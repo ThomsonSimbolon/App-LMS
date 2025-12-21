@@ -2,10 +2,21 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { useAppDispatch, useAppSelector } from '@/store/hooks';
+import {
+  fetchCurrentUser,
+  updateProfile,
+  changePassword,
+  clearError,
+} from '@/store/slices/userSlice';
+import { setUser } from '@/store/slices/authSlice';
 
 export default function ProfilePage() {
   const router = useRouter();
-  const [user, setUser] = useState<any>(null);
+  const dispatch = useAppDispatch();
+  const { user: authUser } = useAppSelector((state) => state.auth);
+  const { currentUser, loading } = useAppSelector((state) => state.user);
+  
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -16,76 +27,45 @@ export default function ProfilePage() {
     newPassword: '',
     confirmPassword: '',
   });
-  const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [changingPassword, setChangingPassword] = useState(false);
 
+  const user = currentUser || authUser;
+
   useEffect(() => {
-    const token = localStorage.getItem('accessToken');
-    if (!token) {
+    if (!authUser) {
       router.push('/login');
       return;
     }
 
-    fetchUserData();
-  }, []);
+    dispatch(fetchCurrentUser());
+  }, [dispatch, authUser, router]);
 
-  const fetchUserData = async () => {
-    const token = localStorage.getItem('accessToken');
-    
-    try {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/users/me`,
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-      
-      const data = await response.json();
-      
-      if (!response.ok) throw new Error(data.error);
-
-      setUser(data.data);
+  useEffect(() => {
+    if (currentUser) {
       setFormData({
-        firstName: data.data.firstName || '',
-        lastName: data.data.lastName || '',
-        email: data.data.email || '',
+        firstName: currentUser.firstName || '',
+        lastName: currentUser.lastName || '',
+        email: currentUser.email || '',
       });
-    } catch (error) {
-      console.error('Failed to fetch user data:', error);
-    } finally {
-      setLoading(false);
     }
-  };
+  }, [currentUser]);
 
   const handleProfileUpdate = async (e: React.FormEvent) => {
     e.preventDefault();
-    const token = localStorage.getItem('accessToken');
     setSaving(true);
+    dispatch(clearError());
 
-    try {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/users/me`,
-        {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify(formData),
-        }
-      );
-
-      const data = await response.json();
-
-      if (!response.ok) throw new Error(data.error);
-
+    const result = await dispatch(updateProfile(formData));
+    
+    if (updateProfile.fulfilled.match(result)) {
+      // Update auth user in store
+      dispatch(setUser(result.payload));
       alert('Profile updated successfully!');
-      localStorage.setItem('user', JSON.stringify(data.data));
-      fetchUserData();
-    } catch (error: any) {
-      alert(error.message);
-    } finally {
-      setSaving(false);
+    } else {
+      alert(result.payload as string || 'Failed to update profile');
     }
+    setSaving(false);
   };
 
   const handlePasswordChange = async (e: React.FormEvent) => {
@@ -101,40 +81,27 @@ export default function ProfilePage() {
       return;
     }
 
-    const token = localStorage.getItem('accessToken');
     setChangingPassword(true);
+    dispatch(clearError());
 
-    try {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/users/me/password`,
-        {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({
-            currentPassword: passwordData.currentPassword,
-            newPassword: passwordData.newPassword,
-          }),
-        }
-      );
+    const result = await dispatch(
+      changePassword({
+        currentPassword: passwordData.currentPassword,
+        newPassword: passwordData.newPassword,
+      })
+    );
 
-      const data = await response.json();
-
-      if (!response.ok) throw new Error(data.error);
-
+    if (changePassword.fulfilled.match(result)) {
       alert('Password changed successfully!');
       setPasswordData({
         currentPassword: '',
         newPassword: '',
         confirmPassword: '',
       });
-    } catch (error: any) {
-      alert(error.message);
-    } finally {
-      setChangingPassword(false);
+    } else {
+      alert(result.payload as string || 'Failed to change password');
     }
+    setChangingPassword(false);
   };
 
   if (loading) {

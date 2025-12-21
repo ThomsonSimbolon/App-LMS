@@ -1,5 +1,6 @@
 'use client';
 
+import { useMemo } from 'react';
 import { Sidebar, SidebarProvider, useSidebar } from '@/components/layouts';
 import StudentHeader from '@/components/layouts/StudentHeader';
 import { useRequireRole } from '@/hooks/useAuth';
@@ -11,9 +12,18 @@ export default function StudentLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const { loading } = useRequireRole(['STUDENT']);
   const user = getCurrentUser();
   const role = getUserRole(user);
+  
+  // Determine redirect destination based on role if not STUDENT
+  const redirectPath = useMemo(() => {
+    if (role === 'ASSESSOR') return '/assessor/dashboard';
+    if (role === 'INSTRUCTOR') return '/instructor/dashboard';
+    if (role === 'ADMIN' || role === 'SUPER_ADMIN') return '/admin/dashboard';
+    return '/dashboard';
+  }, [role]);
+  
+  const { loading } = useRequireRole(['STUDENT'], redirectPath);
 
   // Map role name to sidebar role prop
   const sidebarRole = 'student';

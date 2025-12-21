@@ -1,40 +1,49 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Badge from '@/components/ui/Badge';
 import { useAuth } from '@/hooks/useAuth';
+import { useAppDispatch, useAppSelector } from '@/store/hooks';
+import { fetchDashboardStats } from '@/store/slices/instructorSlice';
 import { BookOpen, Users, Star, TrendingUp, Plus, Settings } from 'lucide-react';
 
 export default function InstructorDashboardPage() {
   const router = useRouter();
   const { user } = useAuth();
-  const [loading, setLoading] = useState(true);
-  const [stats, setStats] = useState({
+  const dispatch = useAppDispatch();
+  const { dashboardStats, dashboardLoading, dashboardError } = useAppSelector(
+    (state) => state.instructor
+  );
+
+  useEffect(() => {
+    dispatch(fetchDashboardStats());
+  }, [dispatch]);
+
+  // Use stats from Redux or default values
+  const stats = dashboardStats || {
     totalCourses: 0,
     totalStudents: 0,
     totalReviews: 0,
     averageRating: 0
-  });
+  };
 
-  useEffect(() => {
-    // Note: Role protection is handled by InstructorLayout
-    // Mock stats for now - in real app, fetch from specific instructor endpoints
-    setTimeout(() => {
-      setStats({
-        totalCourses: 5,
-        totalStudents: 128,
-        totalReviews: 45,
-        averageRating: 4.8
-      });
-      setLoading(false);
-    }, 1000);
-  }, []);
-
-  if (loading) {
+  if (dashboardLoading) {
     return (
       <div className="flex items-center justify-center min-h-[50vh]">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600"></div>
+        <span className="ml-3 text-neutral-600 dark:text-neutral-400">Loading dashboard...</span>
+      </div>
+    );
+  }
+
+  if (dashboardError) {
+    return (
+      <div className="flex items-center justify-center min-h-[50vh]">
+        <div className="text-center">
+          <p className="text-red-600 dark:text-red-400 font-medium">Error loading dashboard</p>
+          <p className="text-sm text-neutral-500 mt-2">{dashboardError}</p>
+        </div>
       </div>
     );
   }
@@ -52,10 +61,10 @@ export default function InstructorDashboardPage() {
 
       <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
         {[
-          { label: 'Total Courses', value: stats.totalCourses, icon: BookOpen, color: 'bg-blue-100 text-blue-600' },
-          { label: 'Total Students', value: stats.totalStudents, icon: Users, color: 'bg-purple-100 text-purple-600' },
-          { label: 'Reviews', value: stats.totalReviews, icon: Star, color: 'bg-yellow-100 text-yellow-600' },
-          { label: 'Avg. Rating', value: stats.averageRating, icon: TrendingUp, color: 'bg-green-100 text-green-600' },
+          { label: 'Total Courses', value: stats.totalCourses, icon: BookOpen, color: 'bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400' },
+          { label: 'Total Students', value: stats.totalStudents, icon: Users, color: 'bg-purple-100 text-purple-600 dark:bg-purple-900/30 dark:text-purple-400' },
+          { label: 'Reviews', value: stats.totalReviews, icon: Star, color: 'bg-yellow-100 text-yellow-600 dark:bg-yellow-900/30 dark:text-yellow-400' },
+          { label: 'Avg. Rating', value: stats.averageRating > 0 ? stats.averageRating.toFixed(1) : 'N/A', icon: TrendingUp, color: 'bg-green-100 text-green-600 dark:bg-green-900/30 dark:text-green-400' },
         ].map((stat, i) => (
           <div key={i} className="card p-6">
             <div className="flex items-center gap-4">

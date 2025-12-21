@@ -30,7 +30,6 @@ const Certificate = sequelize.define('Certificate', {
   certificateNumber: {
     type: DataTypes.STRING,
     allowNull: false,
-    unique: true,
     comment: 'Unique certificate number (UUID)'
   },
   qrCode: {
@@ -71,16 +70,22 @@ const Certificate = sequelize.define('Certificate', {
     type: DataTypes.TEXT,
     allowNull: true,
     comment: 'Reason for rejection (if rejected)'
+  },
+  courseVersion: {
+    type: DataTypes.STRING,
+    allowNull: true,
+    comment: 'Course version at certificate issuance (for versioning system)'
   }
 }, {
   tableName: 'certificates',
   timestamps: true,
   indexes: [
-    { unique: true, fields: ['certificateNumber'] },
+    { unique: true, fields: ['certificateNumber'], name: 'certificates_certificateNumber_unique' },
     { fields: ['userId'] },
     { fields: ['courseId'] },
     { fields: ['userId', 'courseId'] },
-    { fields: ['status'] }
+    { fields: ['status'] },
+    { fields: ['courseVersion'] }
   ]
 });
 

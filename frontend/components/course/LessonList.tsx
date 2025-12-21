@@ -1,5 +1,7 @@
 'use client';
 
+import { getLessonIcon, formatDuration } from '@/lib/lessonUtils';
+
 interface Lesson {
   id: number;
   title: string;
@@ -22,21 +24,6 @@ interface LessonListProps {
 }
 
 export function LessonList({ sections, currentLessonId, onLessonClick }: LessonListProps) {
-  const getLessonIcon = (type: string) => {
-    switch (type) {
-      case 'VIDEO': return '▶️';
-      case 'PDF': return '📄';
-      case 'TEXT': return '📝';
-      case 'QUIZ': return '❓';
-      default: return '📌';
-    }
-  };
-
-  const formatDuration = (seconds?: number) => {
-    if (!seconds) return '';
-    const mins = Math.floor(seconds / 60);
-    return `${mins} min`;
-  };
 
   return (
     <div className="space-y-4">

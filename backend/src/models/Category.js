@@ -10,13 +10,11 @@ const Category = sequelize.define('Category', {
   name: {
     type: DataTypes.STRING,
     allowNull: false,
-    unique: true,
     comment: 'Category name (e.g., Programming, Design, Business)'
   },
   slug: {
     type: DataTypes.STRING,
     allowNull: false,
-    unique: true,
     comment: 'URL-friendly category slug'
   },
   description: {
@@ -33,7 +31,8 @@ const Category = sequelize.define('Category', {
   tableName: 'categories',
   timestamps: true,
   indexes: [
-    { unique: true, fields: ['slug'] }
+    { unique: true, fields: ['name'], name: 'categories_name_unique' },
+    { unique: true, fields: ['slug'], name: 'categories_slug_unique' }
   ]
 });
 

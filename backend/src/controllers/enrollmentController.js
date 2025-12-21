@@ -1,5 +1,7 @@
 const { Enrollment, Course, User, LessonProgress, Lesson, Section, Category } = require('../models');
 const { Op } = require('sequelize');
+const activityLogService = require('../services/activityLogService');
+const notificationService = require('../services/notificationService');
 
 // Enroll in a course
 exports.enrollCourse = async (req, res) => {
@@ -58,12 +60,13 @@ exports.enrollCourse = async (req, res) => {
       });
     }
 
-    // Create enrollment
+    // Create enrollment with course version
     const enrollment = await Enrollment.create({
       userId: req.user.userId,
       courseId,
       status: 'ACTIVE',
-      progress: 0
+      progress: 0,
+      courseVersion: course.version // Lock to current course version
     });
 
     // Fetch with relations
@@ -75,6 +78,16 @@ exports.enrollCourse = async (req, res) => {
           attributes: ['id', 'title', 'thumbnail']
         }
       ]
+    });
+
+    // Log course enrollment activity (non-blocking)
+    activityLogService.logCourseEnroll(req.user, course, req).catch(err => {
+      console.error('Failed to log enrollment activity:', err);
+    });
+
+    // Send enrollment success notification (non-blocking)
+    notificationService.notifyCourseEnrollment(req.user.userId, course).catch(err => {
+      console.error('Failed to send enrollment notification:', err);
     });
 
     res.status(201).json({
@@ -146,7 +159,7 @@ exports.getMyEnrollments = async (req, res) => {
   }
 };
 
-// Get learning page data
+    // Get learning page data
 exports.getLearningData = async (req, res) => {
   try {
     const { enrollmentId } = req.params;
@@ -159,27 +172,7 @@ exports.getLearningData = async (req, res) => {
       include: [
         {
           model: Course,
-          as: 'course',
-          include: [
-            {
-              model: Section,
-              as: 'sections',
-              order: [['order', 'ASC']],
-              include: [
-                {
-                  model: Lesson,
-                  as: 'lessons',
-                  order: [['order', 'ASC']],
-                  attributes: ['id', 'title', 'type', 'duration', 'order', 'isFree']
-                }
-              ]
-            },
-            {
-              model: User,
-              as: 'instructor',
-              attributes: ['id', 'firstName', 'lastName']
-            }
-          ]
+          as: 'course'
         }
       ]
     });
@@ -191,14 +184,64 @@ exports.getLearningData = async (req, res) => {
       });
     }
 
+    // If courseVersion is set, find course with that version
+    // Otherwise, use the enrolled course (backward compatibility)
+    let course;
+    if (enrollment.courseVersion) {
+      // Find course with matching version
+      // Note: In a full implementation, you might want to track originalCourseId
+      // For now, we'll use the enrolled courseId and check its version matches
+      course = await Course.findByPk(enrollment.courseId);
+      
+      // If current course version doesn't match enrollment version, find the correct one
+      // This is a simplified approach - in production, you might want a better versioning strategy
+      if (course && course.version !== enrollment.courseVersion) {
+        // Try to find course with matching version (by title/slug pattern)
+        // For now, we'll use the enrolled course and log a warning
+        console.warn(`Course version mismatch: enrollment expects ${enrollment.courseVersion}, course has ${course.version}`);
+      }
+    } else {
+      // Backward compatibility: use enrolled course
+      course = enrollment.course;
+    }
+
+    // If no course found, use enrolled course as fallback
+    if (!course) {
+      course = enrollment.course;
+    }
+
+    // Load course with all relations
+    const courseWithRelations = await Course.findByPk(course.id, {
+      include: [
+        {
+          model: Section,
+          as: 'sections',
+          order: [['order', 'ASC']],
+          include: [
+            {
+              model: Lesson,
+              as: 'lessons',
+              order: [['order', 'ASC']],
+              attributes: ['id', 'title', 'description', 'type', 'duration', 'order', 'isRequired', 'isFree']
+            }
+          ]
+        },
+        {
+          model: User,
+          as: 'instructor',
+          attributes: ['id', 'firstName', 'lastName']
+        }
+      ]
+    });
+
     // Get lesson progress
     const lessonProgress = await LessonProgress.findAll({
       where: { enrollmentId }
     });
 
     // Add completion status to each lesson
-    const course = enrollment.course.toJSON();
-    course.sections = course.sections.map(section => ({
+    const courseData = courseWithRelations.toJSON();
+    courseData.sections = courseData.sections.map(section => ({
       ...section,
       lessons: section.lessons.map(lesson => {
         const progress = lessonProgress.find(p => p.lessonId === lesson.id);
@@ -218,9 +261,10 @@ exports.getLearningData = async (req, res) => {
           id: enrollment.id,
           progress: enrollment.progress,
           status: enrollment.status,
-          lastAccessedAt: enrollment.lastAccessedAt
+          lastAccessedAt: enrollment.lastAccessedAt,
+          courseVersion: enrollment.courseVersion || courseWithRelations.version
         },
-        course
+        course: courseData
       }
     });
 

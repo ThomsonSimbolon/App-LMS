@@ -5,13 +5,32 @@ const cloudinaryService = require('../services/cloudinaryService');
 exports.createLesson = async (req, res) => {
   try {
     const { sectionId } = req.params;
-    const { title, type, content, duration, order, isFree = false } = req.body;
+    const { title, description, type, content, duration, order, isRequired = true, isFree = false } = req.body;
+
+    // Block ASSESSOR - Lesson creation is academic domain, only INSTRUCTOR allowed
+    if (req.user.roleName === 'ASSESSOR') {
+      return res.status(403).json({
+        success: false,
+        error: 'Access denied',
+        message: 'ASSESSOR role cannot create lessons. Only INSTRUCTOR can create academic content.'
+      });
+    }
 
     if (!title || !type) {
       return res.status(400).json({
         success: false,
         error: 'Validation error',
         message: 'Title and type are required'
+      });
+    }
+
+    // Validate lesson type
+    const validTypes = ['VIDEO', 'MATERIAL', 'LIVE_SESSION', 'ASSIGNMENT', 'QUIZ', 'EXAM', 'DISCUSSION'];
+    if (!validTypes.includes(type)) {
+      return res.status(400).json({
+        success: false,
+        error: 'Validation error',
+        message: `Invalid lesson type. Must be one of: ${validTypes.join(', ')}`
       });
     }
 
@@ -27,11 +46,12 @@ exports.createLesson = async (req, res) => {
       });
     }
 
-    // Check permission
+    // Check permission - Only INSTRUCTOR (owner) or ADMIN/SUPER_ADMIN can create lessons
     if (section.course.instructorId !== req.user.userId && req.user.roleName !== 'ADMIN' && req.user.roleName !== 'SUPER_ADMIN') {
       return res.status(403).json({
         success: false,
-        error: 'Access denied'
+        error: 'Access denied',
+        message: 'Only course instructor or administrators can create lessons'
       });
     }
 
@@ -42,26 +62,53 @@ exports.createLesson = async (req, res) => {
       lessonOrder = (maxOrder || 0) + 1;
     }
 
-    // Handle file upload based on type
-    let contentUrl = content;
+    // Handle content - can be JSON object or handle file uploads
+    let lessonContent = content;
 
+    // Handle file upload for VIDEO and MATERIAL types
     if (req.file) {
       if (type === 'VIDEO') {
         const upload = await cloudinaryService.uploadVideo(req.file, 'lessons/videos');
-        contentUrl = upload.url;
-      } else if (type === 'PDF') {
-        const upload = await cloudinaryService.uploadPDF(req.file, 'lessons/pdfs');
-        contentUrl = upload.url;
+        lessonContent = {
+          videoUrl: upload.url,
+          duration: duration || 0,
+          minWatchPercentage: 80
+        };
+      } else if (type === 'MATERIAL') {
+        const upload = await cloudinaryService.uploadPDF(req.file, 'lessons/materials');
+        lessonContent = {
+          fileUrl: upload.url,
+          fileType: 'PDF'
+        };
       }
+    } else if (content && typeof content === 'string') {
+      // If content is string, try to parse as JSON, otherwise wrap it
+      try {
+        lessonContent = JSON.parse(content);
+      } catch (e) {
+        // If not JSON, wrap it based on type
+        if (type === 'VIDEO') {
+          lessonContent = { videoUrl: content, duration: duration || 0, minWatchPercentage: 80 };
+        } else if (type === 'MATERIAL') {
+          lessonContent = { fileUrl: content, fileType: 'PDF' };
+        } else {
+          lessonContent = { content: content };
+        }
+      }
+    } else if (content && typeof content === 'object') {
+      // Content is already an object, use it directly
+      lessonContent = content;
     }
 
     const lesson = await Lesson.create({
       sectionId,
       title,
+      description: description || null,
       type,
-      content: contentUrl,
+      content: lessonContent,
       duration: duration || 0,
       order: lessonOrder,
+      isRequired: isRequired !== undefined ? isRequired : true,
       isFree
     });
 
@@ -85,7 +132,16 @@ exports.createLesson = async (req, res) => {
 exports.updateLesson = async (req, res) => {
   try {
     const { id } = req.params;
-    const { title, type, content, duration, order, isFree } = req.body;
+    const { title, description, type, content, duration, order, isRequired, isFree } = req.body;
+
+    // Block ASSESSOR - Lesson update is academic domain, only INSTRUCTOR allowed
+    if (req.user.roleName === 'ASSESSOR') {
+      return res.status(403).json({
+        success: false,
+        error: 'Access denied',
+        message: 'ASSESSOR role cannot update lessons. Only INSTRUCTOR can modify academic content.'
+      });
+    }
 
     const lesson = await Lesson.findByPk(id, {
       include: [{
@@ -102,31 +158,78 @@ exports.updateLesson = async (req, res) => {
       });
     }
 
-    // Check permission
+    // Check permission - Only INSTRUCTOR (owner) or ADMIN/SUPER_ADMIN can update lessons
     if (lesson.section.course.instructorId !== req.user.userId && req.user.roleName !== 'ADMIN' && req.user.roleName !== 'SUPER_ADMIN') {
       return res.status(403).json({
         success: false,
-        error: 'Access denied'
+        error: 'Access denied',
+        message: 'Only course instructor or administrators can update lessons'
       });
     }
 
+    // Validate lesson type if provided
+    if (type) {
+      const validTypes = ['VIDEO', 'MATERIAL', 'LIVE_SESSION', 'ASSIGNMENT', 'QUIZ', 'EXAM', 'DISCUSSION'];
+      if (!validTypes.includes(type)) {
+        return res.status(400).json({
+          success: false,
+          error: 'Validation error',
+          message: `Invalid lesson type. Must be one of: ${validTypes.join(', ')}`
+      });
+      }
+    }
+
     const updates = {};
-    if (title) updates.title = title;
-    if (type) updates.type = type;
-    if (content) updates.content = content;
+    if (title !== undefined) updates.title = title;
+    if (description !== undefined) updates.description = description;
+    if (type !== undefined) updates.type = type;
     if (duration !== undefined) updates.duration = duration;
     if (order !== undefined) updates.order = order;
+    if (isRequired !== undefined) updates.isRequired = isRequired;
     if (isFree !== undefined) updates.isFree = isFree;
 
-    // Handle file upload
+    // Handle content update
+    const updateType = type || lesson.type;
+    let lessonContent = content;
+
+    // Handle file upload for VIDEO and MATERIAL types
     if (req.file) {
-      if (type === 'VIDEO' || lesson.type === 'VIDEO') {
+      if (updateType === 'VIDEO') {
         const upload = await cloudinaryService.uploadVideo(req.file, 'lessons/videos');
-        updates.content = upload.url;
-      } else if (type === 'PDF' || lesson.type === 'PDF') {
-        const upload = await cloudinaryService.uploadPDF(req.file, 'lessons/pdfs');
-        updates.content = upload.url;
+        lessonContent = {
+          videoUrl: upload.url,
+          duration: duration !== undefined ? duration : lesson.duration || 0,
+          minWatchPercentage: lesson.content?.minWatchPercentage || 80
+        };
+      } else if (updateType === 'MATERIAL') {
+        const upload = await cloudinaryService.uploadPDF(req.file, 'lessons/materials');
+        lessonContent = {
+          fileUrl: upload.url,
+          fileType: 'PDF'
+        };
       }
+    } else if (content !== undefined) {
+      if (typeof content === 'string') {
+        // Try to parse as JSON, otherwise wrap it
+        try {
+          lessonContent = JSON.parse(content);
+        } catch (e) {
+          // If not JSON, wrap it based on type
+          if (updateType === 'VIDEO') {
+            lessonContent = { videoUrl: content, duration: duration !== undefined ? duration : lesson.duration || 0, minWatchPercentage: 80 };
+          } else if (updateType === 'MATERIAL') {
+            lessonContent = { fileUrl: content, fileType: 'PDF' };
+          } else {
+            lessonContent = { content: content };
+          }
+        }
+      } else if (typeof content === 'object') {
+        lessonContent = content;
+      }
+    }
+
+    if (lessonContent !== undefined) {
+      updates.content = lessonContent;
     }
 
     await lesson.update(updates);
@@ -152,6 +255,15 @@ exports.deleteLesson = async (req, res) => {
   try {
     const { id } = req.params;
 
+    // Block ASSESSOR - Lesson deletion is academic domain, only INSTRUCTOR allowed
+    if (req.user.roleName === 'ASSESSOR') {
+      return res.status(403).json({
+        success: false,
+        error: 'Access denied',
+        message: 'ASSESSOR role cannot delete lessons. Only INSTRUCTOR can delete academic content.'
+      });
+    }
+
     const lesson = await Lesson.findByPk(id, {
       include: [{
         model: Section,
@@ -167,11 +279,12 @@ exports.deleteLesson = async (req, res) => {
       });
     }
 
-    // Check permission
+    // Check permission - Only INSTRUCTOR (owner) or ADMIN/SUPER_ADMIN can delete lessons
     if (lesson.section.course.instructorId !== req.user.userId && req.user.roleName !== 'ADMIN' && req.user.roleName !== 'SUPER_ADMIN') {
       return res.status(403).json({
         success: false,
-        error: 'Access denied'
+        error: 'Access denied',
+        message: 'Only course instructor or administrators can delete lessons'
       });
     }
 

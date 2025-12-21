@@ -1,10 +1,7 @@
 'use client';
 
-import React from 'react';
 import { Header, Footer } from '@/components/layouts';
 import Card from '@/components/ui/Card';
-import { cn } from '@/lib/utils';
-import Image from 'next/image';
 
 export default function AboutPage() {
   const stats = [
@@ -53,7 +50,7 @@ export default function AboutPage() {
               Empowering the World to Learn
             </h1>
             <p className="text-primary-100 dark:text-neutral-400 text-lg md:text-xl leading-relaxed max-w-2xl mx-auto">
-              We're on a mission to democratize education by connecting expert instructors with eager learners worldwide.
+              We&apos;re on a mission to democratize education by connecting expert instructors with eager learners worldwide.
             </p>
           </div>
         </section>
@@ -140,7 +137,7 @@ export default function AboutPage() {
                Join our growing team
              </h2>
              <p className="text-xl text-neutral-600 dark:text-neutral-400">
-               We're always looking for talented individuals who are passionate about education and technology.
+               We&apos;re always looking for talented individuals who are passionate about education and technology.
              </p>
              <button className="btn bg-primary-600 hover:bg-primary-700 text-white px-8 py-3 text-lg rounded-full">
                View Open Positions

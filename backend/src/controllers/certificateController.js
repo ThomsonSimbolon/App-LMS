@@ -1,9 +1,20 @@
-const { Certificate, Course, User, Enrollment, Lesson, Section } = require('../models');
-const qrService = require('../services/qrService');
-const pdfService = require('../services/pdfService');
-const cloudinaryService = require('../services/cloudinaryService');
-const crypto = require('crypto');
-const path = require('path');
+const {
+  Certificate,
+  Course,
+  User,
+  Enrollment,
+  Lesson,
+  Section,
+  CourseAssessor,
+} = require("../models");
+const { Op } = require("sequelize");
+const qrService = require("../services/qrService");
+const pdfService = require("../services/pdfService");
+const cloudinaryService = require("../services/cloudinaryService");
+const activityLogService = require("../services/activityLogService");
+const notificationService = require("../services/notificationService");
+const crypto = require("crypto");
+const path = require("path");
 
 // Request certificate
 exports.requestCertificate = async (req, res) => {
@@ -13,8 +24,8 @@ exports.requestCertificate = async (req, res) => {
     if (!courseId) {
       return res.status(400).json({
         success: false,
-        error: 'Validation error',
-        message: 'Course ID is required'
+        error: "Validation error",
+        message: "Course ID is required",
       });
     }
 
@@ -23,25 +34,29 @@ exports.requestCertificate = async (req, res) => {
       where: {
         userId: req.user.userId,
         courseId,
-        status: 'COMPLETED'
+        status: "COMPLETED",
       },
-      include: [{
-        model: Course,
-        as: 'course',
-        attributes: ['id', 'title', 'requireManualApproval'],
-        include: [{
-          model: User,
-          as: 'instructor',
-          attributes: ['firstName', 'lastName']
-        }]
-      }]
+      include: [
+        {
+          model: Course,
+          as: "course",
+          attributes: ["id", "title", "requireManualApproval"],
+          include: [
+            {
+              model: User,
+              as: "instructor",
+              attributes: ["firstName", "lastName"],
+            },
+          ],
+        },
+      ],
     });
 
     if (!enrollment) {
       return res.status(400).json({
         success: false,
-        error: 'Course not completed',
-        message: 'You must complete the course before requesting a certificate'
+        error: "Course not completed",
+        message: "You must complete the course before requesting a certificate",
       });
     }
 
@@ -49,20 +64,23 @@ exports.requestCertificate = async (req, res) => {
     const existing = await Certificate.findOne({
       where: {
         userId: req.user.userId,
-        courseId
-      }
+        courseId,
+      },
     });
 
     if (existing) {
       return res.status(400).json({
         success: false,
-        error: 'Certificate already exists',
-        message: 'You have already requested a certificate for this course'
+        error: "Certificate already exists",
+        message: "You have already requested a certificate for this course",
       });
     }
 
     // Generate certificate number
-    const certificateNumber = `LMS-${new Date().getFullYear()}-CERT-${crypto.randomBytes(3).toString('hex').toUpperCase()}`;
+    const certificateNumber = `LMS-${new Date().getFullYear()}-CERT-${crypto
+      .randomBytes(3)
+      .toString("hex")
+      .toUpperCase()}`;
 
     // Generate QR code
     const verifyUrl = `${process.env.FRONTEND_URL}/verify-certificate/${certificateNumber}`;
@@ -80,46 +98,68 @@ exports.requestCertificate = async (req, res) => {
       courseName: enrollment.course.title,
       completionDate: enrollment.completedAt,
       instructorName,
-      qrCodeDataURL: qrCode
+      qrCodeDataURL: qrCode,
     });
 
     // Upload PDF to Cloudinary (if configured, otherwise use local)
     let pdfUrl = `/uploads/certificates/${certificateNumber}.pdf`;
     try {
       if (process.env.CLOUDINARY_CLOUD_NAME) {
-        const upload = await cloudinaryService.uploadPDF({ path: pdfPath }, 'certificates');
+        const upload = await cloudinaryService.uploadPDF(
+          { path: pdfPath },
+          "certificates"
+        );
         pdfUrl = upload.url;
       }
     } catch (uploadError) {
-      console.log('Using local PDF storage');
+      console.log("Using local PDF storage");
     }
 
-    // Create certificate
+    // Create certificate with course version
     const certificate = await Certificate.create({
       userId: req.user.userId,
       courseId,
       certificateNumber,
       qrCode,
       pdfUrl,
-      status: enrollment.course.requireManualApproval ? 'PENDING' : 'APPROVED',
+      status: enrollment.course.requireManualApproval ? "PENDING" : "APPROVED",
       issuedAt: enrollment.course.requireManualApproval ? null : new Date(),
-      issuedBy: enrollment.course.requireManualApproval ? null : enrollment.course.instructorId
+      issuedBy: enrollment.course.requireManualApproval
+        ? null
+        : enrollment.course.instructorId,
+      courseVersion:
+        enrollment.course.version || enrollment.courseVersion || "1.0", // Save course version
     });
+
+    // Log certificate request activity (non-blocking)
+    // Note: user already fetched above at line 74
+    activityLogService.logCertRequested(user, certificate, req).catch((err) => {
+      console.error("Failed to log certificate request activity:", err);
+    });
+
+    // Send certificate request notification (non-blocking)
+    const certStatus = enrollment.course.requireManualApproval
+      ? "PENDING"
+      : "APPROVED";
+    notificationService
+      .notifyCertificateStatus(req.user.userId, certificate, certStatus)
+      .catch((err) => {
+        console.error("Failed to send certificate notification:", err);
+      });
 
     res.status(201).json({
       success: true,
-      message: enrollment.course.requireManualApproval 
-        ? 'Certificate request submitted for approval'
-        : 'Certificate generated successfully',
-      data: certificate
+      message: enrollment.course.requireManualApproval
+        ? "Certificate request submitted for approval"
+        : "Certificate generated successfully",
+      data: certificate,
     });
-
   } catch (error) {
-    console.error('Request certificate error:', error);
+    console.error("Request certificate error:", error);
     res.status(500).json({
       success: false,
-      error: 'Internal server error',
-      message: error.message
+      error: "Internal server error",
+      message: error.message,
     });
   }
 };
@@ -137,24 +177,23 @@ exports.getMyCertificates = async (req, res) => {
       include: [
         {
           model: Course,
-          as: 'course',
-          attributes: ['id', 'title']
-        }
+          as: "course",
+          attributes: ["id", "title"],
+        },
       ],
-      order: [['createdAt', 'DESC']]
+      order: [["createdAt", "DESC"]],
     });
 
     res.status(200).json({
       success: true,
-      data: { certificates }
+      data: { certificates },
     });
-
   } catch (error) {
-    console.error('Get certificates error:', error);
+    console.error("Get certificates error:", error);
     res.status(500).json({
       success: false,
-      error: 'Internal server error',
-      message: error.message
+      error: "Internal server error",
+      message: error.message,
     });
   }
 };
@@ -168,32 +207,31 @@ exports.downloadCertificate = async (req, res) => {
       where: {
         id,
         userId: req.user.userId,
-        status: 'APPROVED'
-      }
+        status: "APPROVED",
+      },
     });
 
     if (!certificate) {
       return res.status(404).json({
         success: false,
-        error: 'Certificate not found or not approved'
+        error: "Certificate not found or not approved",
       });
     }
 
     // If using Cloudinary, redirect to URL
-    if (certificate.pdfUrl.startsWith('http')) {
+    if (certificate.pdfUrl.startsWith("http")) {
       return res.redirect(certificate.pdfUrl);
     }
 
     // If local file
-    const filePath = path.join(__dirname, '../../', certificate.pdfUrl);
+    const filePath = path.join(__dirname, "../../", certificate.pdfUrl);
     res.download(filePath);
-
   } catch (error) {
-    console.error('Download certificate error:', error);
+    console.error("Download certificate error:", error);
     res.status(500).json({
       success: false,
-      error: 'Internal server error',
-      message: error.message
+      error: "Internal server error",
+      message: error.message,
     });
   }
 };
@@ -204,42 +242,97 @@ exports.approveCertificate = async (req, res) => {
     const { id } = req.params;
     const { status, rejectionReason } = req.body;
 
-    if (!['APPROVED', 'REJECTED'].includes(status)) {
+    if (!["APPROVED", "REJECTED"].includes(status)) {
       return res.status(400).json({
         success: false,
-        error: 'Validation error',
-        message: 'Status must be APPROVED or REJECTED'
+        error: "Validation error",
+        message: "Status must be APPROVED or REJECTED",
       });
     }
 
-    const certificate = await Certificate.findByPk(id);
+    const certificate = await Certificate.findByPk(id, {
+      include: [
+        {
+          model: Course,
+          as: "course",
+          attributes: ["id", "title"],
+        },
+      ],
+    });
 
     if (!certificate) {
       return res.status(404).json({
         success: false,
-        error: 'Certificate not found'
+        error: "Certificate not found",
       });
+    }
+
+    // Authorization: Check if ASSESSOR is assigned to this course
+    // ADMIN and SUPER_ADMIN can always approve (fallback)
+    if (req.user.roleName === "ASSESSOR") {
+      const isAssigned = await CourseAssessor.findOne({
+        where: {
+          courseId: certificate.courseId,
+          assessorId: req.user.userId,
+        },
+      });
+
+      if (!isAssigned) {
+        return res.status(403).json({
+          success: false,
+          error: "Access denied",
+          message:
+            "You are not assigned as assessor for this course. Only assigned assessors can approve certificates.",
+        });
+      }
     }
 
     await certificate.update({
       status,
-      approvedAt: status === 'APPROVED' ? new Date() : null,
+      approvedAt: status === "APPROVED" ? new Date() : null,
       approvedBy: req.user.userId,
-      rejectionReason: status === 'REJECTED' ? rejectionReason : null
+      rejectionReason: status === "REJECTED" ? rejectionReason : null,
     });
+
+    // Log certificate approval/rejection activity (non-blocking)
+    const approver = await User.findByPk(req.user.userId);
+    if (status === "APPROVED") {
+      activityLogService
+        .logCertApproved(approver, certificate, req)
+        .catch((err) => {
+          console.error("Failed to log certificate approval activity:", err);
+        });
+    } else if (status === "REJECTED") {
+      activityLogService
+        .logCertRejected(approver, certificate, rejectionReason, req)
+        .catch((err) => {
+          console.error("Failed to log certificate rejection activity:", err);
+        });
+    }
+
+    // Send certificate status notification to student (non-blocking)
+    notificationService
+      .notifyCertificateStatus(
+        certificate.userId,
+        certificate,
+        status,
+        rejectionReason
+      )
+      .catch((err) => {
+        console.error("Failed to send certificate status notification:", err);
+      });
 
     res.status(200).json({
       success: true,
       message: `Certificate ${status.toLowerCase()} successfully`,
-      data: certificate
+      data: certificate,
     });
-
   } catch (error) {
-    console.error('Approve certificate error:', error);
+    console.error("Approve certificate error:", error);
     res.status(500).json({
       success: false,
-      error: 'Internal server error',
-      message: error.message
+      error: "Internal server error",
+      message: error.message,
     });
   }
 };
@@ -247,34 +340,87 @@ exports.approveCertificate = async (req, res) => {
 // Get pending certificates (Assessor/Admin)
 exports.getPendingCertificates = async (req, res) => {
   try {
+    // Build where clause for certificate filtering
+    const where = { status: "PENDING" };
+
+    // If ASSESSOR role, only show certificates from assigned courses
+    if (req.user.roleName === "ASSESSOR") {
+      // Get all course IDs where this assessor is assigned
+      const assignedCourses = await CourseAssessor.findAll({
+        where: { assessorId: req.user.userId },
+        attributes: ["courseId"],
+      });
+
+      const assignedCourseIds = assignedCourses.map((ca) => ca.courseId);
+
+      // If no assigned courses, return empty array
+      if (assignedCourseIds.length === 0) {
+        return res.status(200).json({
+          success: true,
+          data: { certificates: [] },
+          message:
+            "No certificates found. You are not assigned to any courses.",
+        });
+      }
+
+      // Filter certificates by assigned course IDs using Sequelize Op.in
+      where.courseId = { [Op.in]: assignedCourseIds };
+    }
+    // ADMIN and SUPER_ADMIN can see all pending certificates
+
     const certificates = await Certificate.findAll({
-      where: { status: 'PENDING' },
+      where,
       include: [
         {
           model: User,
-          as: 'user',
-          attributes: ['id', 'firstName', 'lastName', 'email']
+          as: "student", // Use 'student' alias as defined in models/index.js
+          attributes: ["id", "firstName", "lastName", "email"],
+          required: false,
         },
         {
           model: Course,
-          as: 'course',
-          attributes: ['id', 'title']
-        }
+          as: "course",
+          attributes: ["id", "title"],
+          required: false,
+        },
       ],
-      order: [['createdAt', 'ASC']]
+      order: [["createdAt", "ASC"]],
     });
+
+    // Format response to match frontend expectations
+    const formattedCertificates = certificates.map((cert) => ({
+      id: cert.id,
+      certificateNumber: cert.certificateNumber,
+      status: cert.status,
+      courseVersion: cert.courseVersion,
+      createdAt: cert.createdAt,
+      user: cert.student
+        ? {
+            id: cert.student.id,
+            firstName: cert.student.firstName,
+            lastName: cert.student.lastName,
+            email: cert.student.email,
+          }
+        : null,
+      course: cert.course
+        ? {
+            id: cert.course.id,
+            title: cert.course.title,
+          }
+        : null,
+    }));
 
     res.status(200).json({
       success: true,
-      data: { certificates }
+      data: { certificates: formattedCertificates },
     });
-
   } catch (error) {
-    console.error('Get pending certificates error:', error);
+    console.error("Get pending certificates error:", error);
     res.status(500).json({
       success: false,
-      error: 'Internal server error',
-      message: error.message
+      error: "Internal server error",
+      message: error.message,
+      ...(process.env.NODE_ENV === "development" && { stack: error.stack }),
     });
   }
 };
@@ -287,53 +433,54 @@ exports.verifyCertificate = async (req, res) => {
     const certificate = await Certificate.findOne({
       where: {
         certificateNumber,
-        status: 'APPROVED'
+        status: "APPROVED",
       },
       include: [
         {
           model: User,
-          as: 'user',
-          attributes: ['firstName', 'lastName']
+          as: "user",
+          attributes: ["firstName", "lastName"],
         },
         {
           model: Course,
-          as: 'course',
-          attributes: ['title']
-        }
-      ]
+          as: "course",
+          attributes: ["title"],
+        },
+      ],
     });
 
     if (!certificate) {
       return res.status(404).json({
         success: false,
-        error: 'Certificate not found',
-        message: 'Invalid certificate number or certificate not approved'
+        error: "Certificate not found",
+        message: "Invalid certificate number or certificate not approved",
       });
     }
 
     res.status(200).json({
       success: true,
-      message: 'Certificate is valid',
+      message: "Certificate is valid",
       data: {
         certificateNumber: certificate.certificateNumber,
         status: certificate.status,
         student: {
           firstName: certificate.user.firstName,
-          lastName: certificate.user.lastName
+          lastName: certificate.user.lastName,
         },
         course: {
-          title: certificate.course.title
+          title: certificate.course.title,
+          version: certificate.courseVersion || "1.0", // Include course version
         },
-        issuedAt: certificate.issuedAt
-      }
+        issuedAt: certificate.issuedAt,
+        courseVersion: certificate.courseVersion || "1.0",
+      },
     });
-
   } catch (error) {
-    console.error('Verify certificate error:', error);
+    console.error("Verify certificate error:", error);
     res.status(500).json({
       success: false,
-      error: 'Internal server error',
-      message: error.message
+      error: "Internal server error",
+      message: error.message,
     });
   }
 };

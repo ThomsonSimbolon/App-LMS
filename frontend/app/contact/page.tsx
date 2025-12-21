@@ -48,7 +48,7 @@ export default function ContactPage() {
           <div className="container-custom relative z-10 text-center">
             <h1 className="text-4xl md:text-5xl font-bold mb-6 text-white">Get in Touch</h1>
             <p className="text-primary-100 dark:text-neutral-400 text-lg max-w-2xl mx-auto">
-              Have questions about our courses or platform? We're here to help. Reach out to our team.
+              Have questions about our courses or platform? We&apos;re here to help. Reach out to our team.
             </p>
           </div>
         </section>

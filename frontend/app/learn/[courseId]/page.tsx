@@ -1,138 +1,162 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import { VideoPlayer } from '@/components/course/VideoPlayer';
-import { PDFViewer } from '@/components/course/PDFViewer';
-import { LessonList } from '@/components/course/LessonList';
+import { useState, useEffect, useMemo, useRef } from "react";
+import { useRouter } from "next/navigation";
+import { LessonList } from "@/components/course/LessonList";
+import { LessonRenderer } from "@/components/lesson/LessonRenderer";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
+import { fetchMyEnrollments } from "@/store/slices/enrollmentSlice";
+import {
+  fetchLessonContent,
+  completeLesson,
+  clearLessonContent,
+  type LessonContent,
+} from "@/store/slices/lessonSlice";
 
-export default function LearnPage({ params }: { params: { courseId: string } }) {
+interface Lesson {
+  id: number;
+  title: string;
+  type: string;
+  duration?: number;
+  isCompleted?: boolean;
+}
+
+interface Section {
+  id: number;
+  title: string;
+  lessons?: Lesson[];
+}
+
+export default function LearnPage({
+  params,
+}: {
+  params: { courseId: string };
+}) {
   const router = useRouter();
-  const [enrollment, setEnrollment] = useState<any>(null);
-  const [currentLesson, setCurrentLesson] = useState<any>(null);
-  const [lessonContent, setLessonContent] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
-  const [completing, setCompleting] = useState(false);
+  const dispatch = useAppDispatch();
+  const { enrollments, loading: enrollmentsLoading } = useAppSelector(
+    (state) => state.enrollment
+  );
+  const { lessonContent } = useAppSelector((state) => state.lesson);
+  const { user } = useAppSelector((state) => state.auth);
 
   useEffect(() => {
-    fetchEnrollmentData();
-  }, [params.courseId]);
+    if (!user) {
+      router.push("/login");
+      return;
+    }
+    dispatch(fetchMyEnrollments());
+  }, [dispatch, user, router]);
+
+  // Find enrollment for this course
+  const enrollment = enrollments.find(
+    (e) => e.course.id === parseInt(params.courseId)
+  );
+
+  // Get first lesson from enrollment when available
+  const firstLesson = useMemo(() => {
+    if (!enrollment?.course.sections?.[0]?.lessons?.[0]) {
+      return null;
+    }
+    return enrollment.course.sections[0].lessons[0] as Lesson;
+  }, [enrollment]);
+
+  // Use lazy initialization for currentLesson
+  const [currentLesson, setCurrentLesson] = useState<Lesson | null>(() => {
+    // This initializer only runs once when component mounts
+    // We'll update it via effect if needed when enrollment loads
+    return null;
+  });
+  const [completing, setCompleting] = useState(false);
+  const [watchTime, setWatchTime] = useState(0);
+  const [submissionData, setSubmissionData] = useState<any>(null);
+  const hasInitializedLesson = useRef(false);
+
+  // Set initial lesson when enrollment data becomes available
+  useEffect(() => {
+    if (firstLesson && !hasInitializedLesson.current && !currentLesson) {
+      hasInitializedLesson.current = true;
+      // Use setTimeout to defer state update and avoid synchronous setState in effect
+      setTimeout(() => {
+        setCurrentLesson(firstLesson);
+      }, 0);
+    }
+  }, [firstLesson, currentLesson]);
 
   useEffect(() => {
     if (currentLesson) {
-      fetchLessonContent(currentLesson.id);
+      dispatch(clearLessonContent());
+      dispatch(fetchLessonContent(currentLesson.id));
     }
-  }, [currentLesson]);
+  }, [dispatch, currentLesson]);
 
-  const fetchEnrollmentData = async () => {
-    const token = localStorage.getItem('accessToken');
-    if (!token) {
-      router.push('/login');
+  const handleLessonClick = (lessonId: number) => {
+    if (!enrollment?.course.sections) {
       return;
     }
 
-    try {
-      // Get user's enrollments
-      const enrollmentsRes = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/enrollments/me`,
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-      const enrollmentsData = await enrollmentsRes.json();
-      
-      if (!enrollmentsRes.ok) throw new Error(enrollmentsData.error);
+    const lesson = enrollment.course.sections
+      .flatMap((s: Section) => s.lessons || [])
+      .find((l: Lesson) => l.id === lessonId);
 
-      // Find enrollment for this course
-      const courseEnrollment = enrollmentsData.data.enrollments?.find(
-        (e: any) => e.course.id === parseInt(params.courseId)
-      );
-
-      if (!courseEnrollment) {
-        setError('You are not enrolled in this course');
-        setLoading(false);
-        return;
-      }
-
-      setEnrollment(courseEnrollment);
-      
-      // Set first available lesson as current
-      if (courseEnrollment.course.sections?.[0]?.lessons?.[0]) {
-        setCurrentLesson(courseEnrollment.course.sections[0].lessons[0]);
-      }
-      
-      setLoading(false);
-    } catch (err: any) {
-      setError(err.message);
-      setLoading(false);
-    }
-  };
-
-  const fetchLessonContent = async (lessonId: number) => {
-    const token = localStorage.getItem('accessToken');
-    try {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/lessons/${lessonId}/content`,
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-      const data = await response.json();
-      
-      if (!response.ok) throw new Error(data.error);
-      
-      setLessonContent(data.data);
-    } catch (err: any) {
-      console.error('Failed to fetch lesson content:', err);
-    }
-  };
-
-  const handleLessonClick = (lessonId: number) => {
-    const lesson = enrollment?.course.sections
-      .flatMap((s: any) => s.lessons)
-      .find((l: any) => l.id === lessonId);
-    
     if (lesson) {
       setCurrentLesson(lesson);
-      setLessonContent(null);
+      dispatch(clearLessonContent());
     }
   };
 
-  const handleCompleteLesson = async () => {
-    if (!currentLesson) return;
-    
-    const token = localStorage.getItem('accessToken');
+  const handleCompleteLesson = async (assignmentSubmissionData?: any) => {
+    if (!currentLesson || !lessonContent) return;
+
     setCompleting(true);
+    
+    // Use submission data from AssignmentLesson component if provided
+    const finalSubmissionData = assignmentSubmissionData || submissionData;
 
-    try {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/lessons/${currentLesson.id}/complete`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({ watchTime: currentLesson.duration || 0 }),
-        }
-      );
+    const result = await dispatch(
+      completeLesson({
+        lessonId: currentLesson.id,
+        watchTime: watchTime || currentLesson.duration || lessonContent.duration || 0,
+        submissionData: finalSubmissionData,
+      })
+    );
 
-      const data = await response.json();
-      
-      if (!response.ok) throw new Error(data.error);
-
-      alert('Lesson marked as complete!');
-      fetchEnrollmentData(); // Refresh data
-    } catch (err: any) {
-      alert(err.message);
-    } finally {
-      setCompleting(false);
+    if (completeLesson.fulfilled.match(result)) {
+      // Refresh enrollment data
+      dispatch(fetchMyEnrollments());
+      // Reset watch time and submission data
+      setWatchTime(0);
+      setSubmissionData(null);
+    } else {
+      const errorMessage = (result.payload as string) || "Failed to complete lesson";
+      alert(errorMessage);
     }
+    setCompleting(false);
   };
+
+  const handleProgressUpdate = (newWatchTime: number) => {
+    setWatchTime(newWatchTime);
+  };
+
+  // Reset watch time and submission data when lesson changes
+  useEffect(() => {
+    if (currentLesson) {
+      setWatchTime(0);
+      setSubmissionData(null);
+    }
+  }, [currentLesson]);
+
+  const loading = enrollmentsLoading;
+  const error = !enrollment ? "You are not enrolled in this course" : "";
 
   if (loading) {
     return (
       <div className="min-h-screen bg-neutral-50 dark:bg-neutral-950 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600 mx-auto mb-4"></div>
-          <p className="text-neutral-600 dark:text-neutral-400">Loading course...</p>
+          <p className="text-neutral-600 dark:text-neutral-400">
+            Loading course...
+          </p>
         </div>
       </div>
     );
@@ -143,9 +167,16 @@ export default function LearnPage({ params }: { params: { courseId: string } }) 
       <div className="min-h-screen bg-neutral-50 dark:bg-neutral-950 flex items-center justify-center">
         <div className="card p-12 text-center max-w-md">
           <div className="text-6xl mb-4">❌</div>
-          <h1 className="text-2xl font-bold text-neutral-900 dark:text-white mb-2">Access Denied</h1>
-          <p className="text-neutral-600 dark:text-neutral-400 mb-6">{error || 'Unable to access this course'}</p>
-          <button onClick={() => router.push('/courses')} className="btn bg-primary-600 hover:bg-primary-700 text-white px-6 py-3">
+          <h1 className="text-2xl font-bold text-neutral-900 dark:text-white mb-2">
+            Access Denied
+          </h1>
+          <p className="text-neutral-600 dark:text-neutral-400 mb-6">
+            {error || "Unable to access this course"}
+          </p>
+          <button
+            onClick={() => router.push("/courses")}
+            className="btn bg-primary-600 hover:bg-primary-700 text-white px-6 py-3"
+          >
             Browse Courses
           </button>
         </div>
@@ -160,7 +191,10 @@ export default function LearnPage({ params }: { params: { courseId: string } }) 
         <div className="container-custom py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
-              <button onClick={() => router.push('/dashboard')} className="text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white">
+              <button
+                onClick={() => router.push("/dashboard")}
+                className="text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white"
+              >
                 ← Back
               </button>
               <div>
@@ -194,43 +228,33 @@ export default function LearnPage({ params }: { params: { courseId: string } }) 
                   <h2 className="text-2xl font-bold text-neutral-900 dark:text-white mb-4">
                     {currentLesson.title}
                   </h2>
-                  
+
                   {lessonContent ? (
-                    <>
-                      {currentLesson.type === 'VIDEO' && lessonContent.contentUrl && (
-                        <VideoPlayer url={lessonContent.contentUrl} />
-                      )}
-                      {currentLesson.type === 'PDF' && lessonContent.contentUrl && (
-                        <PDFViewer url={lessonContent.contentUrl} />
-                      )}
-                      {currentLesson.type === 'TEXT' && (
-                        <div className="prose dark:prose-invert max-w-none">
-                          <p>{lessonContent.textContent}</p>
-                        </div>
-                      )}
-                    </>
+                    <LessonRenderer
+                      lesson={lessonContent}
+                      onComplete={handleCompleteLesson}
+                      onProgressUpdate={handleProgressUpdate}
+                      currentWatchTime={watchTime}
+                      isCompleted={currentLesson.isCompleted}
+                      isCompleting={completing}
+                    />
                   ) : (
                     <div className="bg-neutral-100 dark:bg-neutral-800 rounded-lg h-96 flex items-center justify-center">
                       <div className="text-center">
                         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600 mx-auto mb-2"></div>
-                        <p className="text-sm text-neutral-600 dark:text-neutral-400">Loading content...</p>
+                        <p className="text-sm text-neutral-600 dark:text-neutral-400">
+                          Loading content...
+                        </p>
                       </div>
                     </div>
                   )}
 
-                  <div className="mt-6 pt-6 border-t border-neutral-200 dark:border-neutral-800">
-                    <button
-                      onClick={handleCompleteLesson}
-                      disabled={completing || currentLesson.isCompleted}
-                      className="btn bg-accent-600 hover:bg-accent-700 text-white px-6 py-3 disabled:opacity-50"
-                    >
-                      {currentLesson.isCompleted ? '✓ Completed' : completing ? 'Marking Complete...' : 'Mark as Complete'}
-                    </button>
-                  </div>
                 </>
               ) : (
                 <div className="text-center py-12">
-                  <p className="text-neutral-600 dark:text-neutral-400">Select a lesson to begin</p>
+                  <p className="text-neutral-600 dark:text-neutral-400">
+                    Select a lesson to begin
+                  </p>
                 </div>
               )}
             </div>

@@ -10,7 +10,6 @@ const Permission = sequelize.define('Permission', {
   name: {
     type: DataTypes.STRING,
     allowNull: false,
-    unique: true,
     comment: 'Permission name (e.g., create_course, manage_users)'
   },
   resource: {
@@ -34,7 +33,8 @@ const Permission = sequelize.define('Permission', {
   indexes: [
     {
       unique: true,
-      fields: ['name']
+      fields: ['name'],
+      name: 'permissions_name_unique'
     },
     {
       fields: ['resource', 'action']

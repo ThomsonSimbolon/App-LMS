@@ -1,63 +1,38 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { EnrolledCourseCard } from '@/components/dashboard/EnrolledCourseCard';
+import { useAppDispatch, useAppSelector } from '@/store/hooks';
+import { fetchMyEnrollments } from '@/store/slices/enrollmentSlice';
 
 export default function MyCoursesPage() {
   const router = useRouter();
-  const [enrollments, setEnrollments] = useState<any[]>([]);
-  const [filteredEnrollments, setFilteredEnrollments] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
+  const dispatch = useAppDispatch();
+  const { enrollments, loading } = useAppSelector((state) => state.enrollment);
+  const { user } = useAppSelector((state) => state.auth);
   const [activeFilter, setActiveFilter] = useState('all');
 
   useEffect(() => {
-    const token = localStorage.getItem('accessToken');
-    if (!token) {
+    if (!user) {
       router.push('/login');
       return;
     }
 
-    fetchEnrollments();
-  }, []);
+    dispatch(fetchMyEnrollments());
+  }, [dispatch, user, router]);
 
-  useEffect(() => {
-    filterCourses();
-  }, [activeFilter, enrollments]);
-
-  const fetchEnrollments = async () => {
-    const token = localStorage.getItem('accessToken');
-    
-    try {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/enrollments/me`,
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-      
-      const data = await response.json();
-      
-      if (!response.ok) throw new Error(data.error);
-
-      setEnrollments(data.data.enrollments || []);
-    } catch (error) {
-      console.error('Failed to fetch enrollments:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const filterCourses = () => {
+  // Filter enrollments based on active filter
+  const filteredEnrollments = useMemo(() => {
     switch (activeFilter) {
       case 'active':
-        setFilteredEnrollments(enrollments.filter(e => e.progress > 0 && e.progress < 100));
-        break;
+        return enrollments.filter((e) => e.progress > 0 && e.progress < 100);
       case 'completed':
-        setFilteredEnrollments(enrollments.filter(e => e.progress === 100));
-        break;
+        return enrollments.filter((e) => e.progress === 100);
       default:
-        setFilteredEnrollments(enrollments);
+        return enrollments;
     }
-  };
+  }, [enrollments, activeFilter]);
 
   return (
     <div>
@@ -135,7 +110,7 @@ export default function MyCoursesPage() {
           </p>
           {activeFilter === 'all' && (
             <button
-              onClick={() => router.push('/courses')}
+              onClick={() => router.push('/dashboard/browse-courses')}
               className="btn bg-primary-600 hover:bg-primary-700 text-white px-6 py-3"
             >
               Browse Courses

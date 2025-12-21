@@ -5,7 +5,9 @@ import { useRouter } from 'next/navigation';
 import Input from '@/components/ui/Input';
 import Button from '@/components/ui/Button';
 import { ArrowLeft, Upload, BookOpen, AlertCircle } from 'lucide-react';
-import { getAccessToken } from '@/lib/auth';
+import { useAppDispatch, useAppSelector } from '@/store/hooks';
+import { fetchCategories } from '@/store/slices/categorySlice';
+import { createCourse, clearError } from '@/store/slices/courseSlice';
 
 interface Category {
   id: number;
@@ -15,9 +17,10 @@ interface Category {
 
 export default function CreateCoursePage() {
   const router = useRouter();
-  const [loading, setLoading] = useState(false);
-  const [categories, setCategories] = useState<Category[]>([]);
-  const [categoriesLoading, setCategoriesLoading] = useState(true);
+  const dispatch = useAppDispatch();
+  const { categories, loading: categoriesLoading } = useAppSelector((state) => state.category);
+  const { loading } = useAppSelector((state) => state.course);
+  
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [thumbnailPreview, setThumbnailPreview] = useState<string | null>(null);
 
@@ -35,23 +38,8 @@ export default function CreateCoursePage() {
   const [thumbnailFile, setThumbnailFile] = useState<File | null>(null);
 
   useEffect(() => {
-    fetchCategories();
-  }, []);
-
-  const fetchCategories = async () => {
-    try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/categories?limit=100`);
-      const data = await response.json();
-      
-      if (response.ok && data.success) {
-        setCategories(data.data.categories || []);
-      }
-    } catch (error) {
-      console.error('Failed to fetch categories:', error);
-    } finally {
-      setCategoriesLoading(false);
-    }
-  };
+    dispatch(fetchCategories(100));
+  }, [dispatch]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value, type } = e.target;
@@ -126,51 +114,31 @@ export default function CreateCoursePage() {
       return;
     }
 
-    setLoading(true);
+    dispatch(clearError());
 
-    try {
-      const token = getAccessToken();
-      if (!token) {
-        router.push('/login');
-        return;
-      }
+    // Create FormData for multipart/form-data
+    const formDataToSend = new FormData();
+    formDataToSend.append('title', formData.title);
+    formDataToSend.append('description', formData.description);
+    formDataToSend.append('categoryId', formData.categoryId);
+    formDataToSend.append('level', formData.level);
+    formDataToSend.append('type', formData.type);
+    formDataToSend.append('price', formData.type === 'FREE' ? '0' : formData.price);
+    formDataToSend.append('requireSequentialCompletion', formData.requireSequentialCompletion.toString());
+    formDataToSend.append('requireManualApproval', formData.requireManualApproval.toString());
 
-      // Create FormData for multipart/form-data
-      const formDataToSend = new FormData();
-      formDataToSend.append('title', formData.title);
-      formDataToSend.append('description', formData.description);
-      formDataToSend.append('categoryId', formData.categoryId);
-      formDataToSend.append('level', formData.level);
-      formDataToSend.append('type', formData.type);
-      formDataToSend.append('price', formData.type === 'FREE' ? '0' : formData.price);
-      formDataToSend.append('requireSequentialCompletion', formData.requireSequentialCompletion.toString());
-      formDataToSend.append('requireManualApproval', formData.requireManualApproval.toString());
+    if (thumbnailFile) {
+      formDataToSend.append('thumbnail', thumbnailFile);
+    }
 
-      if (thumbnailFile) {
-        formDataToSend.append('thumbnail', thumbnailFile);
-      }
+    const result = await dispatch(createCourse(formDataToSend));
 
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/courses`, {
-        method: 'POST',
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-        body: formDataToSend,
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.message || data.error || 'Failed to create course');
-      }
-
-      // Success - redirect to course detail or courses list
+    if (createCourse.fulfilled.match(result)) {
+      // Success - redirect to courses list
       router.push(`/instructor/courses`);
-    } catch (error: any) {
-      console.error('Create course error:', error);
-      setErrors({ submit: error.message || 'Failed to create course. Please try again.' });
-    } finally {
-      setLoading(false);
+    } else {
+      const errorMessage = result.payload as string || 'Failed to create course';
+      setErrors({ submit: errorMessage });
     }
   };
 

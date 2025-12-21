@@ -15,7 +15,6 @@ const Course = sequelize.define('Course', {
   slug: {
     type: DataTypes.STRING,
     allowNull: false,
-    unique: true,
     comment: 'URL-friendly course slug'
   },
   description: {
@@ -80,15 +79,22 @@ const Course = sequelize.define('Course', {
     type: DataTypes.DATE,
     allowNull: true,
     comment: 'Publication timestamp'
+  },
+  version: {
+    type: DataTypes.STRING,
+    defaultValue: '1.0',
+    allowNull: false,
+    comment: 'Course version (e.g., 1.0, 1.1, 2.0) - for versioning system'
   }
 }, {
   tableName: 'courses',
   timestamps: true,
   indexes: [
-    { unique: true, fields: ['slug'] },
+    { unique: true, fields: ['slug'], name: 'courses_slug_unique' },
     { fields: ['categoryId'] },
     { fields: ['instructorId'] },
-    { fields: ['isPublished'] }
+    { fields: ['isPublished'] },
+    { fields: ['version'] }
   ]
 });
 

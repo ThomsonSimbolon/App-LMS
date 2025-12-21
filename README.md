@@ -27,12 +27,16 @@ Modern Learning Management System dengan Certification & Assessment
 
 ### Fitur Utama
 
-- 🎓 **Course Management** - Buat kursus dengan sections dan lessons (VIDEO, PDF, TEXT)
+- 🎓 **Course Management** - Buat kursus dengan sections dan lessons (7 types: VIDEO, MATERIAL, LIVE_SESSION, ASSIGNMENT, QUIZ, EXAM, DISCUSSION)
 - 📊 **Progress Tracking** - Tracking progress pembelajaran real-time dengan resume functionality
 - ✅ **Quizzes & Exams** - Assessment otomatis dengan timer dan batas attempts
-- 🏆 **Certification** - Generate sertifikat PDF dengan QR verification
+- 🏆 **Certification** - Generate sertifikat PDF dengan QR verification dan approval workflow
 - 👥 **Role-Based Access Control** - 5 roles dengan permission system
 - 🔒 **Lesson Locking** - Sequential completion (dapat dikonfigurasi)
+- 👨‍🏫 **Assessor Assignment** - Assign assessor ke course untuk certificate approval
+- 📝 **Activity Logging** - Log semua aktivitas user untuk audit trail
+- 🔔 **Notifications** - Sistem notifikasi real-time untuk user
+- 📈 **Dashboard Analytics** - Dashboard statistik untuk admin dan instructor
 - ✉️ **Email Verification** - Verifikasi akun via email
 - 🌙 **Dark Mode** - Dukungan dark mode
 - 📱 **Responsive Design** - Mobile-first responsive design
@@ -43,9 +47,9 @@ Modern Learning Management System dengan Certification & Assessment
 app-lms/
 ├── backend/                    # Node.js + Express + Sequelize API
 │   ├── src/
-│   │   ├── models/           # 14 Sequelize models
-│   │   ├── controllers/      # 10 API controllers
-│   │   ├── routes/           # 8 route files
+│   │   ├── models/           # 17 Sequelize models
+│   │   ├── controllers/      # 15 API controllers
+│   │   ├── routes/           # 12 route files
 │   │   ├── middleware/       # Auth & RBAC middleware
 │   │   ├── services/         # Business logic services
 │   │   ├── config/           # Database, JWT, Cloudinary config
@@ -57,10 +61,14 @@ app-lms/
     ├── app/                  # App Router pages
     │   ├── admin/           # Admin pages
     │   ├── instructor/      # Instructor pages
+    │   ├── assessor/        # Assessor pages
     │   ├── dashboard/       # Student dashboard
     │   ├── courses/         # Course pages
     │   ├── learn/           # Learning interface
     │   └── ...
+    ├── store/               # Redux store & slices
+    │   ├── slices/         # Redux slices
+    │   └── store.ts        # Store configuration
     ├── components/          # React components
     │   ├── layouts/         # Layout components
     │   ├── course/          # Course components
@@ -87,10 +95,14 @@ app-lms/
 ┌─────────────────────────────────────────────────────────┐
 │                    App Router                           │
 │                    (src/app.js)                         │
-│  ┌──────────┐  ┌──────────┐  ┌──────────┐            │
-│  │  Auth    │  │  Course  │  │ Enrollment│            │
-│  │  Routes  │  │  Routes  │  │  Routes   │  ...        │
-│  └────┬─────┘  └────┬─────┘  └────┬─────┘            │
+│  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐ │
+│  │  Auth    │  │  Course  │  │ Enrollment│  │ Dashboard│ │
+│  │  Routes  │  │  Routes  │  │  Routes   │  │  Routes  │ │
+│  └────┬─────┘  └────┬─────┘  └────┬─────┘  └────┬─────┘ │
+│  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐ │
+│  │Activity  │  │Notification│ │Certificate│ │  Quiz   │ │
+│  │  Log     │  │  Routes   │  │  Routes   │  │ Routes  │ │
+│  └────┬─────┘  └────┬─────┘  └────┬─────┘  └────┬─────┘ │
 └───────┼─────────────┼─────────────┼──────────────────┘
         │             │             │
         ▼             ▼             ▼
@@ -115,20 +127,31 @@ app-lms/
 │  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐ │
 │  │emailService  │  │ pdfService   │  │qrService     │ │
 │  └──────────────┘  └──────────────┘  └──────────────┘ │
+│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐ │
+│  │notification  │  │activityLog    │  │courseVersion │ │
+│  │  Service     │  │  Service      │  │  Service     │ │
+│  └──────────────┘  └──────────────┘  └──────────────┘ │
+│  ┌──────────────┐  ┌──────────────┐                   │
+│  │lessonCompletion│ │localFile     │                   │
+│  │  Service     │  │  Service     │                   │
+│  └──────────────┘  └──────────────┘                   │
 └──────────────────────┬──────────────────────────────────┘
                        │
                        ▼
 ┌─────────────────────────────────────────────────────────┐
 │                  Models Layer (Sequelize)               │
-│  ┌──────────┐  ┌──────────┐  ┌──────────┐            │
-│  │   User   │  │  Course   │  │Enrollment │  ...        │
-│  └────┬─────┘  └────┬─────┘  └────┬─────┘            │
+│  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐ │
+│  │   User   │  │  Course   │  │Enrollment│  │ActivityLog│ │
+│  └────┬─────┘  └────┬─────┘  └────┬─────┘  └────┬─────┘ │
+│  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐ │
+│  │Notification│ │CourseAssessor│ │Certificate│ │  Quiz   │ │
+│  └────┬─────┘  └────┬─────┘  └────┬─────┘  └────┬─────┘ │
 └───────┼─────────────┼─────────────┼──────────────────┘
         │             │             │
         ▼             ▼             ▼
 ┌─────────────────────────────────────────────────────────┐
 │                    MySQL Database                       │
-│              (14 Tables dengan Relations)               │
+│              (17 Tables dengan Relations)               │
 └─────────────────────────────────────────────────────────┘
 ```
 
@@ -143,10 +166,10 @@ app-lms/
 │  │   Pages      │  │   Dashboard  │  │  Dashboard   │ │
 │  └──────────────┘  └──────────────┘  └──────────────┘ │
 │                                                          │
-│  ┌──────────────┐  ┌──────────────┐                    │
-│  │    Admin     │  │   Learning   │                    │
-│  │   Dashboard  │  │   Interface  │                    │
-│  └──────────────┘  └──────────────┘                    │
+│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐ │
+│  │    Admin     │  │   Assessor    │  │   Learning   │ │
+│  │   Dashboard  │  │   Dashboard  │  │   Interface  │ │
+│  └──────────────┘  └──────────────┘  └──────────────┘ │
 └──────────────────────┬──────────────────────────────────┘
                        │
                        ▼
@@ -156,10 +179,10 @@ app-lms/
 │  │   Layouts   │  │   Course     │  │     Quiz     │ │
 │  │  Components  │  │  Components  │  │  Components  │ │
 │  └──────────────┘  └──────────────┘  └──────────────┘ │
-│  ┌──────────────┐                                      │
-│  │   UI         │                                      │
-│  │  Components  │                                      │
-│  └──────────────┘                                      │
+│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐ │
+│  │   UI         │  │Notification  │  │  Certificate │ │
+│  │  Components  │  │  Components  │  │  Components  │ │
+│  └──────────────┘  └──────────────┘  └──────────────┘ │
 └──────────────────────┬──────────────────────────────────┘
                        │
                        ▼
@@ -168,12 +191,24 @@ app-lms/
 │  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐ │
 │  │   useAuth    │  │   auth.ts    │  │   utils.ts   │ │
 │  └──────────────┘  └──────────────┘  └──────────────┘ │
+│  ┌──────────────┐  ┌──────────────┐                  │
+│  │   api.ts     │  │  lessonUtils │                  │
+│  └──────────────┘  └──────────────┘                  │
 └──────────────────────┬──────────────────────────────────┘
                        │
                        ▼
 ┌─────────────────────────────────────────────────────────┐
 │              Backend API                                │
 │         (http://localhost:5040/api)                     │
+└──────────────────────┬──────────────────────────────────┘
+                       │
+                       ▼
+┌─────────────────────────────────────────────────────────┐
+│              Redux Store (State Management)             │
+│  ┌──────────┐  ┌──────────┐  ┌──────────┐            │
+│  │   Auth    │  │  Course  │  │Enrollment│  ...        │
+│  │   Slice   │  │  Slice   │  │  Slice   │            │
+│  └──────────┘  └──────────┘  └──────────┘            │
 └─────────────────────────────────────────────────────────┘
 ```
 
@@ -458,7 +493,47 @@ app-lms/
 └─────────────────┘
 ```
 
-### 4. Certificate Approval Flow
+### 4. Assessor Assignment Flow (Admin)
+
+```
+┌─────────────────┐
+│ Admin Login     │
+└──────┬──────────┘
+       │
+       ▼
+┌─────────────────┐
+│ Select Course   │
+│ (Admin Dashboard)│
+└──────┬──────────┘
+       │
+       ▼
+┌─────────────────┐
+│ View Course     │
+│ Details         │
+└──────┬──────────┘
+       │
+       ▼
+┌─────────────────┐
+│ Assign Assessors│
+│ (Multi-select   │
+│  ASSESSOR role) │
+└──────┬──────────┘
+       │
+       ▼
+┌─────────────────┐
+│ Save Assignment │
+│ (Sync operation)│
+└──────┬──────────┘
+       │
+       ▼
+┌─────────────────┐
+│ Activity Logged │
+│ (ASSESSOR_      │
+│  ASSIGNED)      │
+└─────────────────┘
+```
+
+### 5. Certificate Approval Flow
 
 ```
 ┌─────────────────┐
@@ -487,15 +562,34 @@ app-lms/
        │                       │
        │                       ▼
        │               ┌─────────────────┐
-       │               │ Assessor/Admin  │
-       │               │ Reviews         │
+       │               │ Check Assessor   │
+       │               │ Assignment       │
        │               └──────┬──────────┘
        │                       │
-       │                       ▼
-       │               ┌─────────────────┐
-       │               │ Approve/Reject  │
-       │               └──────┬──────────┘
-       │                       │
+       │                       ├─── ASSESSOR ────▶ ┌─────────────────┐
+       │                       │                    │ Filter by       │
+       │                       │                    │ Assigned Courses│
+       │                       │                    └──────┬──────────┘
+       │                       │                             │
+       │                       │                             ▼
+       │                       │                    ┌─────────────────┐
+       │                       │                    │ Assessor        │
+       │                       │                    │ Reviews         │
+       │                       │                    └──────┬──────────┘
+       │                       │                             │
+       │                       ├─── ADMIN ────────▶ ┌─────────────────┐
+       │                       │                    │ Admin Reviews   │
+       │                       │                    │ (All courses)   │
+       │                       │                    └──────┬──────────┘
+       │                       │                             │
+       │                       ▼                             ▼
+       │               ┌─────────────────┐         ┌─────────────────┐
+       │               │ Approve/Reject  │         │ Approve/Reject  │
+       │               │ (with reason)   │         │ (with reason)   │
+       │               └──────┬──────────┘         └──────┬──────────┘
+       │                       │                           │
+       │                       └───────────┬───────────────┘
+       │                                     │
        └─── NO ────────▶ ┌─────────────────┐
                          │ Status: APPROVED│
                          │ (Auto-approved) │
@@ -515,12 +609,24 @@ app-lms/
                                  │
                                  ▼
                          ┌─────────────────┐
+                         │ Activity Logged │
+                         │ (CERT_APPROVED)  │
+                         └──────┬──────────┘
+                                 │
+                                 ▼
+                         ┌─────────────────┐
+                         │ Notification    │
+                         │ Sent to Student │
+                         └──────┬──────────┘
+                                 │
+                                 ▼
+                         ┌─────────────────┐
                          │ Certificate     │
                          │ Ready           │
                          └─────────────────┘
 ```
 
-### 5. Quiz Flow
+### 6. Quiz Flow
 
 ```
 ┌─────────────────┐
@@ -593,7 +699,7 @@ app-lms/
 ```
 backend/
 ├── src/
-│   ├── models/              # 14 Sequelize Models
+│   ├── models/              # 17 Sequelize Models
 │   │   ├── User.js
 │   │   ├── Role.js
 │   │   ├── Permission.js
@@ -608,21 +714,29 @@ backend/
 │   │   ├── Question.js
 │   │   ├── ExamResult.js
 │   │   ├── Certificate.js
+│   │   ├── CourseAssessor.js
+│   │   ├── ActivityLog.js
+│   │   ├── Notification.js
 │   │   └── index.js        # Model associations
 │   │
-│   ├── controllers/        # 10 Controllers
+│   ├── controllers/        # 15 Controllers
 │   │   ├── authController.js
 │   │   ├── userController.js
 │   │   ├── categoryController.js
 │   │   ├── courseController.js
+│   │   ├── courseAssessorController.js
 │   │   ├── sectionController.js
 │   │   ├── lessonController.js
 │   │   ├── enrollmentController.js
 │   │   ├── lessonProgressController.js
 │   │   ├── quizController.js
-│   │   └── certificateController.js
+│   │   ├── certificateController.js
+│   │   ├── dashboardController.js
+│   │   ├── instructorController.js
+│   │   ├── activityLogController.js
+│   │   └── notificationController.js
 │   │
-│   ├── routes/            # 8 Route Files
+│   ├── routes/            # 12 Route Files
 │   │   ├── authRoutes.js
 │   │   ├── userRoutes.js
 │   │   ├── categoryRoutes.js
@@ -630,7 +744,11 @@ backend/
 │   │   ├── enrollmentRoutes.js
 │   │   ├── lessonRoutes.js
 │   │   ├── quizRoutes.js
-│   │   └── certificateRoutes.js
+│   │   ├── certificateRoutes.js
+│   │   ├── dashboardRoutes.js
+│   │   ├── instructorRoutes.js
+│   │   ├── activityLogRoutes.js
+│   │   └── notificationRoutes.js
 │   │
 │   ├── middleware/        # Middleware
 │   │   └── auth.js        # verifyToken, hasRole
@@ -639,7 +757,12 @@ backend/
 │   │   ├── emailService.js
 │   │   ├── pdfService.js
 │   │   ├── qrService.js
-│   │   └── cloudinaryService.js
+│   │   ├── cloudinaryService.js
+│   │   ├── notificationService.js
+│   │   ├── activityLogService.js
+│   │   ├── courseVersionService.js
+│   │   ├── localFileService.js
+│   │   └── lessonCompletionService.js
 │   │
 │   ├── config/            # Configuration
 │   │   ├── database.js
@@ -794,8 +917,10 @@ backend/
 - `id` (INTEGER, PK, Auto Increment)
 - `sectionId` (INTEGER, FK to sections)
 - `title` (STRING, Required)
-- `type` (ENUM: VIDEO, PDF, TEXT, QUIZ, Required)
-- `content` (TEXT, Video URL, PDF URL, atau text content)
+- `type` (ENUM: VIDEO, MATERIAL, LIVE_SESSION, ASSIGNMENT, QUIZ, EXAM, DISCUSSION, Required)
+- `description` (TEXT, Optional)
+- `content` (JSON, Flexible schema per type - Video URL, PDF URL, assignment data, etc.)
+- `isRequired` (BOOLEAN, Default: true)
 - `duration` (INTEGER, Seconds, Optional)
 - `order` (INTEGER, Default: 0)
 - `isFree` (BOOLEAN, Default: false)
@@ -866,6 +991,82 @@ backend/
 
 ---
 
+#### 9. CourseAssessor Model
+
+**File**: `src/models/CourseAssessor.js`
+
+**Fields**:
+
+- `id` (INTEGER, PK, Auto Increment)
+- `courseId` (INTEGER, FK to courses)
+- `assessorId` (INTEGER, FK to users, must be ASSESSOR role)
+- `createdAt`, `updatedAt` (Timestamps)
+
+**Relations**:
+
+- `belongsTo(Course)` - CourseAssessor belongs to Course
+- `belongsTo(User)` - CourseAssessor belongs to User (Assessor)
+- Many-to-many: Course ↔ Assessor (through CourseAssessor)
+
+**Unique Constraint**: `(courseId, assessorId)` - Prevent duplicate assignments
+
+**Business Rules**:
+
+- Satu course dapat memiliki banyak assessor
+- Satu assessor dapat handle banyak courses
+- Hanya assigned assessor yang bisa approve certificate untuk course tersebut
+- ADMIN dapat approve sebagai fallback meskipun tidak ada assessor assigned
+
+---
+
+#### 10. ActivityLog Model
+
+**File**: `src/models/ActivityLog.js`
+
+**Fields**:
+
+- `id` (INTEGER, PK, Auto Increment)
+- `userId` (INTEGER, FK to users, Optional - untuk system events)
+- `eventType` (ENUM: USER_LOGIN, COURSE_ENROLL, LESSON_COMPLETE, QUIZ_SUBMIT, CERT_REQUESTED, CERT_APPROVED, CERT_REJECTED, ASSESSOR_ASSIGNED_TO_COURSE, ASSESSOR_UNASSIGNED_FROM_COURSE)
+- `entityType` (ENUM: USER, COURSE, QUIZ, CERTIFICATE, SYSTEM)
+- `entityId` (INTEGER, Optional - ID dari entity terkait)
+- `metadata` (JSON, Optional - Additional event data)
+- `ipAddress` (STRING(45), Optional - Supports IPv6)
+- `userAgent` (TEXT, Optional)
+- `createdAt` (Timestamp only - immutable)
+
+**Relations**:
+
+- `belongsTo(User)` - ActivityLog dapat dimiliki oleh User (nullable untuk system events)
+
+**Indexes**: userId, eventType, entityType, entityId, createdAt
+
+---
+
+#### 11. Notification Model
+
+**File**: `src/models/Notification.js`
+
+**Fields**:
+
+- `id` (INTEGER, PK, Auto Increment)
+- `userId` (INTEGER, FK to users)
+- `title` (STRING, Required)
+- `message` (TEXT, Required)
+- `type` (ENUM: INFO, SUCCESS, WARNING, ERROR, Default: INFO)
+- `isRead` (BOOLEAN, Default: false)
+- `entityType` (ENUM: COURSE, QUIZ, CERTIFICATE, ENROLLMENT, SYSTEM, Optional)
+- `entityId` (INTEGER, Optional - untuk navigation)
+- `createdAt` (Timestamp only - immutable)
+
+**Relations**:
+
+- `belongsTo(User)` - Notification dimiliki oleh User
+
+**Indexes**: userId, isRead, createdAt, (userId, isRead)
+
+---
+
 ### Controllers
 
 #### 1. authController.js
@@ -930,7 +1131,24 @@ backend/
 
 ---
 
-#### 4. quizController.js
+#### 4. lessonProgressController.js
+
+**Fungsi**: Handle lesson progress & completion
+
+**Methods**:
+
+- `getLessonContent(req, res)` - Get lesson content dengan JSON structure (protected)
+- `markLessonComplete(req, res)` - Mark lesson as complete dengan type-specific validation via lessonCompletionService
+- `updateWatchTime(req, res)` - Update video watch time
+
+**Dependencies**:
+
+- `Lesson`, `LessonProgress`, `Enrollment` models
+- `lessonCompletionService` - Centralized completion validation
+
+---
+
+#### 5. quizController.js
 
 **Fungsi**: Handle quiz creation & taking
 
@@ -958,8 +1176,8 @@ backend/
 - `requestCertificate(req, res)` - Request certificate setelah course completion
 - `getMyCertificates(req, res)` - Get certificates milik user
 - `downloadCertificate(req, res)` - Download certificate PDF
-- `getPendingCertificates(req, res)` - Get pending certificates (ASSESSOR/ADMIN)
-- `approveCertificate(req, res)` - Approve/reject certificate (ASSESSOR/ADMIN)
+- `getPendingCertificates(req, res)` - Get pending certificates (ASSESSOR/ADMIN, filtered by assigned courses)
+- `approveCertificate(req, res)` - Approve/reject certificate (ASSESSOR/ADMIN, dengan authorization check)
 - `verifyCertificate(req, res)` - Verify certificate (PUBLIC, no auth)
 
 **Dependencies**:
@@ -967,7 +1185,86 @@ backend/
 - `pdfService` - Generate PDF
 - `qrService` - Generate QR code
 - `cloudinaryService` - Upload PDF
-- `Certificate`, `Course`, `User`, `Enrollment` models
+- `Certificate`, `Course`, `User`, `Enrollment`, `CourseAssessor` models
+
+---
+
+#### 7. courseAssessorController.js
+
+**Fungsi**: Handle assessor assignment ke courses
+
+**Methods**:
+
+- `assignAssessors(req, res)` - Assign assessors ke course (ADMIN/SUPER_ADMIN)
+- `getAssignedAssessors(req, res)` - Get assigned assessors untuk course (ADMIN/SUPER_ADMIN/INSTRUCTOR)
+
+**Dependencies**:
+
+- `CourseAssessor`, `Course`, `User` models
+- `activityLogService` - Log assessor assignment events
+
+---
+
+#### 7. dashboardController.js
+
+**Fungsi**: Handle dashboard statistics
+
+**Methods**:
+
+- `getDashboardStats(req, res)` - Get dashboard statistics (ADMIN/SUPER_ADMIN)
+
+**Dependencies**:
+
+- `User`, `Course`, `Enrollment`, `Certificate`, `ActivityLog` models
+
+---
+
+#### 8. instructorController.js
+
+**Fungsi**: Handle instructor-specific data dan analytics
+
+**Methods**:
+
+- `getDashboardStats(req, res)` - Get instructor dashboard statistics (total courses, students, reviews, rating)
+- `getMyStudents(req, res)` - Get students enrolled in instructor's courses dengan pagination dan search
+- `getMyAnalytics(req, res)` - Get analytics untuk instructor's courses (completion rates, enrollment trends, etc.)
+
+**Dependencies**:
+
+- `Course`, `Enrollment`, `User`, `LessonProgress` models
+
+---
+
+#### 9. activityLogController.js
+
+**Fungsi**: Handle activity log queries
+
+**Methods**:
+
+- `getActivityLogs(req, res)` - Get activity logs dengan filters (ADMIN/SUPER_ADMIN)
+- `getActivityLogStats(req, res)` - Get activity log statistics (ADMIN/SUPER_ADMIN)
+
+**Dependencies**:
+
+- `ActivityLog`, `User` models
+
+---
+
+#### 12. notificationController.js
+
+**Fungsi**: Handle notifications
+
+**Methods**:
+
+- `getNotifications(req, res)` - Get user notifications
+- `getUnreadCount(req, res)` - Get unread notification count
+- `markAsRead(req, res)` - Mark notification as read
+- `markAllAsRead(req, res)` - Mark all notifications as read
+- `deleteNotification(req, res)` - Delete notification
+
+**Dependencies**:
+
+- `Notification`, `User` models
 
 ---
 
@@ -1052,6 +1349,48 @@ GET    /api/certificates/me (protected)
 GET    /api/certificates/:id/download (protected)
 GET    /api/certificates/pending/list (ASSESSOR/ADMIN)
 PATCH  /api/certificates/:id/approve (ASSESSOR/ADMIN)
+```
+
+#### 8. courseRoutes.js (Additional Endpoints)
+
+```javascript
+GET    /api/courses/admin/all (ADMIN/SUPER_ADMIN)
+DELETE /api/courses/my-courses/:id (INSTRUCTOR)
+PATCH  /api/courses/:id/assign-instructor (ADMIN/SUPER_ADMIN)
+POST   /api/courses/:id/publish-new-version (INSTRUCTOR/ADMIN)
+POST   /api/courses/:courseId/assessors (ADMIN/SUPER_ADMIN)
+GET    /api/courses/:courseId/assessors (ADMIN/SUPER_ADMIN/INSTRUCTOR)
+```
+
+#### 9. dashboardRoutes.js
+
+```javascript
+GET / api / admin / dashboard / stats(ADMIN / SUPER_ADMIN);
+```
+
+#### 10. activityLogRoutes.js
+
+```javascript
+GET / api / activity - logs(ADMIN / SUPER_ADMIN);
+GET / api / activity - logs / stats(ADMIN / SUPER_ADMIN);
+```
+
+#### 11. instructorRoutes.js
+
+```javascript
+GET / api / instructor / dashboard / stats(INSTRUCTOR / ADMIN);
+GET / api / instructor / students(INSTRUCTOR / ADMIN);
+GET / api / instructor / analytics(INSTRUCTOR / ADMIN);
+```
+
+#### 12. notificationRoutes.js
+
+```javascript
+GET    /api/notifications (protected)
+GET    /api/notifications/unread-count (protected)
+PATCH  /api/notifications/:id/read (protected)
+PATCH  /api/notifications/mark-all-read (protected)
+DELETE /api/notifications/:id (protected)
 ```
 
 ---
@@ -1142,6 +1481,97 @@ router.post("/admin-only", verifyToken, hasRole(["ADMIN"]), controller.method);
 
 ---
 
+#### 5. notificationService.js
+
+**Fungsi**: Create dan manage notifications
+
+**Methods**:
+
+- `createNotification(userId, title, message, type, entityType, entityId)` - Create notification
+- `sendNotificationToUser(userId, notificationData)` - Send notification ke user
+
+**Dependencies**: `Notification` model
+
+---
+
+#### 6. activityLogService.js
+
+**Fungsi**: Log user activities
+
+**Methods**:
+
+- `logActivity(userId, eventType, entityType, entityId, metadata, ipAddress, userAgent)` - Log activity
+
+**Dependencies**: `ActivityLog` model
+
+---
+
+#### 7. courseVersionService.js
+
+**Fungsi**: Handle course versioning
+
+**Methods**:
+
+- `publishNewVersion(courseId, instructorId)` - Publish new course version
+
+**Dependencies**: `Course` model
+
+---
+
+#### 8. localFileService.js
+
+**Fungsi**: Handle local file operations
+
+**Methods**:
+
+- File upload utilities untuk local storage
+
+---
+
+#### 9. lessonCompletionService.js
+
+**Fungsi**: Centralized service untuk lesson completion validation dan management
+
+**Methods**:
+
+- `validateCompletion(lesson, userId, payload)` - Validate completion requirements berdasarkan lesson type
+- `markComplete(lessonId, userId, payload)` - Mark lesson as complete dengan full validation
+- `getCompletionStatus(lessonId, userId)` - Get completion status untuk lesson
+- `validateContentSchema(type, content)` - Validate content schema berdasarkan lesson type
+
+**Features**:
+
+- Type-specific completion rules (VIDEO: minWatchPercentage, ASSIGNMENT: submission required, etc.)
+- Prevents client-side spoofing
+- Enforces sequential completion when required
+- Handles QUIZ/EXAM completion via quiz submission
+
+**Dependencies**: `Lesson`, `LessonProgress`, `Enrollment`, `Quiz`, `ExamResult` models
+
+---
+
+#### 9. lessonCompletionService.js
+
+**Fungsi**: Centralized service untuk lesson completion validation dan management
+
+**Methods**:
+
+- `validateCompletion(lesson, userId, payload)` - Validate completion requirements berdasarkan lesson type
+- `markComplete(lessonId, userId, payload)` - Mark lesson as complete dengan full validation
+- `getCompletionStatus(lessonId, userId)` - Get completion status untuk lesson
+- `validateContentSchema(type, content)` - Validate content schema berdasarkan lesson type
+
+**Features**:
+
+- Type-specific completion rules (VIDEO: minWatchPercentage, ASSIGNMENT: submission required, etc.)
+- Prevents client-side spoofing
+- Enforces sequential completion when required
+- Handles QUIZ/EXAM completion via quiz submission
+
+**Dependencies**: `Lesson`, `LessonProgress`, `Enrollment`, `Quiz`, `ExamResult` models
+
+---
+
 ## Dokumentasi Frontend
 
 ### Struktur Folder Frontend
@@ -1215,6 +1645,20 @@ frontend/
 │   │   └── [certificateNumber]/
 │   │       └── page.tsx
 │   │
+│   ├── assessor/              # Assessor Dashboard
+│   │   ├── layout.tsx
+│   │   ├── dashboard/
+│   │   │   └── page.tsx
+│   │   └── certificates/
+│   │       └── page.tsx
+│   │
+│   ├── about/                 # Public Pages
+│   │   └── page.tsx
+│   ├── contact/
+│   │   └── page.tsx
+│   ├── pricing/
+│   │   └── page.tsx
+│   │
 │   └── ... (other pages)
 │
 ├── components/               # React Components
@@ -1235,6 +1679,16 @@ frontend/
 │   │   ├── VideoPlayer.tsx
 │   │   └── PDFViewer.tsx
 │   │
+│   ├── lesson/              # Lesson Type Components
+│   │   ├── LessonRenderer.tsx
+│   │   ├── VideoLesson.tsx
+│   │   ├── MaterialLesson.tsx
+│   │   ├── LiveSessionLesson.tsx
+│   │   ├── AssignmentLesson.tsx
+│   │   ├── QuizLesson.tsx
+│   │   ├── ExamLesson.tsx
+│   │   └── DiscussionLesson.tsx
+│   │
 │   ├── quiz/                # Quiz Components
 │   │   ├── QuizStart.tsx
 │   │   ├── QuestionCard.tsx
@@ -1243,6 +1697,14 @@ frontend/
 │   ├── dashboard/           # Dashboard Components
 │   │   ├── DashboardCard.tsx
 │   │   └── EnrolledCourseCard.tsx
+│   │
+│   ├── notifications/       # Notification Components
+│   │   ├── NotificationBell.tsx
+│   │   ├── NotificationDropdown.tsx
+│   │   └── NotificationItem.tsx
+│   │
+│   ├── certificate/         # Certificate Components
+│   │   └── (certificate components)
 │   │
 │   └── ui/                  # UI Components
 │       ├── Button.tsx
@@ -1253,6 +1715,7 @@ frontend/
 │       ├── Modal.tsx
 │       ├── Skeleton.tsx
 │       ├── ThemeToggle.tsx
+│       ├── Toast.tsx
 │       └── index.ts
 │
 ├── hooks/                    # Custom Hooks
@@ -1260,8 +1723,28 @@ frontend/
 │
 ├── lib/                      # Utilities
 │   ├── auth.ts              # Auth utilities
+│   ├── api.ts               # API client utilities
 │   ├── theme.tsx            # Theme provider
-│   └── utils.ts             # General utilities
+│   ├── utils.ts             # General utilities
+│   └── lessonUtils.ts       # Lesson utilities
+│
+├── store/                    # Redux Store
+│   ├── slices/              # Redux Slices
+│   │   ├── authSlice.ts
+│   │   ├── userSlice.ts
+│   │   ├── courseSlice.ts
+│   │   ├── enrollmentSlice.ts
+│   │   ├── lessonSlice.ts
+│   │   ├── certificateSlice.ts
+│   │   ├── notificationSlice.ts
+│   │   ├── activityLogSlice.ts
+│   │   ├── categorySlice.ts
+│   │   ├── dashboardSlice.ts
+│   │   └── courseAssessorSlice.ts
+│   ├── api.ts               # RTK Query API
+│   ├── hooks.ts             # Typed hooks
+│   ├── store.ts             # Store configuration
+│   └── ReduxProvider.tsx    # Redux Provider
 │
 └── public/                   # Static Assets
 ```
@@ -1323,6 +1806,18 @@ frontend/
 - Continue learning buttons
 - Filter by status (ACTIVE, COMPLETED, DROPPED)
 
+**Browse Courses** (`app/dashboard/browse-courses/page.tsx`)
+
+- Browse available courses
+- Search and filter courses
+- Enroll in courses
+
+**Course Detail** (`app/dashboard/courses/[id]/page.tsx`)
+
+- Course detail untuk enrolled course
+- Progress tracking
+- Access learning page
+
 **Quizzes** (`app/dashboard/quizzes/page.tsx`)
 
 - List available quizzes
@@ -1369,16 +1864,25 @@ frontend/
 
 **Students** (`app/instructor/students/page.tsx`)
 
-- List students enrolled in courses
-- Progress tracking
+- List students enrolled in instructor's courses (dynamic data)
+- Progress tracking per student
 - Filter by course
+- Search functionality
+- Pagination support
 
 **Analytics** (`app/instructor/analytics/page.tsx`)
 
-- Course performance
-- Student engagement
+- Course performance metrics (dynamic data)
+- Student engagement statistics
 - Completion rates
-- Charts & graphs
+- Enrollment growth trends
+- Charts & graphs dengan real-time data
+
+**Dashboard** (`app/instructor/dashboard/page.tsx`)
+
+- Course statistics (total courses, students, reviews, rating) - dynamic data
+- Quick overview metrics
+- Recent activity summary
 
 ---
 
@@ -1417,6 +1921,40 @@ frontend/
 - System settings
 - Category management
 - Role & permission management
+
+**Activity Logs** (`app/admin/activity-logs/page.tsx`)
+
+- View all activity logs
+- Filter by user, event type, date
+- Activity statistics
+
+**Categories** (`app/admin/categories/page.tsx`)
+
+- Manage course categories
+- Create, update, delete categories
+
+**Course Detail** (`app/admin/courses/[id]/page.tsx`)
+
+- Course detail dengan full management
+- Assign assessors
+- Assign instructor
+- View enrolled students
+
+---
+
+#### 5. Assessor Dashboard Pages
+
+**Dashboard** (`app/assessor/dashboard/page.tsx`)
+
+- Overview pending certificates
+- Statistics
+- Quick actions
+
+**Certificates** (`app/assessor/certificates/page.tsx`)
+
+- List pending certificates (filtered by assigned courses)
+- Approve/reject certificates
+- View certificate details
 
 ---
 
@@ -1478,6 +2016,13 @@ frontend/
 - Notifications
 - Theme toggle
 
+**7. AssessorHeader.tsx**
+
+- User info
+- Assessor quick actions
+- Notifications
+- Theme toggle
+
 ---
 
 #### Course Components
@@ -1520,6 +2065,58 @@ frontend/
 - Download button
 - Zoom controls
 - Page navigation
+
+---
+
+#### Lesson Components
+
+**1. LessonRenderer.tsx**
+
+- Central component untuk render lesson berdasarkan type
+- Auto-select appropriate lesson component
+- Handle completion callbacks
+- Progress tracking integration
+
+**2. VideoLesson.tsx**
+
+- Video player dengan controls
+- Watch time tracking
+- Auto-save progress
+- Completion validation (minWatchPercentage)
+
+**3. MaterialLesson.tsx**
+
+- Material viewer (PDF, documents)
+- Download functionality
+- Content display
+- Auto-completion support
+
+**4. LiveSessionLesson.tsx**
+
+- Live session information
+- Meeting URL integration
+- Scheduled time display
+- Attendance tracking
+
+**5. AssignmentLesson.tsx**
+
+- Assignment instructions
+- Submission form (file/text/link)
+- Deadline display
+- Submission status
+
+**6. QuizLesson.tsx & ExamLesson.tsx**
+
+- Quiz/Exam integration
+- Link ke quiz interface
+- Completion via quiz submission
+- Results display
+
+**7. DiscussionLesson.tsx**
+
+- Discussion topic display
+- Instructions
+- Participation tracking
 
 ---
 
@@ -1601,6 +2198,34 @@ frontend/
 - Light/dark mode toggle
 - Icon animation
 
+**9. Toast.tsx**
+
+- Toast notification component
+- Success, error, warning, info variants
+- Auto-dismiss functionality
+
+---
+
+#### Notification Components
+
+**1. NotificationBell.tsx**
+
+- Notification bell icon dengan badge
+- Unread count display
+- Click to open dropdown
+
+**2. NotificationDropdown.tsx**
+
+- Dropdown menu dengan list notifications
+- Mark as read functionality
+- Navigation to related entities
+
+**3. NotificationItem.tsx**
+
+- Individual notification item
+- Type-based styling
+- Read/unread states
+
 ---
 
 ### Hooks
@@ -1636,6 +2261,42 @@ const isAdmin = hasRole(["ADMIN", "SUPER_ADMIN"]);
 
 ---
 
+### Redux Store
+
+**File**: `store/store.ts`
+
+**Slices**:
+
+1. **authSlice** - Authentication state
+2. **userSlice** - User profile management
+3. **courseSlice** - Course data management
+4. **enrollmentSlice** - Enrollment management
+5. **lessonSlice** - Lesson data management (updated dengan 7 lesson types)
+6. **certificateSlice** - Certificate management
+7. **notificationSlice** - Notification management
+8. **activityLogSlice** - Activity log queries
+9. **categorySlice** - Category management
+10. **dashboardSlice** - Dashboard statistics
+11. **courseAssessorSlice** - Assessor assignment management
+12. **instructorSlice** - Instructor-specific data (students, analytics, dashboard stats)
+
+**Typed Hooks**:
+
+- `useAppDispatch()` - Typed dispatch hook
+- `useAppSelector()` - Typed selector hook
+
+**Usage**:
+
+```typescript
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
+import { fetchCourses } from "@/store/slices/courseSlice";
+
+const dispatch = useAppDispatch();
+const { courses, loading } = useAppSelector((state) => state.course);
+```
+
+---
+
 ### Lib Utilities
 
 #### auth.ts
@@ -1651,9 +2312,39 @@ const isAdmin = hasRole(["ADMIN", "SUPER_ADMIN"]);
 - `isAdmin(user)` - Check if admin
 - `isInstructor(user)` - Check if instructor
 - `isStudent(user)` - Check if student
+- `isAssessor(user)` - Check if assessor
 - `getUserRole(user)` - Get role name
 - `getUserDisplayName(user)` - Get display name
 - `getUserInitials(user)` - Get initials for avatar
+
+---
+
+#### api.ts
+
+**File**: `lib/api.ts`
+
+**Functions**:
+
+- `getApiBaseUrl()` - Get base API URL dari environment
+- `getApiUrl(endpoint)` - Build full API URL
+- `getFileUrl(filePath)` - Convert relative file path ke full URL
+- `apiGet<T>(endpoint, options)` - GET request
+- `apiPost<T>(endpoint, data, options)` - POST request
+- `apiPut<T>(endpoint, data, options)` - PUT request
+- `apiPatch<T>(endpoint, data, options)` - PATCH request
+- `apiDelete<T>(endpoint, options)` - DELETE request
+
+---
+
+#### lessonUtils.ts
+
+**File**: `lib/lessonUtils.ts`
+
+**Functions**:
+
+- Lesson utility functions untuk handling lesson types
+- Lesson content parsing
+- Lesson progress calculations
 
 ---
 
@@ -1737,12 +2428,30 @@ const { theme, toggleTheme } = useTheme();
 
 ┌──────────┐         ┌──────────────┐
 │   User   │────────▶│ Certificate  │
-└──────────┘         └──────┬───────┘
-                            │
-                            ▼
-                     ┌──────────┐
-                     │  Course   │
-                     └──────────┘
+└────┬─────┘         └──────┬───────┘
+     │                      │
+     │                      ▼
+     │               ┌──────────┐
+     │               │  Course   │
+     │               └──────┬─────┘
+     │                      │
+     │                      ▼
+     │               ┌──────────────┐
+     │               │CourseAssessor │
+     │               └──────┬───────┘
+     │                      │
+     │                      ▼
+     │               ┌──────────┐
+     │               │   User    │
+     │               │(Assessor) │
+     │               └──────────┘
+     │
+     ├─────────────────┐
+     │                 │
+     ▼                 ▼
+┌──────────────┐  ┌──────────────┐
+│ ActivityLog  │  │ Notification │
+└──────────────┘  └──────────────┘
 ```
 
 ### Table Details
@@ -1759,7 +2468,7 @@ const { theme, toggleTheme } = useTheme();
 5. **categories** - Course categories
 6. **courses** - Courses
 7. **sections** - Course sections (ordered)
-8. **lessons** - Lessons (VIDEO, PDF, TEXT, QUIZ)
+8. **lessons** - Lessons (7 types: VIDEO, MATERIAL, LIVE_SESSION, ASSIGNMENT, QUIZ, EXAM, DISCUSSION)
 
 #### Enrollment & Progress Tables
 
@@ -1775,6 +2484,12 @@ const { theme, toggleTheme } = useTheme();
 #### Certification Tables
 
 14. **certificates** - Certificates dengan approval workflow
+15. **course_assessors** - Many-to-many: Course ↔ Assessor assignments
+
+#### System Tables
+
+16. **activity_logs** - Activity logging untuk audit trail
+17. **notifications** - User notifications
 
 ---
 
@@ -1788,13 +2503,15 @@ http://localhost:5040/api
 
 ### Authentication Endpoints
 
-| Method | Endpoint                    | Auth | Role | Description          |
-| ------ | --------------------------- | ---- | ---- | -------------------- |
-| POST   | `/auth/register`            | ❌   | -    | Register user baru   |
-| POST   | `/auth/login`               | ❌   | -    | Login user           |
-| GET    | `/auth/verify-email/:token` | ❌   | -    | Verify email         |
-| POST   | `/auth/refresh`             | ❌   | -    | Refresh access token |
-| POST   | `/auth/logout`              | ✅   | -    | Logout user          |
+| Method | Endpoint                    | Auth | Role | Description               |
+| ------ | --------------------------- | ---- | ---- | ------------------------- |
+| POST   | `/auth/register`            | ❌   | -    | Register user baru        |
+| POST   | `/auth/login`               | ❌   | -    | Login user                |
+| GET    | `/auth/verify-email/:token` | ❌   | -    | Verify email              |
+| POST   | `/auth/refresh`             | ❌   | -    | Refresh access token      |
+| POST   | `/auth/logout`              | ✅   | -    | Logout user               |
+| POST   | `/auth/forgot-password`     | ❌   | -    | Request password reset    |
+| POST   | `/auth/reset-password`      | ❌   | -    | Reset password with token |
 
 ### User Endpoints
 
@@ -1811,21 +2528,27 @@ http://localhost:5040/api
 
 ### Course Endpoints
 
-| Method | Endpoint                               | Auth | Role             | Description            |
-| ------ | -------------------------------------- | ---- | ---------------- | ---------------------- |
-| GET    | `/courses`                             | ❌   | -                | List published courses |
-| GET    | `/courses/:id`                         | ❌   | -                | Get course details     |
-| GET    | `/courses/my-courses`                  | ✅   | INSTRUCTOR/ADMIN | Get my courses         |
-| POST   | `/courses`                             | ✅   | INSTRUCTOR/ADMIN | Create course          |
-| PUT    | `/courses/:id`                         | ✅   | INSTRUCTOR/ADMIN | Update course          |
-| DELETE | `/courses/:id`                         | ✅   | INSTRUCTOR/ADMIN | Delete course          |
-| PATCH  | `/courses/:id/publish`                 | ✅   | INSTRUCTOR/ADMIN | Publish/unpublish      |
-| POST   | `/courses/:courseId/sections`          | ✅   | INSTRUCTOR/ADMIN | Create section         |
-| PUT    | `/courses/sections/:id`                | ✅   | INSTRUCTOR/ADMIN | Update section         |
-| DELETE | `/courses/sections/:id`                | ✅   | INSTRUCTOR/ADMIN | Delete section         |
-| POST   | `/courses/sections/:sectionId/lessons` | ✅   | INSTRUCTOR/ADMIN | Create lesson          |
-| PUT    | `/courses/lessons/:id`                 | ✅   | INSTRUCTOR/ADMIN | Update lesson          |
-| DELETE | `/courses/lessons/:id`                 | ✅   | INSTRUCTOR/ADMIN | Delete lesson          |
+| Method | Endpoint                               | Auth | Role                         | Description             |
+| ------ | -------------------------------------- | ---- | ---------------------------- | ----------------------- |
+| GET    | `/courses`                             | ❌   | -                            | List published courses  |
+| GET    | `/courses/:id`                         | ❌   | -                            | Get course details      |
+| GET    | `/courses/my-courses`                  | ✅   | INSTRUCTOR/ADMIN             | Get my courses          |
+| GET    | `/courses/admin/all`                   | ✅   | ADMIN/SUPER_ADMIN            | Get all courses (admin) |
+| POST   | `/courses`                             | ✅   | INSTRUCTOR/ADMIN             | Create course           |
+| PUT    | `/courses/:id`                         | ✅   | INSTRUCTOR/ADMIN             | Update course           |
+| DELETE | `/courses/:id`                         | ✅   | ADMIN/SUPER_ADMIN            | Delete course           |
+| DELETE | `/courses/my-courses/:id`              | ✅   | INSTRUCTOR                   | Delete own course       |
+| PATCH  | `/courses/:id/publish`                 | ✅   | INSTRUCTOR/ADMIN             | Publish/unpublish       |
+| POST   | `/courses/:id/publish-new-version`     | ✅   | INSTRUCTOR/ADMIN             | Publish new version     |
+| PATCH  | `/courses/:id/assign-instructor`       | ✅   | ADMIN/SUPER_ADMIN            | Assign instructor       |
+| POST   | `/courses/:courseId/sections`          | ✅   | INSTRUCTOR/ADMIN             | Create section          |
+| PUT    | `/courses/sections/:id`                | ✅   | INSTRUCTOR/ADMIN             | Update section          |
+| DELETE | `/courses/sections/:id`                | ✅   | INSTRUCTOR/ADMIN             | Delete section          |
+| POST   | `/courses/sections/:sectionId/lessons` | ✅   | INSTRUCTOR/ADMIN             | Create lesson           |
+| PUT    | `/courses/lessons/:id`                 | ✅   | INSTRUCTOR/ADMIN             | Update lesson           |
+| DELETE | `/courses/lessons/:id`                 | ✅   | INSTRUCTOR/ADMIN             | Delete lesson           |
+| POST   | `/courses/:courseId/assessors`         | ✅   | ADMIN/SUPER_ADMIN            | Assign assessors        |
+| GET    | `/courses/:courseId/assessors`         | ✅   | ADMIN/SUPER_ADMIN/INSTRUCTOR | Get assigned assessors  |
 
 ### Enrollment Endpoints
 
@@ -1858,14 +2581,14 @@ http://localhost:5040/api
 
 ### Certificate Endpoints
 
-| Method | Endpoint                                  | Auth | Role           | Description                 |
-| ------ | ----------------------------------------- | ---- | -------------- | --------------------------- |
-| GET    | `/certificates/verify/:certificateNumber` | ❌   | -              | Verify certificate (public) |
-| POST   | `/certificates`                           | ✅   | -              | Request certificate         |
-| GET    | `/certificates/me`                        | ✅   | -              | Get my certificates         |
-| GET    | `/certificates/:id/download`              | ✅   | -              | Download certificate        |
-| GET    | `/certificates/pending/list`              | ✅   | ASSESSOR/ADMIN | Get pending certificates    |
-| PATCH  | `/certificates/:id/approve`               | ✅   | ASSESSOR/ADMIN | Approve/reject certificate  |
+| Method | Endpoint                                  | Auth | Role           | Description                                                          |
+| ------ | ----------------------------------------- | ---- | -------------- | -------------------------------------------------------------------- |
+| GET    | `/certificates/verify/:certificateNumber` | ❌   | -              | Verify certificate (public)                                          |
+| POST   | `/certificates`                           | ✅   | -              | Request certificate                                                  |
+| GET    | `/certificates/me`                        | ✅   | -              | Get my certificates                                                  |
+| GET    | `/certificates/:id/download`              | ✅   | -              | Download certificate                                                 |
+| GET    | `/certificates/pending/list`              | ✅   | ASSESSOR/ADMIN | Get pending certificates (filtered by assigned courses for ASSESSOR) |
+| PATCH  | `/certificates/:id/approve`               | ✅   | ASSESSOR/ADMIN | Approve/reject certificate (ASSESSOR must be assigned to course)     |
 
 ### Category Endpoints
 
@@ -1873,6 +2596,37 @@ http://localhost:5040/api
 | ------ | ------------- | ---- | ----------------- | --------------- |
 | GET    | `/categories` | ❌   | -                 | List categories |
 | POST   | `/categories` | ✅   | ADMIN/SUPER_ADMIN | Create category |
+
+### Dashboard Endpoints
+
+| Method | Endpoint                 | Auth | Role              | Description              |
+| ------ | ------------------------ | ---- | ----------------- | ------------------------ |
+| GET    | `/admin/dashboard/stats` | ✅   | ADMIN/SUPER_ADMIN | Get dashboard statistics |
+
+### Instructor Endpoints
+
+| Method | Endpoint                      | Auth | Role                         | Description                      |
+| ------ | ----------------------------- | ---- | ---------------------------- | -------------------------------- |
+| GET    | `/instructor/dashboard/stats` | ✅   | INSTRUCTOR/ADMIN/SUPER_ADMIN | Get instructor dashboard stats   |
+| GET    | `/instructor/students`        | ✅   | INSTRUCTOR/ADMIN/SUPER_ADMIN | Get students enrolled in courses |
+| GET    | `/instructor/analytics`       | ✅   | INSTRUCTOR/ADMIN/SUPER_ADMIN | Get instructor analytics         |
+
+### Activity Log Endpoints
+
+| Method | Endpoint               | Auth | Role              | Description                    |
+| ------ | ---------------------- | ---- | ----------------- | ------------------------------ |
+| GET    | `/activity-logs`       | ✅   | ADMIN/SUPER_ADMIN | Get activity logs with filters |
+| GET    | `/activity-logs/stats` | ✅   | ADMIN/SUPER_ADMIN | Get activity log statistics    |
+
+### Notification Endpoints
+
+| Method | Endpoint                       | Auth | Role | Description                    |
+| ------ | ------------------------------ | ---- | ---- | ------------------------------ |
+| GET    | `/notifications`               | ✅   | -    | Get user notifications         |
+| GET    | `/notifications/unread-count`  | ✅   | -    | Get unread notification count  |
+| PATCH  | `/notifications/:id/read`      | ✅   | -    | Mark notification as read      |
+| PATCH  | `/notifications/mark-all-read` | ✅   | -    | Mark all notifications as read |
+| DELETE | `/notifications/:id`           | ✅   | -    | Delete notification            |
 
 ---
 
@@ -2018,10 +2772,11 @@ npm run dev
 - **Language**: TypeScript 5
 - **Styling**: TailwindCSS 3.4
 - **UI Icons**: Lucide React 0.562
-- **State Management**: React Hooks
-- **HTTP Client**: Fetch API
+- **State Management**: Redux Toolkit 2.11, React Redux 9.2
+- **HTTP Client**: Fetch API (custom api.ts wrapper)
 - **Utils**: clsx 2.1, tailwind-merge 3.4
 - **Theme**: Custom dark mode implementation
+- **Emoji Picker**: emoji-picker-react 4.16
 
 ---
 
@@ -2180,6 +2935,79 @@ Untuk issues dan pertanyaan:
 
 ---
 
-**Last Updated**: 17 Desember 2025  
+## Changelog
+
+### Version 1.0.0 (17 Desember 2025)
+
+**Added Features**:
+
+- ✅ **Assessor Assignment System** - Assign assessors ke courses untuk certificate approval
+- ✅ **Activity Logging** - Comprehensive activity logging untuk audit trail
+- ✅ **Notification System** - Real-time notifications untuk users
+- ✅ **Dashboard Analytics** - Dashboard statistics untuk admin
+- ✅ **Course Versioning** - Publish new course versions
+- ✅ **Enhanced Certificate Approval** - Filtered by assessor assignments dengan authorization checks
+- ✅ **Redux State Management** - Centralized state management dengan Redux Toolkit
+- ✅ **Assessor Dashboard** - Dedicated dashboard untuk assessors
+- ✅ **Browse Courses Page** - Enhanced course browsing untuk students
+- ✅ **Password Reset Flow** - Complete forgot password & reset password functionality
+- ✅ **Lesson Types System** - Support 7 lesson types (VIDEO, MATERIAL, LIVE_SESSION, ASSIGNMENT, QUIZ, EXAM, DISCUSSION)
+- ✅ **Centralized Lesson Completion** - lessonCompletionService untuk type-specific validation
+- ✅ **Instructor Dynamic Features** - Dynamic data untuk students, analytics, dan dashboard pages
+
+**Updated**:
+
+- 📝 Complete documentation update dengan semua fitur baru
+- 🔄 Improved API endpoints documentation dengan semua routes
+- 📊 Enhanced database schema documentation (17 tables)
+- 🎨 Updated frontend structure documentation dengan Redux store
+- 🔐 Enhanced security documentation
+- 📚 Lesson model updated dengan 7 types dan JSON content schema
+- 🎯 Frontend lesson components refactored dengan LessonRenderer
+
+**Technical Improvements**:
+
+- 🏗️ Backend: 17 models, 15 controllers, 12 route files, 9 services
+- 🎨 Frontend: Redux Toolkit integration, 12 slices
+- 📱 Enhanced UI components (Toast, Notifications, Lesson Components)
+- 🔍 Activity logging untuk semua critical operations
+- ✅ Type-safe lesson completion dengan centralized validation
+- 📊 Dynamic instructor dashboard dengan real-time analytics
+
+---
+
+**Last Updated**: 18 Desember 2025  
 **Version**: 1.0.0  
 **Status**: ✅ Production Ready
+
+---
+
+### Version 1.1.0 (18 Desember 2025)
+
+**Added Features**:
+
+- ✅ **7 Lesson Types Support** - VIDEO, MATERIAL, LIVE_SESSION, ASSIGNMENT, QUIZ, EXAM, DISCUSSION
+- ✅ **Lesson Completion Service** - Centralized `lessonCompletionService` untuk type-specific validation
+- ✅ **JSON Content Schema** - Flexible content structure per lesson type
+- ✅ **Lesson Renderer Components** - Individual components untuk setiap lesson type
+- ✅ **Instructor Dynamic Dashboard** - Real-time statistics (courses, students, reviews, rating)
+- ✅ **Instructor Students Page** - Dynamic student list dengan pagination dan search
+- ✅ **Instructor Analytics Page** - Dynamic analytics dengan charts dan trends
+
+**Updated**:
+
+- 📝 Lesson Model: Updated dengan 7 types, JSON content, description, isRequired fields
+- 🔄 lessonProgressController: Integrated dengan lessonCompletionService
+- 🎨 Frontend: LessonRenderer component untuk dynamic lesson rendering
+- 📊 Frontend: instructorSlice dengan thunks untuk students, analytics, dashboard
+- 🔐 Authorization: Enhanced lesson endpoints dengan ASSESSOR blocking
+
+**Technical Improvements**:
+
+- 🏗️ Backend: Added instructorController dengan 3 methods
+- 🏗️ Backend: Added instructorRoutes dengan 3 endpoints
+- 🏗️ Backend: Added lessonCompletionService dengan type-specific validation
+- 🎨 Frontend: Added 7 lesson type components (VideoLesson, MaterialLesson, etc.)
+- 🎨 Frontend: Added LessonRenderer untuk centralized lesson rendering
+- 📊 Frontend: instructorSlice dengan fetchMyStudents, fetchMyAnalytics, fetchDashboardStats
+- ✅ Type-safe lesson completion dengan validation rules per type

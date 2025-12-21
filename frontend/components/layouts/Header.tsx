@@ -1,18 +1,19 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import Link from 'next/link';
-import ThemeToggle from '../ui/ThemeToggle';
-import { Menu, X } from 'lucide-react';
+import { useState } from "react";
+import Link from "next/link";
+import ThemeToggle from "../ui/ThemeToggle";
+import NotificationBell from "../notifications/NotificationBell";
+import { Menu, X } from "lucide-react";
 
 const Header: React.FC = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const navigation = [
-    { name: 'Courses', href: '/courses' },
-    { name: 'About', href: '/about' },
-    { name: 'Pricing', href: '/pricing' },
-    { name: 'Contact', href: '/contact' },
+    { name: "Courses", href: "/courses" },
+    { name: "About", href: "/about" },
+    { name: "Pricing", href: "/pricing" },
+    { name: "Contact", href: "/contact" },
   ];
 
   return (
@@ -24,7 +25,9 @@ const Header: React.FC = () => {
             <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-primary-600 to-accent-600 flex items-center justify-center group-hover:scale-110 transition-transform">
               <span className="text-white font-bold text-lg">L</span>
             </div>
-            <span className="text-xl font-bold gradient-text">LMS Platform</span>
+            <span className="text-xl font-bold gradient-text">
+              LMS Platform
+            </span>
           </Link>
 
           {/* Desktop Navigation */}
@@ -42,6 +45,7 @@ const Header: React.FC = () => {
 
           {/* Auth Buttons */}
           <div className="hidden md:flex items-center gap-3">
+            <NotificationBell />
             <ThemeToggle />
             <Link
               href="/login"

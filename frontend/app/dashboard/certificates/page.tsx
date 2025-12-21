@@ -1,49 +1,33 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
+import { fetchMyCertificates } from "@/store/slices/certificateSlice";
+import { getApiUrl } from "@/lib/api";
 
 export default function CertificatesPage() {
   const router = useRouter();
-  const [certificates, setCertificates] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
+  const dispatch = useAppDispatch();
+  const { myCertificates: certificates, loading } = useAppSelector(
+    (state) => state.certificate
+  );
+  const { user } = useAppSelector((state) => state.auth);
 
   useEffect(() => {
-    const token = localStorage.getItem('accessToken');
-    if (!token) {
-      router.push('/login');
+    if (!user) {
+      router.push("/login");
       return;
     }
 
-    fetchCertificates();
-  }, []);
-
-  const fetchCertificates = async () => {
-    const token = localStorage.getItem('accessToken');
-    
-    try {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/certificates/me`,
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-      
-      const data = await response.json();
-      
-      if (!response.ok) throw new Error(data.error);
-
-      setCertificates(data.data.certificates || []);
-    } catch (error) {
-      console.error('Failed to fetch certificates:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
+    dispatch(fetchMyCertificates());
+  }, [dispatch, user, router]);
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
+    return new Date(dateString).toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
     });
   };
 
@@ -77,30 +61,45 @@ export default function CertificatesPage() {
               <div className="relative h-48 bg-gradient-to-br from-primary-500 to-accent-500 p-6 flex items-center justify-center text-center">
                 <div className="text-white">
                   <div className="text-4xl mb-2">🏆</div>
-                  <h3 className="font-bold text-lg">Certificate of Completion</h3>
-                  <p className="text-sm opacity-90 mt-2">{certificate.certificateNumber}</p>
+                  <h3 className="font-bold text-lg">
+                    Certificate of Completion
+                  </h3>
+                  <p className="text-sm opacity-90 mt-2">
+                    {certificate.certificateNumber}
+                  </p>
                 </div>
               </div>
 
               {/* Certificate Info */}
               <div className="p-6">
                 <h4 className="font-semibold text-neutral-900 dark:text-white mb-2 line-clamp-2">
-                  {certificate.course?.title || 'Course Title'}
+                  {certificate.course?.title || "Course Title"}
                 </h4>
                 <p className="text-sm text-neutral-600 dark:text-neutral-400 mb-4">
-                  Issued: {formatDate(certificate.issuedAt)}
+                  Issued:{" "}
+                  {formatDate(certificate.issuedAt || certificate.createdAt)}
                 </p>
 
                 {/* Actions */}
                 <div className="flex gap-2">
                   <button
-                    onClick={() => window.open(`/verify/${certificate.certificateNumber}`, '_blank')}
+                    onClick={() =>
+                      window.open(
+                        `/verify/${certificate.certificateNumber}`,
+                        "_blank"
+                      )
+                    }
                     className="flex-1 btn bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 text-sm"
                   >
                     View
                   </button>
                   <button
-                    onClick={() => window.open(`${process.env.NEXT_PUBLIC_API_URL}/certificates/${certificate.id}/download`, '_blank')}
+                    onClick={() => {
+                      window.open(
+                        getApiUrl(`certificates/${certificate.id}/download`),
+                        "_blank"
+                      );
+                    }}
                     className="flex-1 btn bg-white dark:bg-neutral-800 hover:bg-neutral-50 dark:hover:bg-neutral-700 border border-neutral-300 dark:border-neutral-700 text-neutral-900 dark:text-white px-4 py-2 text-sm"
                   >
                     Download
@@ -120,7 +119,7 @@ export default function CertificatesPage() {
             Complete a course to earn your first certificate
           </p>
           <button
-            onClick={() => router.push('/dashboard/courses')}
+            onClick={() => router.push("/dashboard/courses")}
             className="btn bg-primary-600 hover:bg-primary-700 text-white px-6 py-3"
           >
             View My Courses

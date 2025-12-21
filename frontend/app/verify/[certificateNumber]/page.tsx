@@ -17,7 +17,7 @@ export default function VerifyCertificatePage({ params }: { params: { certificat
   const verifyCertificate = async () => {
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/certificates/verify/${params.certificateNumber}`
+        `${process.env.NEXT_PUBLIC_API_URL}/api/certificates/verify/${params.certificateNumber}`
       );
       
       const data = await response.json();

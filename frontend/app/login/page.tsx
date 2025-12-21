@@ -1,66 +1,53 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { useAppDispatch, useAppSelector } from '@/store/hooks';
+import { login, clearError } from '@/store/slices/authSlice';
 
 export default function LoginPage() {
   const router = useRouter();
+  const dispatch = useAppDispatch();
+  const { loading, error, user } = useAppSelector((state) => state.auth);
   const [formData, setFormData] = useState({
     email: '',
     password: '',
   });
-  const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false);
+
+  // Redirect based on role after successful login
+  useEffect(() => {
+    if (user) {
+      const roleName = user.role.name;
+      if (roleName === 'STUDENT') {
+        router.push('/dashboard');
+      } else if (roleName === 'INSTRUCTOR') {
+        router.push('/instructor/dashboard');
+      } else if (roleName === 'ADMIN' || roleName === 'SUPER_ADMIN') {
+        router.push('/admin/dashboard');
+      } else if (roleName === 'ASSESSOR') {
+        router.push('/assessor/dashboard');
+      } else {
+        router.push('/dashboard');
+      }
+    }
+  }, [user, router]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({
       ...formData,
       [e.target.name]: e.target.value,
     });
+    // Clear error when user types
+    if (error) {
+      dispatch(clearError());
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
-    setLoading(true);
-
-    try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/login`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || 'Login failed');
-      }
-
-      // Store tokens
-      localStorage.setItem('accessToken', data.data.tokens.accessToken);
-      localStorage.setItem('refreshToken', data.data.tokens.refreshToken);
-      localStorage.setItem('user', JSON.stringify(data.data.user));
-
-      // Redirect based on role
-      const user = data.data.user;
-      if (user.role.name === 'STUDENT') {
-        router.push('/dashboard');
-      } else if (user.role.name === 'INSTRUCTOR') {
-        router.push('/instructor/dashboard');
-      } else if (user.role.name === 'ADMIN' || user.role.name === 'SUPER_ADMIN') {
-        router.push('/admin/dashboard');
-      } else {
-        router.push('/dashboard');
-      }
-    } catch (err: any) {
-      setError(err.message || 'An error occurred during login');
-    } finally {
-      setLoading(false);
-    }
+    dispatch(clearError());
+    dispatch(login(formData));
   };
 
   return (

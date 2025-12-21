@@ -1,11 +1,15 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { useAppDispatch, useAppSelector } from '@/store/hooks';
+import { register, clearError } from '@/store/slices/authSlice';
 
 export default function RegisterPage() {
   const router = useRouter();
+  const dispatch = useAppDispatch();
+  const { loading, error, user } = useAppSelector((state) => state.auth);
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -13,63 +17,55 @@ export default function RegisterPage() {
     password: '',
     confirmPassword: '',
   });
-  const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false);
+  const [validationError, setValidationError] = useState('');
+
+  // Redirect after successful registration
+  useEffect(() => {
+    if (user) {
+      alert('Registration successful! Please check your email to verify your account.');
+      router.push('/login');
+    }
+  }, [user, router]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({
       ...formData,
       [e.target.name]: e.target.value,
     });
+    // Clear errors when user types
+    if (error || validationError) {
+      dispatch(clearError());
+      setValidationError('');
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
+    setValidationError('');
+    dispatch(clearError());
 
     // Validation
     if (formData.password !== formData.confirmPassword) {
-      setError('Passwords do not match');
+      setValidationError('Passwords do not match');
       return;
     }
 
     if (formData.password.length < 6) {
-      setError('Password must be at least 6 characters');
+      setValidationError('Password must be at least 6 characters');
       return;
     }
 
-    setLoading(true);
-
-    try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/register`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
+    dispatch(
+      register({
           firstName: formData.firstName,
           lastName: formData.lastName,
           email: formData.email,
           password: formData.password,
-          roleId: 4, // Student role
-        }),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || 'Registration failed');
-      }
-
-      // Registration successful
-      alert('Registration successful! Please check your email to verify your account.');
-      router.push('/login');
-    } catch (err: any) {
-      setError(err.message || 'An error occurred during registration');
-    } finally {
-      setLoading(false);
-    }
+      })
+    );
   };
+
+  const displayError = validationError || error;
 
   return (
     <div className="min-h-screen bg-neutral-50 dark:bg-neutral-950 flex items-center justify-center py-12 px-4">
@@ -93,9 +89,9 @@ export default function RegisterPage() {
         {/* Form Card */}
         <div className="card p-8">
           <form onSubmit={handleSubmit} className="space-y-6">
-            {error && (
+            {displayError && (
               <div className="bg-error-light/10 border border-error text-error-dark dark:text-error-light rounded-lg p-4 text-sm">
-                {error}
+                {displayError}
               </div>
             )}
 

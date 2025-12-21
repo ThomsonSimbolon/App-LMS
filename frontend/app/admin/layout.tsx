@@ -14,16 +14,14 @@ export default function AdminLayout({
   children: React.ReactNode;
 }) {
   const { loading } = useRequireRole(['ADMIN', 'SUPER_ADMIN']);
-  const [sidebarRole, setSidebarRole] = useState<'admin' | 'super_admin' | 'assessor' | 'student'>('admin');
+  const [sidebarRole, setSidebarRole] = useState<'admin' | 'super_admin'>('admin');
 
   // Determine sidebar role on client-side only to avoid hydration mismatch
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const user = getCurrentUser();
       const role = getUserRole(user);
-      const roleValue = role === 'SUPER_ADMIN' ? 'super_admin' : 
-                       role === 'ADMIN' ? 'admin' : 
-                       role === 'ASSESSOR' ? 'assessor' : 'admin';
+      const roleValue = role === 'SUPER_ADMIN' ? 'super_admin' : 'admin';
       setSidebarRole(roleValue);
     }
   }, []);

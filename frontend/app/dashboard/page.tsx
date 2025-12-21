@@ -1,73 +1,44 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { DashboardCard } from '@/components/dashboard/DashboardCard';
 import { EnrolledCourseCard } from '@/components/dashboard/EnrolledCourseCard';
 import { BookOpen, Target, CheckCircle, Trophy, Search, Settings } from 'lucide-react';
+import { useAppDispatch, useAppSelector } from '@/store/hooks';
+import { fetchMyEnrollments } from '@/store/slices/enrollmentSlice';
 
 export default function DashboardPage() {
   const router = useRouter();
-  const [user, setUser] = useState<any>(null);
-  const [enrollments, setEnrollments] = useState<any[]>([]);
-  const [stats, setStats] = useState({
-    totalCourses: 0,
-    activeCourses: 0,
-    completedCourses: 0,
-    certificates: 0,
-  });
-  const [loading, setLoading] = useState(true);
+  const dispatch = useAppDispatch();
+  const { enrollments, loading } = useAppSelector((state) => state.enrollment);
+  const { user } = useAppSelector((state) => state.auth);
 
   useEffect(() => {
-    // ... useEffect content unchanged
-    const token = localStorage.getItem('accessToken');
-    if (!token) {
+    if (!user) {
       router.push('/login');
       return;
     }
 
-    const userData = localStorage.getItem('user');
-    if (userData) {
-      setUser(JSON.parse(userData));
-    }
+    dispatch(fetchMyEnrollments());
+  }, [dispatch, user, router]);
 
-    fetchDashboardData();
-  }, []);
+  // Calculate stats from enrollments
+  const stats = useMemo(() => {
+    const totalCourses = enrollments.length;
+    const completedCourses = enrollments.filter((e) => e.progress === 100).length;
+    const activeCourses = totalCourses - completedCourses;
 
-  const fetchDashboardData = async () => {
-    // ... fetchDashboardData content unchanged
-    const token = localStorage.getItem('accessToken');
-    
-    try {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/enrollments/me`,
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-      
-      const data = await response.json();
-      
-      if (!response.ok) throw new Error(data.error);
+    return {
+      totalCourses,
+      activeCourses,
+      completedCourses,
+      certificates: completedCourses, // Assuming 1 cert per completed course
+    };
+  }, [enrollments]);
 
-      const enrollmentsData = data.data.enrollments || [];
-      setEnrollments(enrollmentsData.slice(0, 4)); // Show recent 4
-
-      // Calculate stats
-      const totalCourses = enrollmentsData.length;
-      const completedCourses = enrollmentsData.filter((e: any) => e.progress === 100).length;
-      const activeCourses = totalCourses - completedCourses;
-
-      setStats({
-        totalCourses,
-        activeCourses,
-        completedCourses,
-        certificates: completedCourses, // Assuming 1 cert per completed course
-      });
-    } catch (error) {
-      console.error('Failed to fetch dashboard data:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  // Show recent 4 enrollments
+  const recentEnrollments = enrollments.slice(0, 4);
 
   return (
     <div>
@@ -121,7 +92,7 @@ export default function DashboardPage() {
           <h2 className="text-2xl font-bold text-neutral-900 dark:text-white">
             Continue Learning
           </h2>
-          {enrollments.length > 4 && (
+          {enrollments.length > 4 && recentEnrollments.length > 0 && (
             <button
               onClick={() => router.push('/dashboard/courses')}
               className="text-primary-600 dark:text-primary-400 hover:underline font-medium"
@@ -141,9 +112,9 @@ export default function DashboardPage() {
               </div>
             ))}
           </div>
-        ) : enrollments.length > 0 ? (
+        ) : recentEnrollments.length > 0 ? (
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {enrollments.map((enrollment) => (
+            {recentEnrollments.map((enrollment) => (
               <EnrolledCourseCard
                 key={enrollment.id}
                 courseId={enrollment.course.id}
@@ -167,7 +138,7 @@ export default function DashboardPage() {
               Start learning by enrolling in a course
             </p>
             <button
-              onClick={() => router.push('/courses')}
+              onClick={() => router.push('/dashboard/browse-courses')}
               className="btn bg-primary-600 hover:bg-primary-700 text-white px-6 py-3 flex items-center gap-2"
             >
               <Search className="w-4 h-4" />
@@ -179,7 +150,7 @@ export default function DashboardPage() {
 
       {/* Quick Actions */}
       <div className="grid md:grid-cols-2 gap-6">
-        <div className="card p-6 cursor-pointer hover:shadow-md transition-shadow" onClick={() => router.push('/courses')} role="button">
+        <div className="card p-6 cursor-pointer hover:shadow-md transition-shadow" onClick={() => router.push('/dashboard/browse-courses')} role="button">
           <div className="flex items-center gap-3 mb-2">
             <div className="p-2 rounded-lg bg-primary-100 dark:bg-primary-900/30">
               <Search className="w-5 h-5 text-primary-600 dark:text-primary-400" />

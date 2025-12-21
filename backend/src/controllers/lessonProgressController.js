@@ -1,48 +1,75 @@
-const { LessonProgress, Lesson, Enrollment, Section, Course } = require('../models');
+const {
+  LessonProgress,
+  Lesson,
+  Enrollment,
+  Section,
+  Course,
+  User,
+} = require("../models");
+const activityLogService = require("../services/activityLogService");
+const lessonCompletionService = require("../services/lessonCompletionService");
 
 // Get lesson content
 exports.getLessonContent = async (req, res) => {
   try {
     const { lessonId } = req.params;
 
+    // Block ASSESSOR - Lesson access is for students/instructors only
+    if (req.user.roleName === "ASSESSOR") {
+      return res.status(403).json({
+        success: false,
+        error: "Access denied",
+        message:
+          "ASSESSOR role cannot access lesson content. ASSESSOR is only responsible for certificate validation.",
+      });
+    }
+
     const lesson = await Lesson.findByPk(lessonId, {
       include: [
         {
           model: Section,
-          as: 'section',
+          as: "section",
           include: [
             {
               model: Course,
-              as: 'course',
-              attributes: ['id', 'requireSequentialCompletion']
-            }
-          ]
-        }
-      ]
+              as: "course",
+              attributes: ["id", "requireSequentialCompletion"],
+            },
+          ],
+        },
+      ],
     });
 
     if (!lesson) {
       return res.status(404).json({
         success: false,
-        error: 'Lesson not found'
+        error: "Lesson not found",
       });
     }
 
-    // Check if user is enrolled
-    const enrollment = await Enrollment.findOne({
-      where: {
-        userId: req.user.userId,
-        courseId: lesson.section.course.id,
-        status: 'ACTIVE'
-      }
-    });
+    // INSTRUCTOR (course owner) can always view lesson content
+    const isCourseInstructor =
+      lesson.section.course.instructorId === req.user.userId;
+    const isAdmin =
+      req.user.roleName === "ADMIN" || req.user.roleName === "SUPER_ADMIN";
 
-    if (!enrollment && !lesson.isFree) {
-      return res.status(403).json({
-        success: false,
-        error: 'Access denied',
-        message: 'You must be enrolled to access this lesson'
+    // Check if user is enrolled (for STUDENT role)
+    if (!isCourseInstructor && !isAdmin) {
+      const enrollment = await Enrollment.findOne({
+        where: {
+          userId: req.user.userId,
+          courseId: lesson.section.course.id,
+          status: "ACTIVE",
+        },
       });
+
+      if (!enrollment && !lesson.isFree) {
+        return res.status(403).json({
+          success: false,
+          error: "Access denied",
+          message: "You must be enrolled to access this lesson",
+        });
+      }
     }
 
     // TODO: Check if lesson is locked (previous lesson not completed)
@@ -51,7 +78,7 @@ exports.getLessonContent = async (req, res) => {
     // Update last accessed
     if (enrollment) {
       await enrollment.update({
-        lastAccessedLessonId: lessonId
+        lastAccessedLessonId: lessonId,
       });
     }
 
@@ -60,18 +87,21 @@ exports.getLessonContent = async (req, res) => {
       data: {
         id: lesson.id,
         title: lesson.title,
+        description: lesson.description,
         type: lesson.type,
-        content: lesson.content,
-        duration: lesson.duration
-      }
+        content: lesson.content, // JSON object
+        duration: lesson.duration,
+        isRequired: lesson.isRequired,
+        isFree: lesson.isFree,
+        order: lesson.order,
+      },
     });
-
   } catch (error) {
-    console.error('Get lesson content error:', error);
+    console.error("Get lesson content error:", error);
     res.status(500).json({
       success: false,
-      error: 'Internal server error',
-      message: error.message
+      error: "Internal server error",
+      message: error.message,
     });
   }
 };
@@ -80,23 +110,42 @@ exports.getLessonContent = async (req, res) => {
 exports.markLessonComplete = async (req, res) => {
   try {
     const { lessonId } = req.params;
-    const { watchTime } = req.body;
+    const { watchTime, submissionData } = req.body;
+
+    // Block ASSESSOR - Lesson completion is for students only
+    if (req.user.roleName === "ASSESSOR") {
+      return res.status(403).json({
+        success: false,
+        error: "Access denied",
+        message:
+          "ASSESSOR role cannot mark lessons as complete. ASSESSOR is only responsible for certificate validation.",
+      });
+    }
+
+    // Only STUDENT can mark lessons as complete (not INSTRUCTOR/ADMIN)
+    if (req.user.roleName !== "STUDENT") {
+      return res.status(403).json({
+        success: false,
+        error: "Access denied",
+        message: "Only students can mark lessons as complete",
+      });
+    }
 
     // Get lesson with course info
     const lesson = await Lesson.findByPk(lessonId, {
       include: [
         {
           model: Section,
-          as: 'section',
-          attributes: ['courseId']
-        }
-      ]
+          as: "section",
+          attributes: ["courseId"],
+        },
+      ],
     });
 
     if (!lesson) {
       return res.status(404).json({
         success: false,
-        error: 'Lesson not found'
+        error: "Lesson not found",
       });
     }
 
@@ -105,54 +154,88 @@ exports.markLessonComplete = async (req, res) => {
       where: {
         userId: req.user.userId,
         courseId: lesson.section.courseId,
-        status: 'ACTIVE'
-      }
+        status: "ACTIVE",
+      },
     });
 
     if (!enrollment) {
       return res.status(403).json({
         success: false,
-        error: 'Access denied',
-        message: 'You must be enrolled to complete this lesson'
+        error: "Access denied",
+        message: "You must be enrolled to complete this lesson",
       });
     }
 
-    // Create or update lesson progress
-    const [progress, created] = await LessonProgress.findOrCreate({
-      where: {
-        enrollmentId: enrollment.id,
-        lessonId
-      },
-      defaults: {
-        isCompleted: true,
-        completedAt: new Date(),
-        watchTime: watchTime || 0
+    // Use LessonCompletionService to mark lesson as complete
+    const result = await lessonCompletionService.markComplete(
+      lessonId,
+      req.user.userId,
+      {
+        watchTime,
+        submissionData,
       }
+    );
+
+    // Log lesson completion activity (non-blocking)
+    const user = await User.findByPk(req.user.userId);
+    const lessonForLog = await Lesson.findByPk(lessonId, {
+      include: [
+        {
+          model: Section,
+          as: "section",
+          attributes: ["courseId"],
+        },
+      ],
     });
 
-    if (!created && !progress.isCompleted) {
-      await progress.update({
-        isCompleted: true,
-        completedAt: new Date(),
-        watchTime: watchTime || progress.watchTime
+    if (user && lessonForLog) {
+      const enrollmentForLog = await Enrollment.findOne({
+        where: {
+          userId: req.user.userId,
+          courseId: lessonForLog.section.courseId,
+          status: "ACTIVE",
+        },
       });
-    }
 
-    // Recalculate enrollment progress
-    await updateEnrollmentProgress(enrollment.id);
+      if (enrollmentForLog) {
+        activityLogService
+          .logLessonComplete(
+            user,
+            lessonForLog,
+            { watchTime: watchTime || 0, enrollmentId: enrollmentForLog.id },
+            req
+          )
+          .catch((err) => {
+            console.error("Failed to log lesson completion activity:", err);
+          });
+      }
+    }
 
     res.status(200).json({
       success: true,
-      message: 'Lesson marked as complete',
-      data: progress
+      message: result.message || "Lesson marked as complete",
+      data: result.progress,
     });
-
   } catch (error) {
-    console.error('Mark complete error:', error);
+    console.error("Mark complete error:", error);
+
+    // Handle validation errors from service
+    if (
+      error.message.includes("must") ||
+      error.message.includes("required") ||
+      error.message.includes("must complete")
+    ) {
+      return res.status(400).json({
+        success: false,
+        error: "Completion requirement not met",
+        message: error.message,
+      });
+    }
+
     res.status(500).json({
       success: false,
-      error: 'Internal server error',
-      message: error.message
+      error: "Internal server error",
+      message: error.message,
     });
   }
 };
@@ -163,27 +246,38 @@ exports.updateWatchTime = async (req, res) => {
     const { lessonId } = req.params;
     const { watchTime } = req.body;
 
+    // Block ASSESSOR
+    if (req.user.roleName === "ASSESSOR") {
+      return res.status(403).json({
+        success: false,
+        error: "Access denied",
+        message: "ASSESSOR role cannot update lesson progress",
+      });
+    }
+
     if (watchTime === undefined) {
       return res.status(400).json({
         success: false,
-        error: 'Validation error',
-        message: 'Watch time is required'
+        error: "Validation error",
+        message: "Watch time is required",
       });
     }
 
     // Get lesson
     const lesson = await Lesson.findByPk(lessonId, {
-      include: [{
-        model: Section,
-        as: 'section',
-        attributes: ['courseId']
-      }]
+      include: [
+        {
+          model: Section,
+          as: "section",
+          attributes: ["courseId"],
+        },
+      ],
     });
 
     if (!lesson) {
       return res.status(404).json({
         success: false,
-        error: 'Lesson not found'
+        error: "Lesson not found",
       });
     }
 
@@ -191,14 +285,16 @@ exports.updateWatchTime = async (req, res) => {
     const enrollment = await Enrollment.findOne({
       where: {
         userId: req.user.userId,
-        courseId: lesson.section.courseId
-      }
+        courseId: lesson.section.courseId,
+        status: "ACTIVE",
+      },
     });
 
     if (!enrollment) {
       return res.status(403).json({
         success: false,
-        error: 'Access denied'
+        error: "Access denied",
+        message: "You must be enrolled to track progress on this lesson",
       });
     }
 
@@ -206,60 +302,24 @@ exports.updateWatchTime = async (req, res) => {
     const [progress] = await LessonProgress.findOrCreate({
       where: {
         enrollmentId: enrollment.id,
-        lessonId
+        lessonId,
       },
-      defaults: { watchTime }
+      defaults: { watchTime },
     });
 
     await progress.update({ watchTime });
 
     res.status(200).json({
       success: true,
-      message: 'Watch time updated',
-      data: { watchTime: progress.watchTime }
+      message: "Watch time updated",
+      data: { watchTime: progress.watchTime },
     });
-
   } catch (error) {
-    console.error('Update watch time error:', error);
+    console.error("Update watch time error:", error);
     res.status(500).json({
       success: false,
-      error: 'Internal server error',
-      message: error.message
+      error: "Internal server error",
+      message: error.message,
     });
   }
 };
-
-// Helper function to recalculate enrollment progress
-async function updateEnrollmentProgress(enrollmentId) {
-  const enrollment = await Enrollment.findByPk(enrollmentId);
-  
-  // Get total lessons
-  const totalLessons = await Lesson.count({
-    include: [{
-      model: Section,
-      as: 'section',
-      where: { courseId: enrollment.courseId }
-    }]
-  });
-
-  // Get completed lessons
-  const completedLessons = await LessonProgress.count({
-    where: {
-      enrollmentId,
-      isCompleted: true
-    }
-  });
-
-  // Calculate progress percentage
-  const progress = totalLessons > 0 ? Math.round((completedLessons / totalLessons) * 100) : 0;
-
-  // Update enrollment
-  await enrollment.update({
-    progress,
-    status: progress === 100 ? 'COMPLETED' : 'ACTIVE',
-    completedAt: progress === 100 ? new Date() : null
-  });
-
-  return progress;
-}
-

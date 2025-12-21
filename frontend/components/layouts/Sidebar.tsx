@@ -21,6 +21,8 @@ import {
   BarChart,
   Settings,
   GraduationCap,
+  Activity,
+  FolderTree,
 } from "lucide-react";
 
 interface SidebarProps {
@@ -86,7 +88,11 @@ const Sidebar: React.FC<SidebarProps> = ({ role: propRole }) => {
   const studentNavigation = [
     { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
     { name: "My Courses", href: "/dashboard/courses", icon: BookOpen },
-    // { name: 'Learning', href: '/dashboard/learning', icon: GraduationCap }, // Removed: Redundant with My Courses
+    {
+      name: "Browse Courses",
+      href: "/dashboard/browse-courses",
+      icon: GraduationCap,
+    },
     { name: "Quizzes", href: "/dashboard/quizzes", icon: FileCheck },
     { name: "Certificates", href: "/dashboard/certificates", icon: Award },
   ];
@@ -102,13 +108,15 @@ const Sidebar: React.FC<SidebarProps> = ({ role: propRole }) => {
     { name: "Dashboard", href: "/admin/dashboard", icon: LayoutDashboard },
     { name: "Users", href: "/admin/users", icon: Users },
     { name: "Courses", href: "/admin/courses", icon: BookOpen },
+    { name: "Categories", href: "/admin/categories", icon: FolderTree },
     { name: "Certificates", href: "/admin/certificates", icon: Award },
+    { name: "Activity Logs", href: "/admin/activity-logs", icon: Activity },
     { name: "Settings", href: "/admin/settings", icon: Settings },
   ];
 
   const assessorNavigation = [
-    { name: "Dashboard", href: "/admin/dashboard", icon: LayoutDashboard },
-    { name: "Certificates", href: "/admin/certificates", icon: Award },
+    { name: "Dashboard", href: "/assessor/dashboard", icon: LayoutDashboard },
+    { name: "Certificates", href: "/assessor/certificates", icon: Award },
   ];
 
   const navigation =

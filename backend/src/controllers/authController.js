@@ -4,6 +4,7 @@ const { v4: uuidv4 } = require('uuid');
 const { User, Role } = require('../models');
 const { jwtConfig } = require('../config/jwt');
 const emailService = require('../services/emailService');
+const activityLogService = require('../services/activityLogService');
 
 // Generate JWT tokens
 const generateTokens = (user) => {
@@ -211,6 +212,11 @@ exports.login = async (req, res) => {
     await user.update({
       refreshToken: tokens.refreshToken,
       lastLoginAt: new Date()
+    });
+
+    // Log user login activity (non-blocking)
+    activityLogService.logUserLogin(user, req).catch(err => {
+      console.error('Failed to log login activity:', err);
     });
 
     // Return user without sensitive data

@@ -10,7 +10,6 @@ const Role = sequelize.define('Role', {
   name: {
     type: DataTypes.ENUM('SUPER_ADMIN', 'ADMIN', 'INSTRUCTOR', 'STUDENT', 'ASSESSOR'),
     allowNull: false,
-    unique: true,
     comment: 'Role name: SUPER_ADMIN, ADMIN, INSTRUCTOR, STUDENT, ASSESSOR'
   },
   description: {
@@ -24,7 +23,8 @@ const Role = sequelize.define('Role', {
   indexes: [
     {
       unique: true,
-      fields: ['name']
+      fields: ['name'],
+      name: 'roles_name_unique'
     }
   ]
 });

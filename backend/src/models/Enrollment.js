@@ -55,6 +55,11 @@ const Enrollment = sequelize.define('Enrollment', {
       key: 'id'
     },
     comment: 'Last accessed lesson (for resume)'
+  },
+  courseVersion: {
+    type: DataTypes.STRING,
+    allowNull: true,
+    comment: 'Course version at enrollment time (for versioning system)'
   }
 }, {
   tableName: 'enrollments',
@@ -63,7 +68,8 @@ const Enrollment = sequelize.define('Enrollment', {
     { unique: true, fields: ['userId', 'courseId'] },
     { fields: ['userId'] },
     { fields: ['courseId'] },
-    { fields: ['status'] }
+    { fields: ['status'] },
+    { fields: ['courseVersion'] }
   ]
 });
 

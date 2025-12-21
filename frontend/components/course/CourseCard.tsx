@@ -1,16 +1,17 @@
 import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Badge } from '@/components/ui/Badge';
+import Badge from '@/components/ui/Badge';
+import { getFileUrl } from '@/lib/api';
 
 interface CourseCardProps {
   id: number;
   title: string;
   description: string;
   thumbnail?: string;
-  instructor: {
+  instructor?: {
     firstName: string;
-    lastName: string;
+    lastName?: string | null;
   };
   level: 'BEGINNER' | 'INTERMEDIATE' | 'ADVANCED';
   type: 'FREE' | 'PAID' | 'PREMIUM';
@@ -18,6 +19,8 @@ interface CourseCardProps {
   enrollmentCount?: number;
   rating?: number;
   isEnrolled?: boolean;
+  version?: string;
+  basePath?: string;
 }
 
 const levelColors = {
@@ -44,18 +47,22 @@ export function CourseCard({
   enrollmentCount = 0,
   rating,
   isEnrolled = false,
+  version,
+  basePath = '/courses',
 }: CourseCardProps) {
   return (
-    <Link href={`/courses/${id}`}>
+    <Link href={`${basePath}/${id}`}>
       <div className="card card-hover overflow-hidden h-full flex flex-col group">
         {/* Thumbnail */}
         <div className="relative h-48 bg-neutral-200 dark:bg-neutral-800 overflow-hidden">
-          {thumbnail ? (
+          {thumbnail && getFileUrl(thumbnail) ? (
             <Image
-              src={thumbnail}
+              src={getFileUrl(thumbnail)}
               alt={title}
               fill
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
               className="object-cover group-hover:scale-105 transition-transform duration-300"
+              unoptimized
             />
           ) : (
             <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary-400 to-accent-400">
@@ -75,10 +82,15 @@ export function CourseCard({
             )}
           </div>
           
-          <div className="absolute top-3 right-3">
+          <div className="absolute top-3 right-3 flex flex-col gap-1 items-end">
             <span className={`badge ${levelColors[level]}`}>
               {level.charAt(0) + level.slice(1).toLowerCase()}
             </span>
+            {version && (
+              <span className="badge bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 text-xs">
+                v{version}
+              </span>
+            )}
           </div>
         </div>
 
@@ -95,12 +107,25 @@ export function CourseCard({
           {/* Footer */}
           <div className="flex items-center justify-between pt-4 border-t border-neutral-200 dark:border-neutral-800">
             <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary-400 to-accent-400 flex items-center justify-center text-white text-sm font-medium">
-                {instructor.firstName.charAt(0)}{instructor.lastName.charAt(0)}
-              </div>
-              <span className="text-sm text-neutral-700 dark:text-neutral-300">
-                {instructor.firstName} {instructor.lastName}
-              </span>
+              {instructor ? (
+                <>
+                  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary-400 to-accent-400 flex items-center justify-center text-white text-sm font-medium">
+                    {instructor.firstName.charAt(0)}{instructor.lastName?.charAt(0) || ''}
+                  </div>
+                  <span className="text-sm text-neutral-700 dark:text-neutral-300">
+                    {instructor.firstName} {instructor.lastName || ''}
+                  </span>
+                </>
+              ) : (
+                <>
+                  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary-400 to-accent-400 flex items-center justify-center text-white text-sm font-medium">
+                    ?
+                  </div>
+                  <span className="text-sm text-neutral-700 dark:text-neutral-300">
+                    Unknown Instructor
+                  </span>
+                </>
+              )}
             </div>
             
             <div className="flex items-center gap-3 text-sm text-neutral-600 dark:text-neutral-400">

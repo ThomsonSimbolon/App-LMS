@@ -33,6 +33,10 @@ const enrollmentRoutes = require("./routes/enrollmentRoutes");
 const lessonRoutes = require("./routes/lessonRoutes");
 const quizRoutes = require("./routes/quizRoutes");
 const certificateRoutes = require("./routes/certificateRoutes");
+const activityLogRoutes = require("./routes/activityLogRoutes");
+const notificationRoutes = require("./routes/notificationRoutes");
+const dashboardRoutes = require("./routes/dashboardRoutes");
+const instructorRoutes = require("./routes/instructorRoutes");
 
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
@@ -42,6 +46,10 @@ app.use("/api/enrollments", enrollmentRoutes);
 app.use("/api/lessons", lessonRoutes);
 app.use("/api/quizzes", quizRoutes);
 app.use("/api/certificates", certificateRoutes);
+app.use("/api/activity-logs", activityLogRoutes);
+app.use("/api/notifications", notificationRoutes);
+app.use("/api/admin/dashboard", dashboardRoutes);
+app.use("/api/instructor", instructorRoutes);
 
 app.get("/api", (req, res) => {
   res.json({
@@ -58,6 +66,8 @@ app.get("/api", (req, res) => {
       lessons: "/api/lessons",
       quizzes: "/api/quizzes",
       certificates: "/api/certificates",
+      activityLogs: "/api/activity-logs",
+      notifications: "/api/notifications",
     },
   });
 });

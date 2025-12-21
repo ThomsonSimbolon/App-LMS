@@ -1,29 +1,40 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Card from '@/components/ui/Card';
 import Input from '@/components/ui/Input';
 import { useRouter } from 'next/navigation';
+import { useAppDispatch, useAppSelector } from '@/store/hooks';
+import { fetchMyStudents } from '@/store/slices/instructorSlice';
 
 export default function InstructorStudentsPage() {
   const router = useRouter();
-  const [searchTerm, setSearchTerm] = useState('');
-
-  // Mock data
-  const students = [
-    { id: 1, name: 'Alice Johnson', email: 'alice@example.com', course: 'React Fundamentals', progress: 75, joinedAt: '2025-10-15' },
-    { id: 2, name: 'Bob Smith', email: 'bob@example.com', course: 'Advanced Node.js', progress: 30, joinedAt: '2025-11-02' },
-    { id: 3, name: 'Charlie Brown', email: 'charlie@example.com', course: 'React Fundamentals', progress: 100, joinedAt: '2025-09-20' },
-    { id: 4, name: 'Diana Prince', email: 'diana@example.com', course: 'UI/UX Design Masterclass', progress: 10, joinedAt: '2025-12-01' },
-    { id: 5, name: 'Evan Wright', email: 'evan@example.com', course: 'Advanced Node.js', progress: 0, joinedAt: '2025-12-05' },
-  ];
-
-  const filteredStudents = students.filter(
-    (student) =>
-      student.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      student.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      student.course.toLowerCase().includes(searchTerm.toLowerCase())
+  const dispatch = useAppDispatch();
+  const { students, studentsLoading, studentsError, pagination } = useAppSelector(
+    (state) => state.instructor
   );
+  const [searchTerm, setSearchTerm] = useState('');
+  const [debouncedSearch, setDebouncedSearch] = useState('');
+
+  // Debounce search term
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearch(searchTerm);
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, [searchTerm]);
+
+  // Fetch students on mount and when search/filter changes
+  useEffect(() => {
+    dispatch(
+      fetchMyStudents({
+        search: debouncedSearch || undefined,
+        page: 1,
+        limit: 10,
+      })
+    );
+  }, [dispatch, debouncedSearch]);
 
   return (
     <div className="space-y-6">
@@ -58,9 +69,24 @@ export default function InstructorStudentsPage() {
               </tr>
             </thead>
             <tbody className="divide-y divide-neutral-200 dark:divide-neutral-700">
-              {filteredStudents.length > 0 ? (
-                filteredStudents.map((student) => (
-                  <tr key={student.id} className="hover:bg-neutral-50 dark:hover:bg-neutral-800/50 transition-colors">
+              {studentsLoading ? (
+                <tr>
+                  <td colSpan={5} className="px-6 py-8 text-center">
+                    <div className="flex items-center justify-center">
+                      <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary-600"></div>
+                      <span className="ml-2 text-neutral-500">Loading students...</span>
+                    </div>
+                  </td>
+                </tr>
+              ) : studentsError ? (
+                <tr>
+                  <td colSpan={5} className="px-6 py-8 text-center text-red-600">
+                    Error: {studentsError}
+                  </td>
+                </tr>
+              ) : students.length > 0 ? (
+                students.map((student) => (
+                  <tr key={`${student.id}-${student.enrollmentId}`} className="hover:bg-neutral-50 dark:hover:bg-neutral-800/50 transition-colors">
                     <td className="px-6 py-4">
                       <div>
                         <div className="font-medium text-neutral-900 dark:text-white">{student.name}</div>
@@ -68,7 +94,7 @@ export default function InstructorStudentsPage() {
                       </div>
                     </td>
                     <td className="px-6 py-4 text-neutral-600 dark:text-neutral-300">
-                      {student.course}
+                      {student.course.title}
                     </td>
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-2">
@@ -78,14 +104,17 @@ export default function InstructorStudentsPage() {
                             style={{ width: `${student.progress}%` }}
                           />
                         </div>
-                        <span className="text-xs text-neutral-500">{student.progress}%</span>
+                        <span className="text-xs text-neutral-500">{Math.round(student.progress)}%</span>
                       </div>
                     </td>
                     <td className="px-6 py-4 text-neutral-600 dark:text-neutral-300">
-                      {student.joinedAt}
+                      {new Date(student.joinedAt).toLocaleDateString()}
                     </td>
                     <td className="px-6 py-4 text-right">
-                      <button className="text-primary-600 hover:text-primary-700 font-medium text-sm">
+                      <button 
+                        onClick={() => router.push(`/instructor/courses/${student.course.id}`)}
+                        className="text-primary-600 hover:text-primary-700 font-medium text-sm"
+                      >
                         Details
                       </button>
                     </td>
@@ -102,7 +131,7 @@ export default function InstructorStudentsPage() {
           </table>
         </div>
         <div className="p-4 border-t border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-900/50 text-center text-sm text-neutral-500">
-          Showing {filteredStudents.length} students
+          Showing {students.length} of {pagination.total} students
         </div>
       </Card>
     </div>

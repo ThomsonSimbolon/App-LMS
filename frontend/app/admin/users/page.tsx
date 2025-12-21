@@ -4,79 +4,26 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Badge from '@/components/ui/Badge';
 import { useRequireRole } from '@/hooks/useAuth';
-import { getAccessToken } from '@/lib/auth';
+import { useAppDispatch, useAppSelector } from '@/store/hooks';
+import {
+  fetchUsers,
+  updateUserRole,
+  deleteUser,
+  clearError,
+} from '@/store/slices/userSlice';
 
 export default function UserManagementPage() {
   const router = useRouter();
+  const dispatch = useAppDispatch();
   const { loading: authLoading } = useRequireRole(['ADMIN', 'SUPER_ADMIN']);
-  const [users, setUsers] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
+  const { users, loading, error } = useAppSelector((state) => state.user);
   const [updating, setUpdating] = useState<number | null>(null);
 
   useEffect(() => {
     if (!authLoading) {
-      fetchUsers();
+      dispatch(fetchUsers());
     }
-  }, [authLoading]);
-
-  const fetchUsers = async () => {
-    const token = getAccessToken();
-    if (!token) {
-      router.push('/login');
-      return;
-    }
-
-    try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) throw new Error(data.error);
-
-      setUsers(data.data || []);
-    } catch (err: any) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleRoleChange = async (userId: number, newRoleId: number) => {
-    const token = getAccessToken();
-    if (!token) {
-      router.push('/login');
-      return;
-    }
-    setUpdating(userId);
-
-    try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users/${userId}/role`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`
-        },
-        body: JSON.stringify({ roleId: newRoleId })
-      });
-
-      const data = await response.json();
-      if (!response.ok) throw new Error(data.error);
-
-      // Update local state
-      setUsers(users.map(u => 
-        u.id === userId ? { ...u, role: { ...u.role, id: newRoleId, name: getRoleName(newRoleId) } } : u
-      ));
-      
-      alert('Role updated successfully');
-    } catch (err: any) {
-      alert(err.message);
-    } finally {
-      setUpdating(null);
-    }
-  };
+  }, [authLoading, dispatch]);
 
   const getRoleName = (id: number) => {
     switch (id) {
@@ -88,32 +35,30 @@ export default function UserManagementPage() {
     }
   };
 
+  const handleRoleChange = async (userId: number, newRoleId: number) => {
+    setUpdating(userId);
+    const result = await dispatch(updateUserRole({ userId, roleId: newRoleId }));
+    
+    if (updateUserRole.fulfilled.match(result)) {
+      alert('Role updated successfully');
+    } else {
+      alert(result.payload as string || 'Failed to update role');
+    }
+    setUpdating(null);
+  };
+
   const handleDeleteUser = async (userId: number) => {
     if (!confirm('Are you sure you want to delete this user? This action cannot be undone.')) return;
 
-    const token = getAccessToken();
-    if (!token) {
-      router.push('/login');
-      return;
-    }
     setUpdating(userId);
-
-    try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users/${userId}`, {
-        method: 'DELETE',
-        headers: { Authorization: `Bearer ${token}` }
-      });
-
-      const data = await response.json();
-      if (!response.ok) throw new Error(data.error);
-
-      setUsers(users.filter(u => u.id !== userId));
+    const result = await dispatch(deleteUser(userId));
+    
+    if (deleteUser.fulfilled.match(result)) {
       alert('User deleted successfully');
-    } catch (err: any) {
-      alert(err.message);
-    } finally {
-      setUpdating(null);
+    } else {
+      alert(result.payload as string || 'Failed to delete user');
     }
+    setUpdating(null);
   };
 
   if (authLoading || loading) {

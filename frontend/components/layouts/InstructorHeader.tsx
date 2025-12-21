@@ -10,17 +10,14 @@ import {
 } from "@/lib/auth";
 import { useSidebar } from "./SidebarContext";
 import ThemeToggle from "../ui/ThemeToggle";
-import {
-  LogOut,
-  Menu,
-  X,
-  ChevronRight,
-  User,
-  ChevronDown,
-} from "lucide-react";
+import NotificationBell from "../notifications/NotificationBell";
+import { LogOut, Menu, X, ChevronRight, User, ChevronDown } from "lucide-react";
+import { useAppDispatch } from "@/store/hooks";
+import { logout } from "@/store/slices/authSlice";
 
 const InstructorHeader: React.FC = () => {
   const router = useRouter();
+  const dispatch = useAppDispatch();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [profileMenuOpen, setProfileMenuOpen] = useState(false);
   const { collapsed, setCollapsed } = useSidebar();
@@ -60,10 +57,15 @@ const InstructorHeader: React.FC = () => {
   }, [profileMenuOpen]);
 
   const handleLogout = () => {
+    // Dispatch logout action to clear Redux state
+    dispatch(logout());
+    // Clear localStorage
     localStorage.removeItem("accessToken");
     localStorage.removeItem("refreshToken");
     localStorage.removeItem("user");
-    router.push("/login");
+    // Use window.location.href for immediate hard redirect to login
+    // This prevents showing homepage or other pages during redirect
+    window.location.href = "/login";
   };
 
   return (
@@ -87,6 +89,7 @@ const InstructorHeader: React.FC = () => {
 
         {/* Right Side - User Info & Actions */}
         <div className="flex items-center gap-4">
+          <NotificationBell />
           <ThemeToggle />
 
           {/* Profile Dropdown */}
@@ -124,28 +127,34 @@ const InstructorHeader: React.FC = () => {
 
             {/* Dropdown Menu */}
             {profileMenuOpen && (
-              <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-neutral-900 rounded-lg shadow-lg border border-neutral-200 dark:border-neutral-800 py-2 z-50">
-                <button
-                  onClick={() => {
-                    setProfileMenuOpen(false);
-                    router.push("/dashboard/profile");
-                  }}
-                  className="w-full flex items-center gap-2 px-4 py-2 text-sm text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors"
-                >
-                  <User className="w-4 h-4" />
-                  <span>Profile</span>
-                </button>
-                <div className="border-t border-neutral-200 dark:border-neutral-800 my-1"></div>
-                <button
-                  onClick={() => {
-                    setProfileMenuOpen(false);
-                    handleLogout();
-                  }}
-                  className="w-full flex items-center gap-2 px-4 py-2 text-sm text-error dark:text-error-light hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors"
-                >
-                  <LogOut className="w-4 h-4" />
-                  <span>Logout</span>
-                </button>
+              <div
+                className="absolute right-0 top-full pt-2 w-48 bg-transparent z-50"
+                onMouseEnter={() => setProfileMenuOpen(true)}
+                onMouseLeave={() => setProfileMenuOpen(false)}
+              >
+                <div className="bg-white dark:bg-neutral-900 rounded-lg shadow-lg border border-neutral-200 dark:border-neutral-800 py-2">
+                  <button
+                    onClick={() => {
+                      setProfileMenuOpen(false);
+                      router.push("/dashboard/profile");
+                    }}
+                    className="w-full flex items-center gap-2 px-4 py-2 text-sm text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors"
+                  >
+                    <User className="w-4 h-4" />
+                    <span>Profile</span>
+                  </button>
+                  <div className="border-t border-neutral-200 dark:border-neutral-800 my-1"></div>
+                  <button
+                    onClick={() => {
+                      setProfileMenuOpen(false);
+                      handleLogout();
+                    }}
+                    className="w-full flex items-center gap-2 px-4 py-2 text-sm text-error dark:text-error-light hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors"
+                  >
+                    <LogOut className="w-4 h-4" />
+                    <span>Logout</span>
+                  </button>
+                </div>
               </div>
             )}
           </div>

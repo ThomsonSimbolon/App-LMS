@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import { ReduxProvider } from "@/store/ReduxProvider";
 
 export const metadata: Metadata = {
   title: "LMS Platform - Learn, Grow, Certify",
@@ -15,7 +16,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="antialiased">
-        {children}
+        <ReduxProvider>{children}</ReduxProvider>
       </body>
     </html>
   );

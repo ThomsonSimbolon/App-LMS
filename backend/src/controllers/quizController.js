@@ -1,5 +1,7 @@
 const { Quiz, Question, ExamResult, Course, User, Section, Lesson } = require('../models');
 const { v4: uuidv4 } = require('uuid');
+const activityLogService = require('../services/activityLogService');
+const notificationService = require('../services/notificationService');
 
 // Get quiz details
 exports.getQuizDetails = async (req, res) => {
@@ -240,6 +242,22 @@ exports.submitQuiz = async (req, res) => {
       startedAt,
       submittedAt,
       timeSpent
+    });
+
+    // Log quiz submission activity (non-blocking)
+    const user = await User.findByPk(req.user.userId);
+    activityLogService.logQuizSubmit(
+      user,
+      quiz,
+      { score, isPassed, attemptNumber, timeSpent },
+      req
+    ).catch(err => {
+      console.error('Failed to log quiz submission activity:', err);
+    });
+
+    // Send quiz result notification (non-blocking)
+    notificationService.notifyQuizResult(req.user.userId, quiz, score, isPassed).catch(err => {
+      console.error('Failed to send quiz result notification:', err);
     });
 
     res.status(200).json({

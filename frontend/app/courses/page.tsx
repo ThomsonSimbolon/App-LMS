@@ -6,12 +6,12 @@ import { CourseCard } from '@/components/course/CourseCard';
 import { CourseFilters, FilterState } from '@/components/course/CourseFilters';
 import Skeleton from '@/components/ui/Skeleton';
 import { BookX, ChevronLeft, ChevronRight } from 'lucide-react';
+import { useAppDispatch, useAppSelector } from '@/store/hooks';
+import { fetchCourses, clearError } from '@/store/slices/courseSlice';
 
 export default function CoursesPage() {
-  const [courses, setCourses] = useState<any[]>([]);
-  // ... state declarations unchanged
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
+  const dispatch = useAppDispatch();
+  const { courses, loading, error, pagination } = useAppSelector((state) => state.course);
   const [filters, setFilters] = useState<FilterState>({
     search: '',
     sort: 'newest',
@@ -20,43 +20,19 @@ export default function CoursesPage() {
   const limit = 12;
 
   useEffect(() => {
-    fetchCourses();
-  }, [filters, page]);
-
-  const fetchCourses = async () => {
-    setLoading(true);
-    try {
-      const params = new URLSearchParams({
-        page: page.toString(),
-        limit: limit.toString(),
-        sort: filters.sort,
-      });
-
-      if (filters.search) params.append('search', filters.search);
-      if (filters.level) params.append('level', filters.level);
-      if (filters.type) params.append('type', filters.type);
-
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/courses?${params}`
-      );
-      
-      const data = await response.json();
-      
-      if (!response.ok) {
-        throw new Error(data.error || 'Failed to fetch courses');
-      }
-
-      setCourses(data.data.courses || []);
-    } catch (err: any) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
-    }
-  };
+    dispatch(
+      fetchCourses({
+        ...filters,
+        page,
+        limit,
+      })
+    );
+  }, [dispatch, filters, page]);
 
   const handleFilterChange = (newFilters: FilterState) => {
     setFilters(newFilters);
     setPage(1); // Reset to first page
+    dispatch(clearError());
   };
 
   return (
@@ -133,32 +109,35 @@ export default function CoursesPage() {
                         enrollmentCount={course.enrollmentCount}
                         rating={course.rating}
                         isEnrolled={course.isEnrolled}
+                        version={course.version}
                       />
                     ))}
                   </div>
 
                   {/* Pagination */}
-                  <div className="flex justify-center gap-2 mt-8">
-                    <button
-                      onClick={() => setPage((p) => Math.max(1, p - 1))}
-                      disabled={page === 1}
-                      className="btn bg-white dark:bg-neutral-800 hover:bg-neutral-50 dark:hover:bg-neutral-700 text-neutral-900 dark:text-white px-4 py-2 disabled:opacity-50 flex items-center gap-2"
-                    >
-                      <ChevronLeft className="w-4 h-4" />
-                      Previous
-                    </button>
-                    <span className="flex items-center px-4 text-neutral-700 dark:text-neutral-300">
-                      Page {page}
-                    </span>
-                    <button
-                      onClick={() => setPage((p) => p + 1)}
-                      disabled={courses.length < limit}
-                      className="btn bg-white dark:bg-neutral-800 hover:bg-neutral-50 dark:hover:bg-neutral-700 text-neutral-900 dark:text-white px-4 py-2 disabled:opacity-50 flex items-center gap-2"
-                    >
-                      Next
-                      <ChevronRight className="w-4 h-4" />
-                    </button>
-                  </div>
+                  {pagination.pages > 1 && (
+                    <div className="flex justify-center gap-2 mt-8">
+                      <button
+                        onClick={() => setPage((p) => Math.max(1, p - 1))}
+                        disabled={page === 1}
+                        className="btn bg-white dark:bg-neutral-800 hover:bg-neutral-50 dark:hover:bg-neutral-700 text-neutral-900 dark:text-white px-4 py-2 disabled:opacity-50 flex items-center gap-2"
+                      >
+                        <ChevronLeft className="w-4 h-4" />
+                        Previous
+                      </button>
+                      <span className="flex items-center px-4 text-neutral-700 dark:text-neutral-300">
+                        Page {page} of {pagination.pages}
+                      </span>
+                      <button
+                        onClick={() => setPage((p) => p + 1)}
+                        disabled={page >= pagination.pages}
+                        className="btn bg-white dark:bg-neutral-800 hover:bg-neutral-50 dark:hover:bg-neutral-700 text-neutral-900 dark:text-white px-4 py-2 disabled:opacity-50 flex items-center gap-2"
+                      >
+                        Next
+                        <ChevronRight className="w-4 h-4" />
+                      </button>
+                    </div>
+                  )}
                 </>
               )}
             </div>
