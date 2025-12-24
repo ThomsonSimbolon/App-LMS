@@ -1,38 +1,40 @@
-'use client';
+"use client";
 
-import React, { useState } from 'react';
-import { Header, Footer } from '@/components/layouts';
-import Card from '@/components/ui/Card';
-import Button from '@/components/ui/Button';
-import Input from '@/components/ui/Input';
-import { cn } from '@/lib/utils';
-import { Mail, MapPin, Phone, Map } from 'lucide-react';
+import React, { useState } from "react";
+import { Header, Footer } from "@/components/layouts";
+import Card from "@/components/ui/Card";
+import Button from "@/components/ui/Button";
+import Input from "@/components/ui/Input";
+import { cn } from "@/lib/utils";
+import { Mail, MapPin, Phone, Map } from "lucide-react";
 
 export default function ContactPage() {
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    subject: '',
-    message: ''
+    name: "",
+    email: "",
+    subject: "",
+    message: "",
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    
+
     // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    
-    alert('Message sent successfully! We will get back to you soon.');
-    setFormData({ name: '', email: '', subject: '', message: '' });
+    await new Promise((resolve) => setTimeout(resolve, 1500));
+
+    alert("Message sent successfully! We will get back to you soon.");
+    setFormData({ name: "", email: "", subject: "", message: "" });
     setLoading(false);
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    setFormData(prev => ({
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    setFormData((prev) => ({
       ...prev,
-      [e.target.name]: e.target.value
+      [e.target.name]: e.target.value,
     }));
   };
 
@@ -40,14 +42,16 @@ export default function ContactPage() {
     <>
       <Header />
       <div className="min-h-screen bg-base dark:bg-base-dark">
-        
         {/* Hero Section */}
         {/* Hero Section */}
         <section className="bg-hero text-white py-20 relative overflow-hidden">
           <div className="container-custom relative z-10 text-center">
-            <h1 className="text-4xl md:text-5xl font-bold mb-6 text-white">Get in Touch</h1>
+            <h1 className="text-4xl md:text-5xl font-bold mb-6 text-white">
+              Get in Touch
+            </h1>
             <p className="text-primary-100 dark:text-neutral-400 text-lg max-w-2xl mx-auto">
-              Have questions about our courses or platform? We&apos;re here to help. Reach out to our team.
+              Have questions about our courses or platform? We&apos;re here to
+              help. Reach out to our team.
             </p>
           </div>
         </section>
@@ -55,7 +59,6 @@ export default function ContactPage() {
         <section className="py-20 px-4 -mt-10">
           <div className="container-custom max-w-6xl mx-auto">
             <div className="grid lg:grid-cols-3 gap-8">
-              
               {/* Contact Info Cards */}
               <div className="lg:col-span-1 space-y-6">
                 <Card className="p-6 flex items-start gap-4">
@@ -63,9 +66,16 @@ export default function ContactPage() {
                     <Mail className="w-6 h-6" />
                   </div>
                   <div>
-                    <h3 className="font-bold text-neutral-900 dark:text-white mb-1">Email</h3>
-                    <p className="text-sm text-neutral-600 dark:text-neutral-400 mb-2">Our friendly team is here to help.</p>
-                    <a href="mailto:support@lms-platform.com" className="text-primary-600 font-medium hover:underline">
+                    <h3 className="font-bold text-neutral-900 dark:text-white mb-1">
+                      Email
+                    </h3>
+                    <p className="text-sm text-neutral-600 dark:text-neutral-400 mb-2">
+                      Our friendly team is here to help.
+                    </p>
+                    <a
+                      href="mailto:support@lms-platform.com"
+                      className="text-primary-600 font-medium hover:underline"
+                    >
                       support@lms-platform.com
                     </a>
                   </div>
@@ -76,10 +86,15 @@ export default function ContactPage() {
                     <MapPin className="w-6 h-6" />
                   </div>
                   <div>
-                    <h3 className="font-bold text-neutral-900 dark:text-white mb-1">Office</h3>
-                    <p className="text-sm text-neutral-600 dark:text-neutral-400 mb-2">Come say hello at our office HQ.</p>
+                    <h3 className="font-bold text-neutral-900 dark:text-white mb-1">
+                      Office
+                    </h3>
+                    <p className="text-sm text-neutral-600 dark:text-neutral-400 mb-2">
+                      Come say hello at our office HQ.
+                    </p>
                     <p className="text-neutral-900 dark:text-white text-sm font-medium">
-                      123 Learning Street<br />
+                      123 Learning Street
+                      <br />
                       Knowledge City, KC 45678
                     </p>
                   </div>
@@ -90,9 +105,16 @@ export default function ContactPage() {
                     <Phone className="w-6 h-6" />
                   </div>
                   <div>
-                    <h3 className="font-bold text-neutral-900 dark:text-white mb-1">Phone</h3>
-                    <p className="text-sm text-neutral-600 dark:text-neutral-400 mb-2">Mon-Fri from 8am to 5pm.</p>
-                    <a href="tel:+15551234567" className="text-primary-600 font-medium hover:underline">
+                    <h3 className="font-bold text-neutral-900 dark:text-white mb-1">
+                      Phone
+                    </h3>
+                    <p className="text-sm text-neutral-600 dark:text-neutral-400 mb-2">
+                      Mon-Fri from 8am to 5pm.
+                    </p>
+                    <a
+                      href="tel:+15551234567"
+                      className="text-primary-600 font-medium hover:underline"
+                    >
                       +1 (555) 123-4567
                     </a>
                   </div>
@@ -121,7 +143,7 @@ export default function ContactPage() {
                       required
                     />
                   </div>
-                  
+
                   <Input
                     label="Subject"
                     name="subject"
@@ -151,27 +173,30 @@ export default function ContactPage() {
                   </div>
 
                   <div className="flex justify-end">
-                    <Button type="submit" size="lg" isLoading={loading} className="w-full md:w-auto">
+                    <Button
+                      type="submit"
+                      size="lg"
+                      isLoading={loading}
+                      className="w-full md:w-auto"
+                    >
                       Send Message
                     </Button>
                   </div>
                 </form>
               </Card>
-
             </div>
           </div>
         </section>
 
         {/* Map Section (Optional visual) */}
         <div className="h-96 bg-neutral-200 dark:bg-neutral-800 w-full relative">
-           <div className="absolute inset-0 flex items-center justify-center text-neutral-500">
-             <div className="text-center flex flex-col items-center">
-               <Map className="w-10 h-10 mb-2" />
-               <p>Interactive Map Component Would Go Here</p>
-             </div>
-           </div>
+          <div className="absolute inset-0 flex items-center justify-center text-neutral-500">
+            <div className="text-center flex flex-col items-center">
+              <Map className="w-10 h-10 mb-2" />
+              <p>Interactive Map Component Would Go Here</p>
+            </div>
+          </div>
         </div>
-
       </div>
       <Footer />
     </>

@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap");
 
 @tailwind base;
 @tailwind components;
@@ -46,8 +46,8 @@
 
   body {
     @apply bg-base text-neutral-900 dark:bg-base-dark dark:text-neutral-100 antialiased;
-    font-family: 'Inter', sans-serif;
-    font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
+    font-family: "Inter", sans-serif;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
   }
 
   /* Scrollbar Styling */
@@ -91,7 +91,7 @@
   .bg-hero {
     background: linear-gradient(to bottom right, #ecfdf5, #f0fdfa);
   }
-  
+
   .dark .bg-hero {
     background: linear-gradient(to bottom right, #030712, #020617);
   }

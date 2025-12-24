@@ -4,7 +4,8 @@ import { ReduxProvider } from "@/store/ReduxProvider";
 
 export const metadata: Metadata = {
   title: "LMS Platform - Learn, Grow, Certify",
-  description: "Modern Learning Management System with integrated certification",
+  description:
+    "Modern Learning Management System with integrated certification",
   keywords: ["lms", "learning", "education", "certification", "online courses"],
 };
 
