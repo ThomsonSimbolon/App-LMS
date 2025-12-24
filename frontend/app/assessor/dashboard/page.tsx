@@ -1,18 +1,20 @@
-'use client';
+"use client";
 
-import { useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import { Award, Clock, CheckCircle, XCircle, ArrowRight } from 'lucide-react';
-import { useAppDispatch, useAppSelector } from '@/store/hooks';
-import { fetchPendingCertificates } from '@/store/slices/certificateSlice';
-import Badge from '@/components/ui/Badge';
-import { useAuth } from '@/hooks/useAuth';
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { Award, Clock, ArrowRight } from "lucide-react";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
+import { fetchPendingCertificates } from "@/store/slices/certificateSlice";
+import Badge from "@/components/ui/Badge";
+import { useAuth } from "@/hooks/useAuth";
 
 export default function AssessorDashboardPage() {
   const router = useRouter();
   const dispatch = useAppDispatch();
   const { user } = useAuth();
-  const { certificates, loading } = useAppSelector((state) => state.certificate);
+  const { certificates, loading } = useAppSelector(
+    (state) => state.certificate
+  );
 
   useEffect(() => {
     // Note: Role protection is handled by AssessorLayout
@@ -43,7 +45,8 @@ export default function AssessorDashboardPage() {
           Assessor Dashboard
         </h1>
         <p className="text-neutral-600 dark:text-neutral-400">
-          Welcome back, {user?.firstName}! Review and approve certificate requests.
+          Welcome back, {user?.firstName}! Review and approve certificate
+          requests.
         </p>
       </div>
 
@@ -55,8 +58,12 @@ export default function AssessorDashboardPage() {
               <Clock className="w-6 h-6 text-warning-600 dark:text-warning-400" />
             </div>
             <div>
-              <p className="text-sm text-neutral-600 dark:text-neutral-400">Pending Review</p>
-              <h3 className="text-2xl font-bold text-neutral-900 dark:text-white">{stats.pending}</h3>
+              <p className="text-sm text-neutral-600 dark:text-neutral-400">
+                Pending Review
+              </p>
+              <h3 className="text-2xl font-bold text-neutral-900 dark:text-white">
+                {stats.pending}
+              </h3>
             </div>
           </div>
         </div>
@@ -67,8 +74,12 @@ export default function AssessorDashboardPage() {
               <Award className="w-6 h-6 text-primary-600 dark:text-primary-400" />
             </div>
             <div>
-              <p className="text-sm text-neutral-600 dark:text-neutral-400">Total Assigned</p>
-              <h3 className="text-2xl font-bold text-neutral-900 dark:text-white">{stats.totalAssigned}</h3>
+              <p className="text-sm text-neutral-600 dark:text-neutral-400">
+                Total Assigned
+              </p>
+              <h3 className="text-2xl font-bold text-neutral-900 dark:text-white">
+                {stats.totalAssigned}
+              </h3>
             </div>
           </div>
         </div>
@@ -88,7 +99,7 @@ export default function AssessorDashboardPage() {
                 </p>
               </div>
               <button
-                onClick={() => router.push('/assessor/certificates')}
+                onClick={() => router.push("/assessor/certificates")}
                 className="btn bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 flex items-center gap-2"
               >
                 View All
@@ -115,11 +126,12 @@ export default function AssessorDashboardPage() {
                           {cert.course?.title}
                         </p>
                         <p className="text-xs text-neutral-500 dark:text-neutral-500">
-                          Requested on {new Date(cert.createdAt).toLocaleDateString()}
+                          Requested on{" "}
+                          {new Date(cert.createdAt).toLocaleDateString()}
                         </p>
                       </div>
                       <button
-                        onClick={() => router.push('/assessor/certificates')}
+                        onClick={() => router.push("/assessor/certificates")}
                         className="btn bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 text-sm"
                       >
                         Review
@@ -148,7 +160,7 @@ export default function AssessorDashboardPage() {
           </h2>
           <div className="grid sm:grid-cols-2 gap-4">
             <button
-              onClick={() => router.push('/assessor/certificates')}
+              onClick={() => router.push("/assessor/certificates")}
               className="p-4 border border-neutral-200 dark:border-neutral-800 rounded-lg hover:bg-neutral-50 dark:hover:bg-neutral-800/50 transition-colors text-left"
             >
               <div className="flex items-center gap-3">
@@ -156,7 +168,9 @@ export default function AssessorDashboardPage() {
                   <Award className="w-5 h-5 text-primary-600 dark:text-primary-400" />
                 </div>
                 <div>
-                  <p className="font-medium text-neutral-900 dark:text-white">Review Certificates</p>
+                  <p className="font-medium text-neutral-900 dark:text-white">
+                    Review Certificates
+                  </p>
                   <p className="text-sm text-neutral-600 dark:text-neutral-400">
                     Approve or reject pending requests
                   </p>
@@ -169,4 +183,3 @@ export default function AssessorDashboardPage() {
     </div>
   );
 }
-

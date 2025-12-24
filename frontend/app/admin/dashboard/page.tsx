@@ -32,13 +32,13 @@ export default function AdminDashboardPage() {
 
   const getEventTypeColor = (eventType: string) => {
     const colors: Record<string, string> = {
-      USER_LOGIN: 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200',
-      COURSE_ENROLL: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200',
-      LESSON_COMPLETE: 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200',
-      QUIZ_SUBMIT: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200',
-      CERT_REQUESTED: 'bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-200',
-      CERT_APPROVED: 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900 dark:text-emerald-200',
-      CERT_REJECTED: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200',
+      USER_LOGIN: 'bg-primary-100 text-primary-700 dark:bg-primary-900/30 dark:text-primary-400',
+      COURSE_ENROLL: 'bg-success/10 text-success dark:bg-success/20 dark:text-success',
+      LESSON_COMPLETE: 'bg-accent-100 text-accent-700 dark:bg-accent-900/30 dark:text-accent-400',
+      QUIZ_SUBMIT: 'bg-warning/10 text-warning dark:bg-warning/20 dark:text-warning',
+      CERT_REQUESTED: 'bg-info/10 text-info dark:bg-info/20 dark:text-info',
+      CERT_APPROVED: 'bg-success/10 text-success dark:bg-success/20 dark:text-success',
+      CERT_REJECTED: 'bg-error/10 text-error dark:bg-error/20 dark:text-error',
     };
     return (
       colors[eventType] ||
@@ -67,10 +67,10 @@ export default function AdminDashboardPage() {
 
       <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
         {[
-          { label: 'Total Users', value: stats?.totalUsers ?? 0, Icon: Users, color: 'bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400' },
-          { label: 'Total Courses', value: stats?.totalCourses ?? 0, Icon: BookOpen, color: 'bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400' },
-          { label: 'Enrollments', value: stats?.totalEnrollments ?? 0, Icon: GraduationCap, color: 'bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400' },
-          { label: 'Instructors', value: stats?.activeInstructors ?? 0, Icon: UserCheck, color: 'bg-orange-100 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400' },
+          { label: 'Total Users', value: stats?.totalUsers ?? 0, Icon: Users, color: 'bg-primary-100 dark:bg-primary-900/30 text-primary-600 dark:text-primary-400' },
+          { label: 'Total Courses', value: stats?.totalCourses ?? 0, Icon: BookOpen, color: 'bg-accent-100 dark:bg-accent-900/30 text-accent-600 dark:text-accent-400' },
+          { label: 'Enrollments', value: stats?.totalEnrollments ?? 0, Icon: GraduationCap, color: 'bg-success/10 dark:bg-success/20 text-success dark:text-success' },
+          { label: 'Instructors', value: stats?.activeInstructors ?? 0, Icon: UserCheck, color: 'bg-warning/10 dark:bg-warning/20 text-warning dark:text-warning' },
         ].map((stat, i) => {
           const IconComponent = stat.Icon;
           return (

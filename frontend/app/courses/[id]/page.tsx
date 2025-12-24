@@ -103,9 +103,9 @@ export default function CourseDetailPage({
   return (
     <>
       <Header />
-      <div className="min-h-screen bg-neutral-50 dark:bg-neutral-950">
+      <div className="min-h-screen bg-background dark:bg-base-dark">
         {/* Hero Section */}
-        <div className="bg-gradient-to-r from-primary-600 to-accent-600 text-white py-16">
+        <div className="bg-primary text-white py-16">
           <div className="container-custom">
             <div className="grid lg:grid-cols-2 gap-8 items-center">
               <div>

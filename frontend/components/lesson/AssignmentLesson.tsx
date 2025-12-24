@@ -1,10 +1,14 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { LessonContent, AssignmentSubmissionData } from '@/store/slices/lessonSlice';
-import Badge from '../ui/Badge';
-import { Calendar, FileText, Link as LinkIcon, Upload } from 'lucide-react';
-import Button from '../ui/Button';
+import { useState } from "react";
+import {
+  LessonContent,
+  AssignmentSubmissionData,
+  AssignmentLessonContent,
+} from "@/store/slices/lessonSlice";
+import Badge from "../ui/Badge";
+import { Calendar, FileText, Link as LinkIcon, Upload } from "lucide-react";
+import Button from "../ui/Button";
 
 interface AssignmentLessonProps {
   lesson: LessonContent;
@@ -12,25 +16,45 @@ interface AssignmentLessonProps {
   isCompleted?: boolean;
 }
 
-export function AssignmentLesson({ 
-  lesson, 
+export function AssignmentLesson({
+  lesson,
   onComplete,
-  isCompleted = false 
+  isCompleted = false,
 }: AssignmentLessonProps) {
   const { content } = lesson;
-  const [submissionText, setSubmissionText] = useState('');
-  const [submissionLink, setSubmissionLink] = useState('');
+  const [submissionText, setSubmissionText] = useState("");
+  const [submissionLink, setSubmissionLink] = useState("");
   const [submissionFile, setSubmissionFile] = useState<File | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const instructions = content.instructions || '';
-  const submissionType = content.submissionType || 'ANY';
-  const deadline = content.deadline;
-  const maxScore = content.maxScore || 100;
+  // Type assertion untuk content sebagai AssignmentLessonContent
+  const assignmentContent = content as AssignmentLessonContent;
 
-  const isOverdue = deadline ? new Date(deadline) < new Date() : false;
-  const isDeadlineApproaching = deadline 
-    ? new Date(deadline).getTime() - Date.now() < 24 * 60 * 60 * 1000 
+  const instructions =
+    typeof assignmentContent.instructions === "string"
+      ? assignmentContent.instructions
+      : "";
+  const submissionType: string =
+    typeof assignmentContent.submissionType === "string"
+      ? assignmentContent.submissionType
+      : "ANY";
+  const deadline = assignmentContent.deadline;
+  const maxScore =
+    typeof assignmentContent.maxScore === "number"
+      ? assignmentContent.maxScore
+      : 100;
+
+  // Type guard untuk deadline - bisa string, number, atau Date
+  const isValidDeadline =
+    deadline &&
+    typeof deadline === "string" &&
+    deadline.trim() !== "" &&
+    !isNaN(Date.parse(deadline));
+  const deadlineDate = isValidDeadline ? new Date(deadline) : null;
+
+  const isOverdue = deadlineDate ? deadlineDate < new Date() : false;
+  const isDeadlineApproaching = deadlineDate
+    ? deadlineDate.getTime() - Date.now() < 24 * 60 * 60 * 1000
     : false;
 
   const handleSubmit = async () => {
@@ -38,30 +62,36 @@ export function AssignmentLesson({
 
     const submissionData: AssignmentSubmissionData = {};
 
-    if (submissionType === 'TEXT' || submissionType === 'ANY') {
+    if (submissionType === "TEXT" || submissionType === "ANY") {
       if (submissionText.trim()) {
         submissionData.text = submissionText;
       }
     }
 
-    if (submissionType === 'LINK' || submissionType === 'ANY') {
+    if (submissionType === "LINK" || submissionType === "ANY") {
       if (submissionLink.trim()) {
         submissionData.link = submissionLink;
       }
     }
 
-    if (submissionType === 'FILE' || submissionType === 'ANY') {
+    if (submissionType === "FILE" || submissionType === "ANY") {
       if (submissionFile) {
         // TODO: Upload file and get URL
         // For now, just show message
-        alert('File upload feature coming soon. Please use text or link submission.');
+        alert(
+          "File upload feature coming soon. Please use text or link submission."
+        );
         return;
       }
     }
 
     // Validate that at least one submission is provided
-    if (!submissionData.text && !submissionData.link && !submissionData.fileUrl) {
-      alert('Please provide a submission (text, file, or link)');
+    if (
+      !submissionData.text &&
+      !submissionData.link &&
+      !submissionData.fileUrl
+    ) {
+      alert("Please provide a submission (text, file, or link)");
       return;
     }
 
@@ -74,13 +104,15 @@ export function AssignmentLesson({
   };
 
   const canSubmit = () => {
-    if (submissionType === 'TEXT') return submissionText.trim().length > 0;
-    if (submissionType === 'LINK') return submissionLink.trim().length > 0;
-    if (submissionType === 'FILE') return submissionFile !== null;
+    if (submissionType === "TEXT") return submissionText.trim().length > 0;
+    if (submissionType === "LINK") return submissionLink.trim().length > 0;
+    if (submissionType === "FILE") return submissionFile !== null;
     // ANY
-    return submissionText.trim().length > 0 || 
-           submissionLink.trim().length > 0 || 
-           submissionFile !== null;
+    return (
+      submissionText.trim().length > 0 ||
+      submissionLink.trim().length > 0 ||
+      submissionFile !== null
+    );
   };
 
   return (
@@ -88,7 +120,9 @@ export function AssignmentLesson({
       <div className="flex items-center gap-2 mb-4">
         <Badge variant="default">Assignment</Badge>
         {isOverdue && <Badge variant="error">Overdue</Badge>}
-        {isDeadlineApproaching && !isOverdue && <Badge variant="warning">Due Soon</Badge>}
+        {isDeadlineApproaching && !isOverdue && (
+          <Badge variant="warning">Due Soon</Badge>
+        )}
         {isCompleted && <Badge variant="success">Submitted</Badge>}
       </div>
 
@@ -116,15 +150,19 @@ export function AssignmentLesson({
             </div>
           )}
 
-          {deadline && (
-            <div className={`flex items-center gap-2 ${isOverdue ? 'text-danger-600 dark:text-danger-400' : ''}`}>
+          {isValidDeadline && deadlineDate && (
+            <div
+              className={`flex items-center gap-2 ${
+                isOverdue ? "text-error dark:text-error" : ""
+              }`}
+            >
               <Calendar className="w-4 h-4" />
               <span className="font-medium">Deadline:</span>
-              <span>{new Date(deadline).toLocaleString()}</span>
+              <span>{deadlineDate.toLocaleString()}</span>
             </div>
           )}
 
-          {maxScore && (
+          {typeof maxScore === "number" && (
             <div className="flex items-center gap-2">
               <span className="font-medium text-neutral-700 dark:text-neutral-300">
                 Max Score:
@@ -138,7 +176,7 @@ export function AssignmentLesson({
 
         {!isCompleted && (
           <div className="space-y-4 mt-6">
-            {(submissionType === 'TEXT' || submissionType === 'ANY') && (
+            {(submissionType === "TEXT" || submissionType === "ANY") && (
               <div>
                 <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
                   Text Submission
@@ -153,9 +191,9 @@ export function AssignmentLesson({
               </div>
             )}
 
-            {(submissionType === 'LINK' || submissionType === 'ANY') && (
+            {(submissionType === "LINK" || submissionType === "ANY") && (
               <div>
-                <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2 flex items-center gap-2">
+                <label className="text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2 flex items-center gap-2">
                   <LinkIcon className="w-4 h-4" />
                   Link Submission
                 </label>
@@ -169,15 +207,17 @@ export function AssignmentLesson({
               </div>
             )}
 
-            {(submissionType === 'FILE' || submissionType === 'ANY') && (
+            {(submissionType === "FILE" || submissionType === "ANY") && (
               <div>
-                <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2 flex items-center gap-2">
+                <label className="text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2 flex items-center gap-2">
                   <Upload className="w-4 h-4" />
                   File Submission
                 </label>
                 <input
                   type="file"
-                  onChange={(e) => setSubmissionFile(e.target.files?.[0] || null)}
+                  onChange={(e) =>
+                    setSubmissionFile(e.target.files?.[0] || null)
+                  }
                   className="w-full px-4 py-2 border border-neutral-300 dark:border-neutral-700 rounded-lg bg-white dark:bg-neutral-900 text-neutral-900 dark:text-white"
                 />
                 {submissionFile && (
@@ -193,11 +233,11 @@ export function AssignmentLesson({
               disabled={!canSubmit() || isSubmitting || isOverdue}
               className="w-full"
             >
-              {isSubmitting ? 'Submitting...' : 'Submit Assignment'}
+              {isSubmitting ? "Submitting..." : "Submit Assignment"}
             </Button>
 
             {isOverdue && (
-              <p className="text-sm text-danger-600 dark:text-danger-400">
+              <p className="text-sm text-error dark:text-error">
                 This assignment is overdue. Please contact your instructor.
               </p>
             )}
@@ -207,7 +247,8 @@ export function AssignmentLesson({
         {isCompleted && (
           <div className="mt-6 p-4 bg-success-50 dark:bg-success-900/20 rounded-lg">
             <p className="text-sm text-success-700 dark:text-success-300">
-              ✓ Assignment submitted successfully. Waiting for instructor review.
+              ✓ Assignment submitted successfully. Waiting for instructor
+              review.
             </p>
           </div>
         )}
@@ -223,4 +264,3 @@ export function AssignmentLesson({
     </div>
   );
 }
-

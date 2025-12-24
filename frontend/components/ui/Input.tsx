@@ -20,14 +20,14 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
           ref={ref}
           type={type}
           className={cn(
-            'input',
-            error && 'border-error-DEFAULT focus:ring-error-DEFAULT',
+            "input",
+            error && "border-error focus:ring-error focus:border-error",
             className
           )}
           {...props}
         />
         {error && (
-          <p className="text-sm text-error-DEFAULT">{error}</p>
+          <p className="text-sm text-error dark:text-error">{error}</p>
         )}
         {helperText && !error && (
           <p className="text-sm text-neutral-500 dark:text-neutral-400">{helperText}</p>

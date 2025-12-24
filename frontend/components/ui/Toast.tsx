@@ -77,42 +77,46 @@ const ToastItem: React.FC<ToastItemProps> = ({ toast, onClose }) => {
   const getIcon = () => {
     switch (toast.type) {
       case "success":
-        return <CheckCircle className="w-5 h-5 text-green-600" />;
+        return <CheckCircle className="w-5 h-5 text-success" />;
       case "error":
-        return <XCircle className="w-5 h-5 text-red-600" />;
+        return <XCircle className="w-5 h-5 text-error" />;
       case "warning":
-        return <AlertTriangle className="w-5 h-5 text-yellow-600" />;
+        return <AlertTriangle className="w-5 h-5 text-warning" />;
       default:
-        return <Info className="w-5 h-5 text-blue-600" />;
+        return <Info className="w-5 h-5 text-info" />;
     }
   };
 
   const getStyles = () => {
+    // Nuxt UI style toast with semantic backgrounds and clear contrast
     switch (toast.type) {
       case "success":
-        return "bg-green-50 border-green-200 dark:bg-green-900/20 dark:border-green-800";
+        return "bg-white dark:bg-neutral-900 border-l-4 border-success text-neutral-900 dark:text-neutral-100 shadow-soft-lg";
       case "error":
-        return "bg-red-50 border-red-200 dark:bg-red-900/20 dark:border-red-800";
+        return "bg-white dark:bg-neutral-900 border-l-4 border-error text-neutral-900 dark:text-neutral-100 shadow-soft-lg";
       case "warning":
-        return "bg-yellow-50 border-yellow-200 dark:bg-yellow-900/20 dark:border-yellow-800";
+        return "bg-white dark:bg-neutral-900 border-l-4 border-warning text-neutral-900 dark:text-neutral-100 shadow-soft-lg";
       default:
-        return "bg-blue-50 border-blue-200 dark:bg-blue-900/20 dark:border-blue-800";
+        return "bg-white dark:bg-neutral-900 border-l-4 border-info text-neutral-900 dark:text-neutral-100 shadow-soft-lg";
     }
   };
 
   return (
     <div
-      className={`${getStyles()} border rounded-lg shadow-lg p-4 pointer-events-auto animate-slide-in flex items-start gap-3`}
+      className={cn(
+        getStyles(),
+        "rounded-xl p-4 pointer-events-auto animate-slide-up flex items-start gap-3 border border-neutral-200 dark:border-neutral-800"
+      )}
     >
       <div className="flex-shrink-0 mt-0.5">{getIcon()}</div>
       <div className="flex-1 min-w-0">
-        <p className="text-sm font-medium text-neutral-900 dark:text-white">
+        <p className="text-sm font-medium">
           {toast.message}
         </p>
       </div>
       <button
         onClick={onClose}
-        className="flex-shrink-0 text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-300 transition-colors"
+        className="flex-shrink-0 text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-300 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2 rounded-lg p-1"
         aria-label="Close"
       >
         <X className="w-4 h-4" />

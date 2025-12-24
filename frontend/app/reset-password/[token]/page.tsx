@@ -1,30 +1,34 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import Link from 'next/link';
-import { Header, Footer } from '@/components/layouts';
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { Header, Footer } from "@/components/layouts";
 
-export default function ResetPasswordPage({ params }: { params: { token: string } }) {
+export default function ResetPasswordPage({
+  params,
+}: {
+  params: { token: string };
+}) {
   const router = useRouter();
   const [formData, setFormData] = useState({
-    password: '',
-    confirmPassword: '',
+    password: "",
+    confirmPassword: "",
   });
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
+    setError("");
 
     if (formData.password !== formData.confirmPassword) {
-      setError('Passwords do not match');
+      setError("Passwords do not match");
       return;
     }
 
     if (formData.password.length < 6) {
-      setError('Password must be at least 6 characters');
+      setError("Password must be at least 6 characters");
       return;
     }
 
@@ -34,8 +38,8 @@ export default function ResetPasswordPage({ params }: { params: { token: string 
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/api/auth/reset-password/${params.token}`,
         {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ password: formData.password }),
         }
       );
@@ -43,13 +47,13 @@ export default function ResetPasswordPage({ params }: { params: { token: string 
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.error || 'Failed to reset password');
+        throw new Error(data.error || "Failed to reset password");
       }
 
-      alert('Password reset successful! Please login with your new password.');
-      router.push('/login');
-    } catch (err: any) {
-      setError(err.message);
+      alert("Password reset successful! Please login with your new password.");
+      router.push("/login");
+    } catch (error) {
+      setError(error instanceof Error ? error.message : "An error occurred");
     } finally {
       setLoading(false);
     }
@@ -58,14 +62,16 @@ export default function ResetPasswordPage({ params }: { params: { token: string 
   return (
     <>
       <Header />
-      <div className="min-h-screen bg-neutral-50 dark:bg-neutral-950 flex items-center justify-center py-12 px-4">
+      <div className="min-h-screen bg-background dark:bg-base-dark flex items-center justify-center py-12 px-4">
         <div className="max-w-md w-full">
           <div className="text-center mb-8">
             <Link href="/" className="inline-flex items-center gap-2 group">
-              <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-primary-600 to-accent-600 flex items-center justify-center group-hover:scale-110 transition-transform">
+              <div className="w-12 h-12 rounded-lg bg-primary flex items-center justify-center group-hover:scale-110 transition-transform">
                 <span className="text-white font-bold text-2xl">L</span>
               </div>
-              <span className="text-2xl font-bold gradient-text">LMS Platform</span>
+              <span className="text-2xl font-bold text-primary dark:text-primary">
+                LMS Platform
+              </span>
             </Link>
             <h2 className="mt-6 text-3xl font-bold text-neutral-900 dark:text-neutral-50">
               Reset Password
@@ -84,7 +90,10 @@ export default function ResetPasswordPage({ params }: { params: { token: string 
               )}
 
               <div>
-                <label htmlFor="password" className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
+                <label
+                  htmlFor="password"
+                  className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2"
+                >
                   New Password
                 </label>
                 <input
@@ -93,14 +102,19 @@ export default function ResetPasswordPage({ params }: { params: { token: string 
                   type="password"
                   required
                   value={formData.password}
-                  onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, password: e.target.value })
+                  }
                   className="input"
                   placeholder="••••••••"
                 />
               </div>
 
               <div>
-                <label htmlFor="confirmPassword" className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
+                <label
+                  htmlFor="confirmPassword"
+                  className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2"
+                >
                   Confirm New Password
                 </label>
                 <input
@@ -109,7 +123,12 @@ export default function ResetPasswordPage({ params }: { params: { token: string 
                   type="password"
                   required
                   value={formData.confirmPassword}
-                  onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      confirmPassword: e.target.value,
+                    })
+                  }
                   className="input"
                   placeholder="••••••••"
                 />
@@ -118,9 +137,9 @@ export default function ResetPasswordPage({ params }: { params: { token: string 
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full btn bg-primary-600 hover:bg-primary-700 text-white px-6 py-3 text-base font-semibold disabled:opacity-50"
+                className="w-full btn bg-primary hover:bg-primary-hover text-white px-6 py-3 text-base font-semibold disabled:opacity-50"
               >
-                {loading ? 'Resetting...' : 'Reset Password'}
+                {loading ? "Resetting..." : "Reset Password"}
               </button>
             </form>
           </div>

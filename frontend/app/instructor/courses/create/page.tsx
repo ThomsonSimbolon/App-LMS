@@ -1,36 +1,33 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import Input from '@/components/ui/Input';
-import Button from '@/components/ui/Button';
-import { ArrowLeft, Upload, BookOpen, AlertCircle } from 'lucide-react';
-import { useAppDispatch, useAppSelector } from '@/store/hooks';
-import { fetchCategories } from '@/store/slices/categorySlice';
-import { createCourse, clearError } from '@/store/slices/courseSlice';
-
-interface Category {
-  id: number;
-  name: string;
-  slug: string;
-}
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import Image from "next/image";
+import Input from "@/components/ui/Input";
+import Button from "@/components/ui/Button";
+import { ArrowLeft, Upload, BookOpen, AlertCircle } from "lucide-react";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
+import { fetchCategories } from "@/store/slices/categorySlice";
+import { createCourse, clearError } from "@/store/slices/courseSlice";
 
 export default function CreateCoursePage() {
   const router = useRouter();
   const dispatch = useAppDispatch();
-  const { categories, loading: categoriesLoading } = useAppSelector((state) => state.category);
+  const { categories, loading: categoriesLoading } = useAppSelector(
+    (state) => state.category
+  );
   const { loading } = useAppSelector((state) => state.course);
-  
+
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [thumbnailPreview, setThumbnailPreview] = useState<string | null>(null);
 
   const [formData, setFormData] = useState({
-    title: '',
-    description: '',
-    categoryId: '',
-    level: 'BEGINNER',
-    type: 'FREE',
-    price: '0',
+    title: "",
+    description: "",
+    categoryId: "",
+    level: "BEGINNER",
+    type: "FREE",
+    price: "0",
     requireSequentialCompletion: false,
     requireManualApproval: false,
   });
@@ -41,19 +38,23 @@ export default function CreateCoursePage() {
     dispatch(fetchCategories(100));
   }, [dispatch]);
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+  const handleInputChange = (
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >
+  ) => {
     const { name, value, type } = e.target;
-    
-    if (type === 'checkbox') {
+
+    if (type === "checkbox") {
       const checked = (e.target as HTMLInputElement).checked;
-      setFormData(prev => ({ ...prev, [name]: checked }));
+      setFormData((prev) => ({ ...prev, [name]: checked }));
     } else {
-      setFormData(prev => ({ ...prev, [name]: value }));
+      setFormData((prev) => ({ ...prev, [name]: value }));
     }
-    
+
     // Clear error when user starts typing
     if (errors[name]) {
-      setErrors(prev => ({ ...prev, [name]: '' }));
+      setErrors((prev) => ({ ...prev, [name]: "" }));
     }
   };
 
@@ -61,20 +62,26 @@ export default function CreateCoursePage() {
     const file = e.target.files?.[0];
     if (file) {
       // Validate file type
-      if (!file.type.startsWith('image/')) {
-        setErrors(prev => ({ ...prev, thumbnail: 'Please select an image file' }));
+      if (!file.type.startsWith("image/")) {
+        setErrors((prev) => ({
+          ...prev,
+          thumbnail: "Please select an image file",
+        }));
         return;
       }
-      
+
       // Validate file size (max 5MB)
       if (file.size > 5 * 1024 * 1024) {
-        setErrors(prev => ({ ...prev, thumbnail: 'Image size must be less than 5MB' }));
+        setErrors((prev) => ({
+          ...prev,
+          thumbnail: "Image size must be less than 5MB",
+        }));
         return;
       }
 
       setThumbnailFile(file);
-      setErrors(prev => ({ ...prev, thumbnail: '' }));
-      
+      setErrors((prev) => ({ ...prev, thumbnail: "" }));
+
       // Create preview
       const reader = new FileReader();
       reader.onloadend = () => {
@@ -88,19 +95,22 @@ export default function CreateCoursePage() {
     const newErrors: Record<string, string> = {};
 
     if (!formData.title.trim()) {
-      newErrors.title = 'Title is required';
+      newErrors.title = "Title is required";
     }
 
     if (!formData.description.trim()) {
-      newErrors.description = 'Description is required';
+      newErrors.description = "Description is required";
     }
 
     if (!formData.categoryId) {
-      newErrors.categoryId = 'Category is required';
+      newErrors.categoryId = "Category is required";
     }
 
-    if (formData.type !== 'FREE' && (!formData.price || parseFloat(formData.price) <= 0)) {
-      newErrors.price = 'Price must be greater than 0 for paid courses';
+    if (
+      formData.type !== "FREE" &&
+      (!formData.price || parseFloat(formData.price) <= 0)
+    ) {
+      newErrors.price = "Price must be greater than 0 for paid courses";
     }
 
     setErrors(newErrors);
@@ -118,17 +128,26 @@ export default function CreateCoursePage() {
 
     // Create FormData for multipart/form-data
     const formDataToSend = new FormData();
-    formDataToSend.append('title', formData.title);
-    formDataToSend.append('description', formData.description);
-    formDataToSend.append('categoryId', formData.categoryId);
-    formDataToSend.append('level', formData.level);
-    formDataToSend.append('type', formData.type);
-    formDataToSend.append('price', formData.type === 'FREE' ? '0' : formData.price);
-    formDataToSend.append('requireSequentialCompletion', formData.requireSequentialCompletion.toString());
-    formDataToSend.append('requireManualApproval', formData.requireManualApproval.toString());
+    formDataToSend.append("title", formData.title);
+    formDataToSend.append("description", formData.description);
+    formDataToSend.append("categoryId", formData.categoryId);
+    formDataToSend.append("level", formData.level);
+    formDataToSend.append("type", formData.type);
+    formDataToSend.append(
+      "price",
+      formData.type === "FREE" ? "0" : formData.price
+    );
+    formDataToSend.append(
+      "requireSequentialCompletion",
+      formData.requireSequentialCompletion.toString()
+    );
+    formDataToSend.append(
+      "requireManualApproval",
+      formData.requireManualApproval.toString()
+    );
 
     if (thumbnailFile) {
-      formDataToSend.append('thumbnail', thumbnailFile);
+      formDataToSend.append("thumbnail", thumbnailFile);
     }
 
     const result = await dispatch(createCourse(formDataToSend));
@@ -137,7 +156,8 @@ export default function CreateCoursePage() {
       // Success - redirect to courses list
       router.push(`/instructor/courses`);
     } else {
-      const errorMessage = result.payload as string || 'Failed to create course';
+      const errorMessage =
+        (result.payload as string) || "Failed to create course";
       setErrors({ submit: errorMessage });
     }
   };
@@ -167,7 +187,9 @@ export default function CreateCoursePage() {
         {errors.submit && (
           <div className="bg-error-50 dark:bg-error-900/20 border border-error-200 dark:border-error-800 rounded-lg p-4 flex items-start gap-3">
             <AlertCircle className="w-5 h-5 text-error-600 dark:text-error-400 flex-shrink-0 mt-0.5" />
-            <p className="text-sm text-error-700 dark:text-error-300">{errors.submit}</p>
+            <p className="text-sm text-error-700 dark:text-error-300">
+              {errors.submit}
+            </p>
           </div>
         )}
 
@@ -201,12 +223,18 @@ export default function CreateCoursePage() {
                     value={formData.description}
                     onChange={handleInputChange}
                     rows={6}
-                    className={`input ${errors.description ? 'border-error-DEFAULT focus:ring-error-DEFAULT' : ''}`}
+                    className={`input ${
+                      errors.description
+                        ? "border-error-DEFAULT focus:ring-error-DEFAULT"
+                        : ""
+                    }`}
                     placeholder="Describe what students will learn in this course..."
                     required
                   />
                   {errors.description && (
-                    <p className="text-sm text-error-DEFAULT mt-1">{errors.description}</p>
+                    <p className="text-sm text-error-DEFAULT mt-1">
+                      {errors.description}
+                    </p>
                   )}
                 </div>
 
@@ -218,7 +246,11 @@ export default function CreateCoursePage() {
                     name="categoryId"
                     value={formData.categoryId}
                     onChange={handleInputChange}
-                    className={`input ${errors.categoryId ? 'border-error-DEFAULT focus:ring-error-DEFAULT' : ''}`}
+                    className={`input ${
+                      errors.categoryId
+                        ? "border-error-DEFAULT focus:ring-error-DEFAULT"
+                        : ""
+                    }`}
                     required
                     disabled={categoriesLoading}
                   >
@@ -230,10 +262,14 @@ export default function CreateCoursePage() {
                     ))}
                   </select>
                   {errors.categoryId && (
-                    <p className="text-sm text-error-DEFAULT mt-1">{errors.categoryId}</p>
+                    <p className="text-sm text-error-DEFAULT mt-1">
+                      {errors.categoryId}
+                    </p>
                   )}
                   {categoriesLoading && (
-                    <p className="text-sm text-neutral-500 dark:text-neutral-400 mt-1">Loading categories...</p>
+                    <p className="text-sm text-neutral-500 dark:text-neutral-400 mt-1">
+                      Loading categories...
+                    </p>
                   )}
                 </div>
               </div>
@@ -280,7 +316,7 @@ export default function CreateCoursePage() {
                   </div>
                 </div>
 
-                {formData.type !== 'FREE' && (
+                {formData.type !== "FREE" && (
                   <Input
                     label="Price"
                     name="price"
@@ -346,18 +382,20 @@ export default function CreateCoursePage() {
 
               <div className="space-y-4">
                 {thumbnailPreview ? (
-                  <div className="relative">
-                    <img
+                  <div className="relative w-full h-48">
+                    <Image
                       src={thumbnailPreview}
                       alt="Thumbnail preview"
-                      className="w-full h-48 object-cover rounded-lg border border-neutral-200 dark:border-neutral-800"
+                      fill
+                      className="object-cover rounded-lg border border-neutral-200 dark:border-neutral-800"
+                      unoptimized
                     />
                     <button
                       type="button"
                       onClick={() => {
                         setThumbnailPreview(null);
                         setThumbnailFile(null);
-                        setErrors(prev => ({ ...prev, thumbnail: '' }));
+                        setErrors((prev) => ({ ...prev, thumbnail: "" }));
                       }}
                       className="absolute top-2 right-2 bg-error-600 hover:bg-error-700 text-white rounded-full p-1.5 transition-colors"
                     >
@@ -385,11 +423,14 @@ export default function CreateCoursePage() {
                 )}
 
                 {errors.thumbnail && (
-                  <p className="text-sm text-error-DEFAULT">{errors.thumbnail}</p>
+                  <p className="text-sm text-error-DEFAULT">
+                    {errors.thumbnail}
+                  </p>
                 )}
 
                 <p className="text-xs text-neutral-500 dark:text-neutral-400">
-                  A good thumbnail helps attract students to your course. Recommended size: 1280x720px
+                  A good thumbnail helps attract students to your course.
+                  Recommended size: 1280x720px
                 </p>
               </div>
             </div>
@@ -424,4 +465,3 @@ export default function CreateCoursePage() {
     </div>
   );
 }
-

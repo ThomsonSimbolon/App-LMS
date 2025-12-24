@@ -1,5 +1,11 @@
-import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
-import { apiGet, apiPut, apiDelete, handleUnauthorized, ApiError } from '../api';
+import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
+import {
+  apiGet,
+  apiPut,
+  apiDelete,
+  handleUnauthorized,
+  ApiError,
+} from "../api";
 
 interface User {
   id: number;
@@ -24,10 +30,6 @@ interface ChangePasswordData {
   newPassword: string;
 }
 
-interface UpdateRoleData {
-  roleId: number;
-}
-
 interface UserState {
   users: User[];
   currentUser: User | null;
@@ -42,109 +44,141 @@ const initialState: UserState = {
   error: null,
 };
 
+// Type guard untuk error
+const isApiError = (error: unknown): error is ApiError => {
+  return typeof error === "object" && error !== null && "message" in error;
+};
+
 // Async thunks
 export const fetchUsers = createAsyncThunk(
-  'user/fetchUsers',
+  "user/fetchUsers",
   async (_, { rejectWithValue }) => {
     try {
-      const response = await apiGet<User[]>('users');
+      const response = await apiGet<User[]>("users");
       return Array.isArray(response) ? response : [];
-    } catch (error: any) {
-      if (error.status === 401) {
+    } catch (error) {
+      if (isApiError(error) && error.status === 401) {
         handleUnauthorized();
       }
-      return rejectWithValue(error.message || 'Failed to fetch users');
+      return rejectWithValue(
+        isApiError(error)
+          ? error.message || "Failed to fetch users"
+          : "Failed to fetch users"
+      );
     }
   }
 );
 
 export const fetchCurrentUser = createAsyncThunk(
-  'user/fetchCurrentUser',
+  "user/fetchCurrentUser",
   async (_, { rejectWithValue }) => {
     try {
-      return await apiGet<User>('users/me');
-    } catch (error: any) {
-      if (error.status === 401) {
+      return await apiGet<User>("users/me");
+    } catch (error) {
+      if (isApiError(error) && error.status === 401) {
         handleUnauthorized();
       }
-      return rejectWithValue(error.message || 'Failed to fetch user');
+      return rejectWithValue(
+        isApiError(error)
+          ? error.message || "Failed to fetch user"
+          : "Failed to fetch user"
+      );
     }
   }
 );
 
 export const updateProfile = createAsyncThunk(
-  'user/updateProfile',
+  "user/updateProfile",
   async (data: UpdateProfileData, { rejectWithValue }) => {
     try {
-      const response = await apiPut<User>('users/me', data);
-      
+      const response = await apiPut<User>("users/me", data);
+
       // Update localStorage
-      if (typeof window !== 'undefined') {
-        const storedUser = localStorage.getItem('user');
+      if (typeof window !== "undefined") {
+        const storedUser = localStorage.getItem("user");
         if (storedUser) {
           const user = JSON.parse(storedUser);
           const updatedUser = { ...user, ...response };
-          localStorage.setItem('user', JSON.stringify(updatedUser));
+          localStorage.setItem("user", JSON.stringify(updatedUser));
         }
       }
-      
+
       return response;
-    } catch (error: any) {
-      if (error.status === 401) {
+    } catch (error) {
+      if (isApiError(error) && error.status === 401) {
         handleUnauthorized();
       }
-      return rejectWithValue(error.message || 'Failed to update profile');
+      return rejectWithValue(
+        isApiError(error)
+          ? error.message || "Failed to update profile"
+          : "Failed to update profile"
+      );
     }
   }
 );
 
 export const changePassword = createAsyncThunk(
-  'user/changePassword',
+  "user/changePassword",
   async (data: ChangePasswordData, { rejectWithValue }) => {
     try {
-      await apiPut('users/me/password', data);
-      return { message: 'Password changed successfully' };
-    } catch (error: any) {
-      if (error.status === 401) {
+      await apiPut("users/me/password", data);
+      return { message: "Password changed successfully" };
+    } catch (error) {
+      if (isApiError(error) && error.status === 401) {
         handleUnauthorized();
       }
-      return rejectWithValue(error.message || 'Failed to change password');
+      return rejectWithValue(
+        isApiError(error)
+          ? error.message || "Failed to change password"
+          : "Failed to change password"
+      );
     }
   }
 );
 
 export const updateUserRole = createAsyncThunk(
-  'user/updateUserRole',
-  async ({ userId, roleId }: { userId: number; roleId: number }, { rejectWithValue }) => {
+  "user/updateUserRole",
+  async (
+    { userId, roleId }: { userId: number; roleId: number },
+    { rejectWithValue }
+  ) => {
     try {
       const response = await apiPut<User>(`users/${userId}/role`, { roleId });
       return { userId, user: response };
-    } catch (error: any) {
-      if (error.status === 401) {
+    } catch (error) {
+      if (isApiError(error) && error.status === 401) {
         handleUnauthorized();
       }
-      return rejectWithValue(error.message || 'Failed to update user role');
+      return rejectWithValue(
+        isApiError(error)
+          ? error.message || "Failed to update user role"
+          : "Failed to update user role"
+      );
     }
   }
 );
 
 export const deleteUser = createAsyncThunk(
-  'user/deleteUser',
+  "user/deleteUser",
   async (userId: number, { rejectWithValue }) => {
     try {
       await apiDelete(`users/${userId}`);
       return userId;
-    } catch (error: any) {
-      if (error.status === 401) {
+    } catch (error) {
+      if (isApiError(error) && error.status === 401) {
         handleUnauthorized();
       }
-      return rejectWithValue(error.message || 'Failed to delete user');
+      return rejectWithValue(
+        isApiError(error)
+          ? error.message || "Failed to delete user"
+          : "Failed to delete user"
+      );
     }
   }
 );
 
 const userSlice = createSlice({
-  name: 'user',
+  name: "user",
   initialState,
   reducers: {
     clearError: (state) => {
@@ -256,4 +290,3 @@ const userSlice = createSlice({
 
 export const { clearError, setCurrentUser } = userSlice.actions;
 export default userSlice.reducer;
-

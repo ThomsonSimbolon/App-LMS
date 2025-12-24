@@ -12,8 +12,8 @@ const Card = React.forwardRef<HTMLDivElement, CardProps>(
       <div
         ref={ref}
         className={cn(
-          'card',
-          hover && 'card-hover cursor-pointer',
+          "card",
+          hover && "card-hover cursor-pointer",
           className
         )}
         {...props}

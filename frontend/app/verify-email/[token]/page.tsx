@@ -1,70 +1,79 @@
-'use client';
+"use client";
 
-import { use, useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import Link from 'next/link';
-import { Header, Footer } from '@/components/layouts';
+import { use, useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { Header, Footer } from "@/components/layouts";
 
-export default function VerifyEmailPage({ params }: { params: Promise<{ token: string }> }) {
+export default function VerifyEmailPage({
+  params,
+}: {
+  params: Promise<{ token: string }>;
+}) {
   const { token } = use(params);
   const router = useRouter();
-  const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading');
-  const [message, setMessage] = useState('');
+  const [status, setStatus] = useState<"loading" | "success" | "error">(
+    "loading"
+  );
+  const [message, setMessage] = useState("");
   const [countdown, setCountdown] = useState(5);
-
-  useEffect(() => {
-    verifyEmail();
-  }, [token]);
-
-  useEffect(() => {
-    if (status === 'success' && countdown > 0) {
-      const timer = setTimeout(() => {
-        setCountdown(countdown - 1);
-      }, 1000);
-      return () => clearTimeout(timer);
-    } else if (status === 'success' && countdown === 0) {
-      router.push('/login');
-    }
-  }, [status, countdown, router]);
 
   const verifyEmail = async () => {
     try {
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/api/auth/verify-email/${token}`,
-        { method: 'GET' }
+        { method: "GET" }
       );
 
       const data = await response.json();
 
       if (response.ok) {
-        setStatus('success');
-        setMessage(data.message || 'Email verified successfully!');
+        setStatus("success");
+        setMessage(data.message || "Email verified successfully!");
       } else {
-        setStatus('error');
-        setMessage(data.error || 'Verification failed');
+        setStatus("error");
+        setMessage(data.error || "Verification failed");
       }
-    } catch (err: any) {
-      setStatus('error');
-      setMessage('An error occurred during verification. Please try again.');
+    } catch {
+      setStatus("error");
+      setMessage("An error occurred during verification. Please try again.");
     }
   };
+
+  useEffect(() => {
+    verifyEmail();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [token]);
+
+  useEffect(() => {
+    if (status === "success" && countdown > 0) {
+      const timer = setTimeout(() => {
+        setCountdown(countdown - 1);
+      }, 1000);
+      return () => clearTimeout(timer);
+    } else if (status === "success" && countdown === 0) {
+      router.push("/login");
+    }
+  }, [status, countdown, router]);
 
   return (
     <>
       <Header />
-      <div className="min-h-screen bg-neutral-50 dark:bg-neutral-950 flex items-center justify-center py-12 px-4">
+      <div className="min-h-screen bg-background dark:bg-base-dark flex items-center justify-center py-12 px-4">
         <div className="max-w-md w-full">
           <div className="text-center mb-8">
             <Link href="/" className="inline-flex items-center gap-2 group">
-              <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-primary-600 to-accent-600 flex items-center justify-center group-hover:scale-110 transition-transform">
+              <div className="w-12 h-12 rounded-lg bg-primary flex items-center justify-center group-hover:scale-110 transition-transform">
                 <span className="text-white font-bold text-2xl">L</span>
               </div>
-              <span className="text-2xl font-bold gradient-text">LMS Platform</span>
+              <span className="text-2xl font-bold text-primary dark:text-primary">
+                LMS Platform
+              </span>
             </Link>
           </div>
 
           <div className="card p-8">
-            {status === 'loading' && (
+            {status === "loading" && (
               <div className="text-center">
                 <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-primary-600 mx-auto mb-6"></div>
                 <h2 className="text-2xl font-bold text-neutral-900 dark:text-white mb-2">
@@ -76,11 +85,21 @@ export default function VerifyEmailPage({ params }: { params: Promise<{ token: s
               </div>
             )}
 
-            {status === 'success' && (
+            {status === "success" && (
               <div className="text-center">
                 <div className="w-16 h-16 bg-accent-100 dark:bg-accent-900/30 rounded-full flex items-center justify-center mx-auto mb-6">
-                  <svg className="w-10 h-10 text-accent-600 dark:text-accent-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                  <svg
+                    className="w-10 h-10 text-accent-600 dark:text-accent-400"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M5 13l4 4L19 7"
+                    />
                   </svg>
                 </div>
                 <h2 className="text-2xl font-bold text-neutral-900 dark:text-white mb-2">
@@ -91,23 +110,37 @@ export default function VerifyEmailPage({ params }: { params: Promise<{ token: s
                 </p>
                 <div className="bg-accent-50 dark:bg-accent-900/10 border border-accent-200 dark:border-accent-900/30 rounded-lg p-4 mb-6">
                   <p className="text-sm text-neutral-700 dark:text-neutral-300">
-                    Redirecting to login in <span className="font-bold text-accent-600 dark:text-accent-400">{countdown}</span> seconds...
+                    Redirecting to login in{" "}
+                    <span className="font-bold text-accent-600 dark:text-accent-400">
+                      {countdown}
+                    </span>{" "}
+                    seconds...
                   </p>
                 </div>
                 <Link
                   href="/login"
-                  className="inline-block w-full btn bg-primary-600 hover:bg-primary-700 text-white px-6 py-3 text-center"
+                  className="inline-block w-full btn bg-primary hover:bg-primary-hover text-white px-6 py-3 text-center"
                 >
                   Go to Login Now
                 </Link>
               </div>
             )}
 
-            {status === 'error' && (
+            {status === "error" && (
               <div className="text-center">
                 <div className="w-16 h-16 bg-error-light/20 rounded-full flex items-center justify-center mx-auto mb-6">
-                  <svg className="w-10 h-10 text-error dark:text-error-light" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  <svg
+                    className="w-10 h-10 text-error dark:text-error-light"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M6 18L18 6M6 6l12 12"
+                    />
                   </svg>
                 </div>
                 <h2 className="text-2xl font-bold text-neutral-900 dark:text-white mb-2">
@@ -116,7 +149,7 @@ export default function VerifyEmailPage({ params }: { params: Promise<{ token: s
                 <p className="text-neutral-600 dark:text-neutral-400 mb-6">
                   {message}
                 </p>
-                
+
                 <div className="bg-neutral-100 dark:bg-neutral-800 rounded-lg p-4 mb-6">
                   <p className="text-sm text-neutral-600 dark:text-neutral-400 mb-2">
                     Common reasons for verification failure:
@@ -131,7 +164,7 @@ export default function VerifyEmailPage({ params }: { params: Promise<{ token: s
                 <div className="flex flex-col gap-3">
                   <Link
                     href="/register"
-                    className="btn bg-primary-600 hover:bg-primary-700 text-white px-6 py-3 text-center"
+                    className="btn bg-primary hover:bg-primary-hover text-white px-6 py-3 text-center"
                   >
                     Register Again
                   </Link>

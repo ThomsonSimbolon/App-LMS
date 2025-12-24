@@ -6,7 +6,7 @@ import Image from "next/image";
 import Badge from "@/components/ui/Badge";
 import Button from "@/components/ui/Button";
 import Modal from "@/components/ui/Modal";
-import { GitBranch, Copy } from "lucide-react";
+import { GitBranch, Copy, Trash2, Plus, BookOpen } from "lucide-react";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import {
   fetchMyCourses,
@@ -124,9 +124,10 @@ export default function InstructorCoursesPage() {
         </div>
         <button
           onClick={() => router.push("/instructor/courses/create")}
-          className="btn bg-primary-600 hover:bg-primary-700 text-white px-6 py-3"
+          className="btn bg-primary-600 hover:bg-primary-700 text-white px-6 py-3 flex items-center gap-2"
         >
-          + Create New Course
+          <Plus className="w-5 h-5" />
+          Create New Course
         </button>
       </div>
 
@@ -161,8 +162,8 @@ export default function InstructorCoursesPage() {
                     unoptimized
                   />
                 ) : (
-                  <div className="w-full h-full flex items-center justify-center text-4xl">
-                    📚
+                  <div className="w-full h-full flex items-center justify-center bg-neutral-100 dark:bg-neutral-700">
+                    <BookOpen className="w-16 h-16 text-neutral-400 dark:text-neutral-500" />
                   </div>
                 )}
                 <div className="absolute top-2 right-2 flex flex-col gap-1 items-end">
@@ -200,10 +201,10 @@ export default function InstructorCoursesPage() {
                     </button>
                     <button
                       onClick={() => handleDelete(course.id)}
-                      className="btn bg-red-50 text-red-600 hover:bg-red-100 p-2"
+                      className="btn bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/30 p-2"
                       title="Delete"
                     >
-                      🗑️
+                      <Trash2 className="w-4 h-4" />
                     </button>
                   </div>
                   <button

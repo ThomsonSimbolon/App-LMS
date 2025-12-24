@@ -47,17 +47,18 @@ const Modal: React.FC<ModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 animate-fade-in">
-      {/* Backdrop */}
+      {/* Backdrop - Nuxt UI style overlay */}
       <div
-        className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+        className="absolute inset-0 bg-black/40 dark:bg-black/60 backdrop-blur-sm transition-opacity"
         onClick={onClose}
       />
 
-      {/* Modal Content */}
+      {/* Modal Content - Nuxt UI style surface */}
       <div
         className={cn(
-          'relative w-full bg-white dark:bg-neutral-900 rounded-2xl shadow-soft-lg',
-          'animate-scale-in',
+          "relative w-full bg-white dark:bg-neutral-900 rounded-xl shadow-soft-lg",
+          "border border-neutral-200 dark:border-neutral-800",
+          "animate-scale-in",
           sizes[size]
         )}
       >
@@ -72,7 +73,8 @@ const Modal: React.FC<ModalProps> = ({
             {showCloseButton && (
               <button
                 onClick={onClose}
-                className="ml-auto text-neutral-500 hover:text-neutral-700 dark:hover:text-neutral-300 transition-colors"
+                className="ml-auto text-neutral-500 hover:text-neutral-700 dark:hover:text-neutral-300 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2 rounded-lg p-1"
+                aria-label="Close modal"
               >
                 <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />

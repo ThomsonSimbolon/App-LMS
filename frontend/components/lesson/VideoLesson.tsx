@@ -1,11 +1,15 @@
-'use client';
+"use client";
 
-import { useState, useRef, useEffect } from 'react';
-import { VideoPlayer } from '../course/VideoPlayer';
-import { LessonContent } from '@/store/slices/lessonSlice';
-import Badge from '../ui/Badge';
-import Button from '../ui/Button';
-import { CheckCircle } from 'lucide-react';
+import { useState, useMemo } from "react";
+import { VideoPlayer } from "../course/VideoPlayer";
+import {
+  LessonContent,
+  VideoLessonContent,
+  LessonContentData,
+} from "@/store/slices/lessonSlice";
+import Badge from "../ui/Badge";
+import Button from "../ui/Button";
+import { CheckCircle } from "lucide-react";
 
 interface VideoLessonProps {
   lesson: LessonContent;
@@ -16,31 +20,57 @@ interface VideoLessonProps {
   isCompleting?: boolean;
 }
 
-export function VideoLesson({ 
-  lesson, 
-  onComplete, 
+export function VideoLesson({
+  lesson,
+  onComplete,
   onProgressUpdate,
   currentWatchTime = 0,
   isCompleted = false,
-  isCompleting = false
+  isCompleting = false,
 }: VideoLessonProps) {
   const [watchTime, setWatchTime] = useState(currentWatchTime);
-  const [watchPercentage, setWatchPercentage] = useState(0);
-  const [canComplete, setCanComplete] = useState(false);
-  const videoRef = useRef<HTMLVideoElement>(null);
+
+  // Type guard untuk memastikan content adalah VideoLessonContent
+  const isVideoContent = (
+    content: LessonContentData
+  ): content is VideoLessonContent => {
+    return "videoUrl" in content;
+  };
 
   const { content } = lesson;
-  const videoUrl = content.videoUrl;
-  const duration = lesson.duration || content.duration || 0;
-  const minWatchPercentage = content.minWatchPercentage || 80;
 
-  useEffect(() => {
+  // Extract properti dengan type safety dan nilai default
+  const videoContent = isVideoContent(content) ? content : null;
+  const videoUrl: string = videoContent?.videoUrl || "";
+  const contentDuration: number | undefined = videoContent?.duration;
+  const contentMinWatchPercentage: number | undefined =
+    videoContent?.minWatchPercentage;
+  const duration: number = lesson.duration || contentDuration || 0;
+  const minWatchPercentage: number = contentMinWatchPercentage || 80;
+
+  // Calculate watch percentage and completion status using useMemo to avoid setState in effect
+  // Hooks harus dipanggil sebelum early return
+  const { watchPercentage, canComplete } = useMemo(() => {
     if (duration > 0 && watchTime > 0) {
       const percentage = (watchTime / duration) * 100;
-      setWatchPercentage(Math.round(percentage));
-      setCanComplete(percentage >= minWatchPercentage);
+      return {
+        watchPercentage: Math.round(percentage),
+        canComplete: percentage >= minWatchPercentage,
+      };
     }
+    return { watchPercentage: 0, canComplete: false };
   }, [watchTime, duration, minWatchPercentage]);
+
+  // Early return setelah semua hooks dipanggil
+  if (!isVideoContent(content)) {
+    return (
+      <div className="p-6 bg-neutral-100 dark:bg-neutral-800 rounded-lg">
+        <p className="text-neutral-600 dark:text-neutral-400">
+          Invalid video lesson content
+        </p>
+      </div>
+    );
+  }
 
   const handleProgress = (progress: number) => {
     if (duration > 0) {
@@ -56,8 +86,6 @@ export function VideoLesson({
   const handleEnded = () => {
     if (duration > 0) {
       setWatchTime(duration);
-      setWatchPercentage(100);
-      setCanComplete(true);
       if (onProgressUpdate) {
         onProgressUpdate(duration);
       }
@@ -85,7 +113,7 @@ export function VideoLesson({
         )}
       </div>
 
-      <VideoPlayer 
+      <VideoPlayer
         url={videoUrl}
         onProgress={handleProgress}
         onEnded={handleEnded}
@@ -104,9 +132,7 @@ export function VideoLesson({
           <div className="w-full bg-neutral-200 dark:bg-neutral-700 rounded-full h-2">
             <div
               className={`h-2 rounded-full transition-all ${
-                canComplete
-                  ? 'bg-success-600'
-                  : 'bg-primary-600'
+                canComplete ? "bg-success-600" : "bg-primary-600"
               }`}
               style={{ width: `${Math.min(watchPercentage, 100)}%` }}
             />
@@ -140,7 +166,11 @@ export function VideoLesson({
               disabled={!canComplete || isCompleting}
               className="w-full"
             >
-              {isCompleting ? 'Marking Complete...' : canComplete ? 'Mark as Complete' : `Watch ${minWatchPercentage}% to Complete`}
+              {isCompleting
+                ? "Marking Complete..."
+                : canComplete
+                ? "Mark as Complete"
+                : `Watch ${minWatchPercentage}% to Complete`}
             </Button>
           )}
         </div>
@@ -148,4 +178,3 @@ export function VideoLesson({
     </div>
   );
 }
-

@@ -1,21 +1,17 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import Badge from '@/components/ui/Badge';
-import { useRequireRole } from '@/hooks/useAuth';
-import { useAppDispatch, useAppSelector } from '@/store/hooks';
+import { useState, useEffect } from "react";
+import { useRequireRole } from "@/hooks/useAuth";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import {
   fetchUsers,
   updateUserRole,
   deleteUser,
-  clearError,
-} from '@/store/slices/userSlice';
+} from "@/store/slices/userSlice";
 
 export default function UserManagementPage() {
-  const router = useRouter();
   const dispatch = useAppDispatch();
-  const { loading: authLoading } = useRequireRole(['ADMIN', 'SUPER_ADMIN']);
+  const { loading: authLoading } = useRequireRole(["ADMIN", "SUPER_ADMIN"]);
   const { users, loading, error } = useAppSelector((state) => state.user);
   const [updating, setUpdating] = useState<number | null>(null);
 
@@ -25,38 +21,35 @@ export default function UserManagementPage() {
     }
   }, [authLoading, dispatch]);
 
-  const getRoleName = (id: number) => {
-    switch (id) {
-      case 1: return 'SUPER_ADMIN';
-      case 2: return 'ADMIN';
-      case 3: return 'INSTRUCTOR';
-      case 4: return 'STUDENT';
-      default: return 'UNKNOWN';
-    }
-  };
-
   const handleRoleChange = async (userId: number, newRoleId: number) => {
     setUpdating(userId);
-    const result = await dispatch(updateUserRole({ userId, roleId: newRoleId }));
-    
+    const result = await dispatch(
+      updateUserRole({ userId, roleId: newRoleId })
+    );
+
     if (updateUserRole.fulfilled.match(result)) {
-      alert('Role updated successfully');
+      alert("Role updated successfully");
     } else {
-      alert(result.payload as string || 'Failed to update role');
+      alert((result.payload as string) || "Failed to update role");
     }
     setUpdating(null);
   };
 
   const handleDeleteUser = async (userId: number) => {
-    if (!confirm('Are you sure you want to delete this user? This action cannot be undone.')) return;
+    if (
+      !confirm(
+        "Are you sure you want to delete this user? This action cannot be undone."
+      )
+    )
+      return;
 
     setUpdating(userId);
     const result = await dispatch(deleteUser(userId));
-    
+
     if (deleteUser.fulfilled.match(result)) {
-      alert('User deleted successfully');
+      alert("User deleted successfully");
     } else {
-      alert(result.payload as string || 'Failed to delete user');
+      alert((result.payload as string) || "Failed to delete user");
     }
     setUpdating(null);
   };
@@ -96,20 +89,34 @@ export default function UserManagementPage() {
           <table className="w-full text-left text-sm">
             <thead className="bg-neutral-50 dark:bg-neutral-900 border-b border-neutral-200 dark:border-neutral-800">
               <tr>
-                <th className="px-6 py-4 font-semibold text-neutral-900 dark:text-white">User</th>
-                <th className="px-6 py-4 font-semibold text-neutral-900 dark:text-white">Email</th>
-                <th className="px-6 py-4 font-semibold text-neutral-900 dark:text-white">Role</th>
-                <th className="px-6 py-4 font-semibold text-neutral-900 dark:text-white">Joined</th>
-                <th className="px-6 py-4 font-semibold text-neutral-900 dark:text-white text-right">Actions</th>
+                <th className="px-6 py-4 font-semibold text-neutral-900 dark:text-white">
+                  User
+                </th>
+                <th className="px-6 py-4 font-semibold text-neutral-900 dark:text-white">
+                  Email
+                </th>
+                <th className="px-6 py-4 font-semibold text-neutral-900 dark:text-white">
+                  Role
+                </th>
+                <th className="px-6 py-4 font-semibold text-neutral-900 dark:text-white">
+                  Joined
+                </th>
+                <th className="px-6 py-4 font-semibold text-neutral-900 dark:text-white text-right">
+                  Actions
+                </th>
               </tr>
             </thead>
             <tbody className="divide-y divide-neutral-200 dark:divide-neutral-800">
               {users.map((user) => (
-                <tr key={user.id} className="hover:bg-neutral-50 dark:hover:bg-neutral-800/50 transition-colors">
+                <tr
+                  key={user.id}
+                  className="hover:bg-neutral-50 dark:hover:bg-neutral-800/50 transition-colors"
+                >
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-full bg-gradient-to-br from-neutral-200 to-neutral-300 dark:from-neutral-700 dark:to-neutral-600 flex items-center justify-center text-xs font-bold text-neutral-700 dark:text-neutral-300">
-                        {user.firstName?.[0]}{user.lastName?.[0]}
+                      <div className="w-8 h-8 rounded-full bg-border dark:bg-[#1E293B] flex items-center justify-center text-xs font-bold text-text-primary dark:text-[#E5E7EB]">
+                        {user.firstName?.[0]}
+                        {user.lastName?.[0]}
                       </div>
                       <div>
                         <div className="font-medium text-neutral-900 dark:text-white">
@@ -124,8 +131,13 @@ export default function UserManagementPage() {
                   <td className="px-6 py-4">
                     <select
                       value={user.role?.id}
-                      onChange={(e) => handleRoleChange(user.id, parseInt(e.target.value))}
-                      disabled={updating === user.id || user.role?.name === 'SUPER_ADMIN'} // Basic protection
+                      onChange={(e) =>
+                        handleRoleChange(user.id, parseInt(e.target.value))
+                      }
+                      disabled={
+                        updating === user.id ||
+                        user.role?.name === "SUPER_ADMIN"
+                      } // Basic protection
                       className="bg-transparent border border-neutral-200 dark:border-neutral-700 rounded px-2 py-1 text-xs focus:ring-2 focus:ring-primary-500"
                     >
                       <option value={2}>ADMIN</option>
@@ -134,7 +146,9 @@ export default function UserManagementPage() {
                     </select>
                   </td>
                   <td className="px-6 py-4 text-neutral-600 dark:text-neutral-400">
-                    {new Date(user.createdAt).toLocaleDateString()}
+                    {user.createdAt
+                      ? new Date(user.createdAt).toLocaleDateString()
+                      : "N/A"}
                   </td>
                   <td className="px-6 py-4 text-right">
                     <button
@@ -142,7 +156,7 @@ export default function UserManagementPage() {
                       disabled={updating === user.id}
                       className="text-error hover:text-error-dark dark:hover:text-error-light font-medium text-xs disabled:opacity-50"
                     >
-                      {updating === user.id ? '...' : 'Delete'}
+                      {updating === user.id ? "..." : "Delete"}
                     </button>
                   </td>
                 </tr>

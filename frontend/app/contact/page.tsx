@@ -39,12 +39,11 @@ export default function ContactPage() {
   return (
     <>
       <Header />
-      <div className="min-h-screen bg-neutral-50 dark:bg-neutral-950">
+      <div className="min-h-screen bg-base dark:bg-base-dark">
         
         {/* Hero Section */}
         {/* Hero Section */}
-        <section className="bg-primary-600 dark:bg-neutral-900 text-white py-20 relative overflow-hidden">
-          <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20"></div>
+        <section className="bg-hero text-white py-20 relative overflow-hidden">
           <div className="container-custom relative z-10 text-center">
             <h1 className="text-4xl md:text-5xl font-bold mb-6 text-white">Get in Touch</h1>
             <p className="text-primary-100 dark:text-neutral-400 text-lg max-w-2xl mx-auto">

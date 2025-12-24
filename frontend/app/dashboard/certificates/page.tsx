@@ -58,7 +58,7 @@ export default function CertificatesPage() {
           {certificates.map((certificate) => (
             <div key={certificate.id} className="card overflow-hidden">
               {/* Certificate Preview */}
-              <div className="relative h-48 bg-gradient-to-br from-primary-500 to-accent-500 p-6 flex items-center justify-center text-center">
+              <div className="relative h-48 bg-primary p-6 flex items-center justify-center text-center">
                 <div className="text-white">
                   <div className="text-4xl mb-2">🏆</div>
                   <h3 className="font-bold text-lg">

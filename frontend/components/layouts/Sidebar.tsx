@@ -131,14 +131,15 @@ const Sidebar: React.FC<SidebarProps> = ({ role: propRole }) => {
   return (
     <aside
       className={cn(
-        "fixed left-0 top-0 h-screen bg-white dark:bg-neutral-900 border-r border-neutral-200 dark:border-neutral-800 transition-all duration-300 ease-in-out z-40 flex flex-col",
+        // Nuxt UI style surface - elevated card surface
+        "fixed left-0 top-0 h-screen bg-white dark:bg-neutral-900 border-r border-neutral-200 dark:border-neutral-800 shadow-soft transition-all duration-300 ease-in-out z-40 flex flex-col",
         collapsed ? "w-16" : "w-64"
       )}
     >
       {/* Brand Section - Height sama dengan header (h-16) */}
       <div
         className={cn(
-          "h-16 border-b border-neutral-200 dark:border-neutral-800 flex items-center justify-center flex-shrink-0",
+          "h-16 border-b border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 flex items-center justify-center flex-shrink-0",
           collapsed ? "px-0" : "px-4"
         )}
       >
@@ -151,7 +152,7 @@ const Sidebar: React.FC<SidebarProps> = ({ role: propRole }) => {
         >
           <div
             className={cn(
-              "rounded-lg bg-gradient-to-br from-primary-600 to-accent-600 flex items-center justify-center group-hover:scale-110 transition-transform flex-shrink-0",
+              "rounded-lg bg-primary-600 dark:bg-primary-600 flex items-center justify-center group-hover:scale-110 transition-transform flex-shrink-0",
               collapsed ? "w-10 h-10" : "w-8 h-8"
             )}
           >
@@ -165,7 +166,7 @@ const Sidebar: React.FC<SidebarProps> = ({ role: propRole }) => {
             </span>
           </div>
           {!collapsed && (
-            <span className="text-xl font-bold gradient-text whitespace-nowrap">
+            <span className="text-xl font-bold text-primary-600 dark:text-primary-400 whitespace-nowrap">
               LMS Platform
             </span>
           )}
@@ -218,13 +219,13 @@ const Sidebar: React.FC<SidebarProps> = ({ role: propRole }) => {
         >
           {collapsed ? (
             <div className="flex items-center justify-center w-full">
-              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary-400 to-accent-400 flex items-center justify-center text-white font-semibold">
+              <div className="w-10 h-10 rounded-full bg-primary-600 dark:bg-primary-600 flex items-center justify-center text-white font-semibold">
                 {initials}
               </div>
             </div>
           ) : (
             <div className="flex items-center gap-3 px-3 py-2">
-              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary-400 to-accent-400 flex items-center justify-center text-white font-semibold">
+              <div className="w-10 h-10 rounded-full bg-primary-600 dark:bg-primary-600 flex items-center justify-center text-white font-semibold">
                 {initials}
               </div>
               <div className="flex-1 min-w-0">

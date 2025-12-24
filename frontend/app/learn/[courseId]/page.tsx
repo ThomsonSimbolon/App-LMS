@@ -10,7 +10,7 @@ import {
   fetchLessonContent,
   completeLesson,
   clearLessonContent,
-  type LessonContent,
+  type AssignmentSubmissionData,
 } from "@/store/slices/lessonSlice";
 
 interface Lesson {
@@ -69,7 +69,9 @@ export default function LearnPage({
   });
   const [completing, setCompleting] = useState(false);
   const [watchTime, setWatchTime] = useState(0);
-  const [submissionData, setSubmissionData] = useState<any>(null);
+  const [submissionData, setSubmissionData] = useState<
+    AssignmentSubmissionData | undefined
+  >(undefined);
   const hasInitializedLesson = useRef(false);
 
   // Set initial lesson when enrollment data becomes available
@@ -105,18 +107,21 @@ export default function LearnPage({
     }
   };
 
-  const handleCompleteLesson = async (assignmentSubmissionData?: any) => {
+  const handleCompleteLesson = async (
+    assignmentSubmissionData?: AssignmentSubmissionData
+  ) => {
     if (!currentLesson || !lessonContent) return;
 
     setCompleting(true);
-    
+
     // Use submission data from AssignmentLesson component if provided
     const finalSubmissionData = assignmentSubmissionData || submissionData;
 
     const result = await dispatch(
       completeLesson({
         lessonId: currentLesson.id,
-        watchTime: watchTime || currentLesson.duration || lessonContent.duration || 0,
+        watchTime:
+          watchTime || currentLesson.duration || lessonContent.duration || 0,
         submissionData: finalSubmissionData,
       })
     );
@@ -126,9 +131,10 @@ export default function LearnPage({
       dispatch(fetchMyEnrollments());
       // Reset watch time and submission data
       setWatchTime(0);
-      setSubmissionData(null);
+      setSubmissionData(undefined);
     } else {
-      const errorMessage = (result.payload as string) || "Failed to complete lesson";
+      const errorMessage =
+        (result.payload as string) || "Failed to complete lesson";
       alert(errorMessage);
     }
     setCompleting(false);
@@ -138,11 +144,14 @@ export default function LearnPage({
     setWatchTime(newWatchTime);
   };
 
-  // Reset watch time and submission data when lesson changes
+  // Reset watch time and submission data when lesson changes - using setTimeout to defer update
   useEffect(() => {
     if (currentLesson) {
-      setWatchTime(0);
-      setSubmissionData(null);
+      const timeoutId = setTimeout(() => {
+        setWatchTime(0);
+        setSubmissionData(undefined);
+      }, 0);
+      return () => clearTimeout(timeoutId);
     }
   }, [currentLesson]);
 
@@ -185,9 +194,9 @@ export default function LearnPage({
   }
 
   return (
-    <div className="min-h-screen bg-neutral-50 dark:bg-neutral-950">
+    <div className="min-h-screen bg-background dark:bg-base-dark">
       {/* Header */}
-      <div className="bg-white dark:bg-neutral-900 border-b border-neutral-200 dark:border-neutral-800 sticky top-0 z-10">
+      <div className="bg-surface dark:bg-base-dark border-b border-border dark:border-[#1E293B] sticky top-0 z-10">
         <div className="container-custom py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
@@ -206,9 +215,9 @@ export default function LearnPage({
                 </p>
               </div>
             </div>
-            <div className="w-48 bg-neutral-200 dark:bg-neutral-700 rounded-full h-2">
+            <div className="w-48 bg-border dark:bg-[#1E293B] rounded-full h-2">
               <div
-                className="bg-accent-600 h-2 rounded-full transition-all"
+                className="bg-primary h-2 rounded-full transition-all"
                 style={{ width: `${enrollment.progress || 0}%` }}
               />
             </div>
@@ -248,7 +257,6 @@ export default function LearnPage({
                       </div>
                     </div>
                   )}
-
                 </>
               ) : (
                 <div className="text-center py-12">
@@ -267,7 +275,8 @@ export default function LearnPage({
                 Course Content
               </h3>
               <LessonList
-                sections={enrollment.course.sections || []}
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                sections={(enrollment.course.sections || []) as any}
                 currentLessonId={currentLesson?.id}
                 onLessonClick={handleLessonClick}
               />

@@ -84,8 +84,8 @@ export default function InstructorAnalyticsPage() {
                 </span>
                 <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${
                   stat.trend === 'up' 
-                    ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' 
-                    : 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'
+                    ? 'bg-success/10 text-success dark:bg-success/20 dark:text-success' 
+                    : 'bg-error/10 text-error dark:bg-error/20 dark:text-error'
                 }`}>
                   {stat.change}
                 </span>
@@ -159,8 +159,8 @@ export default function InstructorAnalyticsPage() {
                     {analytics.trends.engagement.completed}
                   </p>
                 </div>
-                <div className="w-16 h-16 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center">
-                  <span className="text-green-600 dark:text-green-400 font-bold">
+                <div className="w-16 h-16 rounded-full bg-success/10 dark:bg-success/20 flex items-center justify-center">
+                  <span className="text-success dark:text-success font-bold">
                     {analytics.trends.engagement.completed}
                   </span>
                 </div>
@@ -172,8 +172,8 @@ export default function InstructorAnalyticsPage() {
                     {analytics.trends.engagement.dropped}
                   </p>
                 </div>
-                <div className="w-16 h-16 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center">
-                  <span className="text-red-600 dark:text-red-400 font-bold">
+                <div className="w-16 h-16 rounded-full bg-error/10 dark:bg-error/20 flex items-center justify-center">
+                  <span className="text-error dark:text-error font-bold">
                     {analytics.trends.engagement.dropped}
                   </span>
                 </div>

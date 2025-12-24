@@ -60,21 +60,21 @@ export default function DashboardPage() {
           value={stats.totalCourses}
           subtitle="Total courses"
           href="/dashboard/courses"
-          gradient="from-primary-500 to-primary-600"
+          variant="primary"
         />
         <DashboardCard
           icon={Target}
           title="In Progress"
           value={stats.activeCourses}
           subtitle="Active learning"
-          gradient="from-accent-500 to-accent-600"
+          variant="info"
         />
         <DashboardCard
           icon={CheckCircle}
           title="Completed"
           value={stats.completedCourses}
           subtitle="Finished courses"
-          gradient="from-success to-success-dark"
+          variant="success"
         />
         <DashboardCard
           icon={Trophy}
@@ -82,7 +82,7 @@ export default function DashboardPage() {
           value={stats.certificates}
           subtitle="Earned certificates"
           href="/dashboard/certificates"
-          gradient="from-warning to-warning-dark"
+          variant="warning"
         />
       </div>
 

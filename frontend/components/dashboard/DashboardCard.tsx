@@ -1,6 +1,6 @@
-import React from 'react';
-import Link from 'next/link';
-import { LucideIcon } from 'lucide-react';
+import React from "react";
+import Link from "next/link";
+import { LucideIcon } from "lucide-react";
 
 interface DashboardCardProps {
   icon: LucideIcon | string;
@@ -8,7 +8,55 @@ interface DashboardCardProps {
   value: string | number;
   subtitle?: string;
   href?: string;
-  gradient?: string;
+  variant?: "primary" | "success" | "warning" | "error" | "info";
+}
+
+// CardContent component declared outside render to avoid recreation
+function CardContent({
+  Icon,
+  title,
+  value,
+  subtitle,
+  variant = "primary",
+}: {
+  Icon: LucideIcon | string;
+  title: string;
+  value: string | number;
+  subtitle?: string;
+  variant?: "primary" | "success" | "warning" | "error" | "info";
+}) {
+  const variantColors = {
+    primary: "bg-primary",
+    success: "bg-success",
+    warning: "bg-warning",
+    error: "bg-error",
+    info: "bg-info",
+  };
+
+  return (
+    <div className="card card-hover p-6">
+      <div
+        className={`w-12 h-12 rounded-xl ${variantColors[variant]} flex items-center justify-center mb-4 shadow-soft`}
+      >
+        {typeof Icon === "string" ? (
+          <span className="text-2xl text-white">{Icon}</span>
+        ) : (
+          <Icon className="w-6 h-6 text-white" />
+        )}
+      </div>
+      <div className="text-3xl font-bold text-text-primary dark:text-[#E5E7EB] mb-1">
+        {value}
+      </div>
+      <div className="text-sm font-medium text-text-secondary dark:text-[#94A3B8] mb-1">
+        {title}
+      </div>
+      {subtitle && (
+        <div className="text-xs text-text-muted dark:text-[#94A3B8]">
+          {subtitle}
+        </div>
+      )}
+    </div>
+  );
 }
 
 export function DashboardCard({
@@ -17,38 +65,29 @@ export function DashboardCard({
   value,
   subtitle,
   href,
-  gradient = 'from-primary-500 to-accent-500',
+  variant = "primary",
 }: DashboardCardProps) {
-  const CardContent = () => (
-    <div className="card card-hover p-6">
-      <div className={`w-12 h-12 rounded-lg bg-gradient-to-br ${gradient} flex items-center justify-center mb-4 shadow-lg shadow-primary-500/20`}>
-        {typeof Icon === 'string' ? (
-          <span className="text-2xl">{Icon}</span>
-        ) : (
-          <Icon className="w-6 h-6 text-white" />
-        )}
-      </div>
-      <div className="text-3xl font-bold text-neutral-900 dark:text-white mb-1">
-        {value}
-      </div>
-      <div className="text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
-        {title}
-      </div>
-      {subtitle && (
-        <div className="text-xs text-neutral-600 dark:text-neutral-400">
-          {subtitle}
-        </div>
-      )}
-    </div>
-  );
-
   if (href) {
     return (
       <Link href={href}>
-        <CardContent />
+        <CardContent
+          Icon={Icon}
+          title={title}
+          value={value}
+          subtitle={subtitle}
+          variant={variant}
+        />
       </Link>
     );
   }
 
-  return <CardContent />;
+  return (
+    <CardContent
+      Icon={Icon}
+      title={title}
+      value={value}
+      subtitle={subtitle}
+      variant={variant}
+    />
+  );
 }

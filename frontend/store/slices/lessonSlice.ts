@@ -1,20 +1,20 @@
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { apiGet, apiPost, handleUnauthorized } from '../api';
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import { apiGet, apiPost, handleUnauthorized } from "../api";
 
 // Lesson Type Union
-export type LessonType = 
-  | 'VIDEO' 
-  | 'MATERIAL' 
-  | 'LIVE_SESSION' 
-  | 'ASSIGNMENT' 
-  | 'QUIZ' 
-  | 'EXAM' 
-  | 'DISCUSSION';
+export type LessonType =
+  | "VIDEO"
+  | "MATERIAL"
+  | "LIVE_SESSION"
+  | "ASSIGNMENT"
+  | "QUIZ"
+  | "EXAM"
+  | "DISCUSSION";
 
 // Lesson Content Structure (varies by type)
 // Base interface with common fields
 interface BaseLessonContentData {
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 // Type-specific content interfaces
@@ -38,7 +38,7 @@ export interface LiveSessionLessonContent extends BaseLessonContentData {
 
 export interface AssignmentLessonContent extends BaseLessonContentData {
   instructions: string;
-  submissionType?: 'FILE' | 'TEXT' | 'LINK' | 'ANY';
+  submissionType?: "FILE" | "TEXT" | "LINK" | "ANY";
   deadline?: string;
   maxScore?: number;
 }
@@ -55,7 +55,7 @@ export interface DiscussionLessonContent extends BaseLessonContentData {
 }
 
 // Union type for all lesson content
-export type LessonContentData = 
+export type LessonContentData =
   | VideoLessonContent
   | MaterialLessonContent
   | LiveSessionLessonContent
@@ -87,7 +87,7 @@ export interface AssignmentSubmissionData {
 export interface LessonValidationError {
   field?: string;
   message: string;
-  details?: Record<string, any>;
+  details?: Record<string, unknown>;
 }
 
 // Completion status
@@ -115,52 +115,54 @@ const initialState: LessonState = {
 
 // Async thunks
 export const fetchLessonContent = createAsyncThunk(
-  'lesson/fetchLessonContent',
+  "lesson/fetchLessonContent",
   async (lessonId: number, { rejectWithValue }) => {
     try {
-      const response = await apiGet<{ success: boolean; data: LessonContent }>(`lessons/${lessonId}/content`);
+      const response = await apiGet<{ success: boolean; data: LessonContent }>(
+        `lessons/${lessonId}/content`
+      );
       // Handle both old format (direct data) and new format (wrapped in data)
       return response.data || response;
-    } catch (error: any) {
+    } catch (error) {
       if (error.status === 401) {
         handleUnauthorized();
       }
-      return rejectWithValue(error.message || 'Failed to fetch lesson content');
+      return rejectWithValue(error.message || "Failed to fetch lesson content");
     }
   }
 );
 
 export const completeLesson = createAsyncThunk(
-  'lesson/completeLesson',
+  "lesson/completeLesson",
   async (
-    { 
-      lessonId, 
-      watchTime, 
-      submissionData 
-    }: { 
-      lessonId: number; 
-      watchTime?: number; 
+    {
+      lessonId,
+      watchTime,
+      submissionData,
+    }: {
+      lessonId: number;
+      watchTime?: number;
       submissionData?: AssignmentSubmissionData;
-    }, 
+    },
     { rejectWithValue }
   ) => {
     try {
-      await apiPost(`lessons/${lessonId}/complete`, { 
+      await apiPost(`lessons/${lessonId}/complete`, {
         watchTime,
-        submissionData 
+        submissionData,
       });
-      return { message: 'Lesson marked as complete' };
-    } catch (error: any) {
+      return { message: "Lesson marked as complete" };
+    } catch (error) {
       if (error.status === 401) {
         handleUnauthorized();
       }
-      return rejectWithValue(error.message || 'Failed to complete lesson');
+      return rejectWithValue(error.message || "Failed to complete lesson");
     }
   }
 );
 
 const lessonSlice = createSlice({
-  name: 'lesson',
+  name: "lesson",
   initialState,
   reducers: {
     clearError: (state) => {
@@ -207,4 +209,3 @@ const lessonSlice = createSlice({
 
 export const { clearError, clearLessonContent } = lessonSlice.actions;
 export default lessonSlice.reducer;
-

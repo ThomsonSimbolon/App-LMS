@@ -25,22 +25,17 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     const baseStyles = "btn";
 
     const variants = {
-      primary:
-        "bg-primary-600 hover:bg-primary-700 text-white focus:ring-primary-500 shadow-sm",
-      secondary:
-        "bg-accent-600 hover:bg-accent-700 text-white focus:ring-accent-500 shadow-sm",
-      outline:
-        "border-2 border-primary-600 text-primary-600 hover:bg-primary-50 dark:hover:bg-primary-950 focus:ring-primary-500",
-      ghost:
-        "hover:bg-neutral-100 dark:hover:bg-neutral-800 text-neutral-700 dark:text-neutral-300 focus:ring-neutral-500",
-      danger:
-        "bg-red-600 hover:bg-red-700 text-white focus:ring-red-500 shadow-sm",
+      primary: "btn-primary",
+      secondary: "btn-secondary",
+      outline: "btn-outline",
+      ghost: "btn-ghost",
+      danger: "btn-danger",
     };
 
     const sizes = {
-      sm: "px-3 py-1.5 text-sm",
-      md: "px-4 py-2.5 text-base",
-      lg: "px-6 py-3 text-lg",
+      sm: "btn-sm",
+      md: "btn-md",
+      lg: "btn-lg",
     };
 
     return (

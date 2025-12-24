@@ -36,8 +36,8 @@ const Avatar: React.FC<AvatarProps> = ({
   return (
     <div
       className={cn(
-        'relative inline-flex items-center justify-center rounded-full overflow-hidden',
-        'bg-gradient-to-br from-primary-400 to-accent-400 text-white font-semibold',
+        "relative inline-flex items-center justify-center rounded-full overflow-hidden",
+        "bg-primary-600 text-white font-semibold",
         sizes[size],
         className
       )}

@@ -45,7 +45,7 @@ export function QuizResults({
       </div>
 
       {/* Score Display */}
-      <div className="bg-gradient-to-br from-primary-50 to-accent-50 dark:from-primary-900/20 dark:to-accent-900/20 p-8 rounded-xl mb-6">
+      <div className="bg-primary-soft dark:bg-primary/20 p-8 rounded-xl mb-6">
         <div className="text-center">
           <div className="text-6xl font-bold text-neutral-900 dark:text-white mb-2">
             {percentage}%

@@ -71,7 +71,8 @@ const InstructorHeader: React.FC = () => {
   return (
     <header
       className={cn(
-        "fixed top-0 right-0 z-50 h-16 border-b border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 shadow-sm transition-all duration-300 ease-in-out",
+        // Nuxt UI style surface - elevated card surface
+        "fixed top-0 right-0 z-50 h-16 border-b border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 shadow-soft transition-all duration-300 ease-in-out",
         collapsed ? "left-16" : "left-64"
       )}
     >
@@ -100,10 +101,10 @@ const InstructorHeader: React.FC = () => {
           >
             <button
               onClick={() => setProfileMenuOpen(!profileMenuOpen)}
-              className="flex items-center gap-3 px-3 py-1.5 rounded-lg transition-colors"
+              className="flex items-center gap-3 px-3 py-1.5 rounded-lg transition-colors bg-neutral-50 dark:bg-neutral-800/50 hover:bg-neutral-100 dark:hover:bg-neutral-800"
             >
               {/* Profile Avatar */}
-              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary-400 to-accent-400 flex items-center justify-center text-white font-semibold flex-shrink-0">
+              <div className="w-10 h-10 rounded-full bg-primary-600 dark:bg-primary-600 flex items-center justify-center text-white font-semibold flex-shrink-0">
                 {initials}
               </div>
               <div className="text-left">
@@ -132,7 +133,7 @@ const InstructorHeader: React.FC = () => {
                 onMouseEnter={() => setProfileMenuOpen(true)}
                 onMouseLeave={() => setProfileMenuOpen(false)}
               >
-                <div className="bg-white dark:bg-neutral-900 rounded-lg shadow-lg border border-neutral-200 dark:border-neutral-800 py-2">
+                <div className="bg-white dark:bg-neutral-900 rounded-xl shadow-soft-lg border border-neutral-200 dark:border-neutral-800 py-2">
                   <button
                     onClick={() => {
                       setProfileMenuOpen(false);
@@ -183,7 +184,7 @@ const InstructorHeader: React.FC = () => {
           )}
         >
           <div className="px-4 py-2 border-b border-neutral-200 dark:border-neutral-800 mb-2 flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary-400 to-accent-400 flex items-center justify-center text-white font-semibold flex-shrink-0">
+            <div className="w-10 h-10 rounded-full bg-primary-600 dark:bg-primary-600 flex items-center justify-center text-white font-semibold flex-shrink-0">
               {initials}
             </div>
             <div>

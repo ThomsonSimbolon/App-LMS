@@ -1,5 +1,5 @@
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { apiGet, handleUnauthorized } from '../api';
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import { apiGet, handleUnauthorized } from "../api";
 
 // Student interface
 export interface Student {
@@ -36,7 +36,7 @@ export interface Engagement {
 
 export interface TrendChange {
   value: string;
-  trend: 'up' | 'down';
+  trend: "up" | "down";
 }
 
 export interface AnalyticsData {
@@ -92,25 +92,33 @@ const initialState: InstructorState = {
     page: 1,
     limit: 10,
     total: 0,
-    pages: 0
-  }
+    pages: 0,
+  },
 };
 
 // Async thunks
 export const fetchMyStudents = createAsyncThunk(
-  'instructor/fetchMyStudents',
+  "instructor/fetchMyStudents",
   async (
-    params: { search?: string; courseId?: number; page?: number; limit?: number } = {},
+    params: {
+      search?: string;
+      courseId?: number;
+      page?: number;
+      limit?: number;
+    } = {},
     { rejectWithValue }
   ) => {
     try {
       const queryParams = new URLSearchParams();
-      if (params.search) queryParams.append('search', params.search);
-      if (params.courseId) queryParams.append('courseId', params.courseId.toString());
-      if (params.page) queryParams.append('page', params.page.toString());
-      if (params.limit) queryParams.append('limit', params.limit.toString());
+      if (params.search) queryParams.append("search", params.search);
+      if (params.courseId)
+        queryParams.append("courseId", params.courseId.toString());
+      if (params.page) queryParams.append("page", params.page.toString());
+      if (params.limit) queryParams.append("limit", params.limit.toString());
 
-      const endpoint = `instructor/students${queryParams.toString() ? `?${queryParams.toString()}` : ''}`;
+      const endpoint = `instructor/students${
+        queryParams.toString() ? `?${queryParams.toString()}` : ""
+      }`;
       const response = await apiGet<{
         students: Student[];
         pagination: {
@@ -122,18 +130,18 @@ export const fetchMyStudents = createAsyncThunk(
       }>(endpoint);
 
       // apiGet already extracts data.data, so response should be the data object directly
-      if (response && typeof response === 'object' && 'students' in response) {
+      if (response && typeof response === "object" && "students" in response) {
         return {
           students: response.students || [],
           pagination: response.pagination || {
             page: 1,
             limit: 10,
             total: 0,
-            pages: 0
-          }
+            pages: 0,
+          },
         };
       }
-      
+
       // Fallback
       return {
         students: [],
@@ -141,86 +149,94 @@ export const fetchMyStudents = createAsyncThunk(
           page: 1,
           limit: 10,
           total: 0,
-          pages: 0
-        }
+          pages: 0,
+        },
       };
-    } catch (error: any) {
+    } catch (error) {
       if (error.status === 401) {
         handleUnauthorized();
       }
-      return rejectWithValue(error.message || 'Failed to fetch students');
+      return rejectWithValue(error.message || "Failed to fetch students");
     }
   }
 );
 
 export const fetchDashboardStats = createAsyncThunk(
-  'instructor/fetchDashboardStats',
+  "instructor/fetchDashboardStats",
   async (_, { rejectWithValue }) => {
     try {
-      const response = await apiGet<DashboardStats>('instructor/dashboard/stats');
+      const response = await apiGet<DashboardStats>(
+        "instructor/dashboard/stats"
+      );
 
       // apiGet already extracts data.data, so response should be the data object directly
-      if (response && typeof response === 'object' && 'totalCourses' in response) {
+      if (
+        response &&
+        typeof response === "object" &&
+        "totalCourses" in response
+      ) {
         return response;
       }
-      
+
       // Fallback
       return {
         totalCourses: 0,
         totalStudents: 0,
         totalReviews: 0,
-        averageRating: 0
+        averageRating: 0,
       };
-    } catch (error: any) {
+    } catch (error) {
       if (error.status === 401) {
         handleUnauthorized();
       }
-      return rejectWithValue(error.message || 'Failed to fetch dashboard stats');
+      return rejectWithValue(
+        error.message || "Failed to fetch dashboard stats"
+      );
     }
   }
 );
 
 export const fetchMyAnalytics = createAsyncThunk(
-  'instructor/fetchMyAnalytics',
+  "instructor/fetchMyAnalytics",
   async (_, { rejectWithValue }) => {
     try {
-      const response = await apiGet<AnalyticsData>('instructor/analytics');
+      const response = await apiGet<AnalyticsData>("instructor/analytics");
 
       // apiGet already extracts data.data, so response should be the data object directly
-      if (response && typeof response === 'object' && 'stats' in response) {
+      if (response && typeof response === "object" && "stats" in response) {
         return response;
       }
-      
+
       // Fallback
       return {
         stats: {
           totalStudents: 0,
           avgRating: 0,
           completionRate: 0,
-          totalRevenue: 0
+          totalRevenue: 0,
         },
         trends: {
           enrollmentGrowth: [],
-          engagement: { active: 0, completed: 0, dropped: 0 }
+          engagement: { active: 0, completed: 0, dropped: 0 },
         },
         changes: {
-          totalStudents: { value: '0%', trend: 'up' },
-          avgRating: { value: '0', trend: 'up' },
-          completionRate: { value: '0%', trend: 'up' },
-          totalRevenue: { value: '$0', trend: 'up' }
-        }
+          totalStudents: { value: "0%", trend: "up" },
+          avgRating: { value: "0", trend: "up" },
+          completionRate: { value: "0%", trend: "up" },
+          totalRevenue: { value: "$0", trend: "up" },
+        },
       };
-    } catch (error: any) {
+    } catch (error) {
       if (error.status === 401) {
         handleUnauthorized();
       }
-      return rejectWithValue(error.message || 'Failed to fetch analytics');
+      return rejectWithValue(error.message || "Failed to fetch analytics");
     }
   }
 );
 
 const instructorSlice = createSlice({
-  name: 'instructor',
+  name: "instructor",
   initialState,
   reducers: {
     clearStudentsError: (state) => {
@@ -248,7 +264,7 @@ const instructorSlice = createSlice({
             page: 1,
             limit: 10,
             total: 0,
-            pages: 0
+            pages: 0,
           };
         } else {
           state.students = [];
@@ -256,7 +272,7 @@ const instructorSlice = createSlice({
             page: 1,
             limit: 10,
             total: 0,
-            pages: 0
+            pages: 0,
           };
         }
         state.studentsError = null;
@@ -297,7 +313,7 @@ const instructorSlice = createSlice({
             totalCourses: 0,
             totalStudents: 0,
             totalReviews: 0,
-            averageRating: 0
+            averageRating: 0,
           };
         }
         state.dashboardError = null;
@@ -309,6 +325,6 @@ const instructorSlice = createSlice({
   },
 });
 
-export const { clearStudentsError, clearAnalyticsError, clearDashboardError } = instructorSlice.actions;
+export const { clearStudentsError, clearAnalyticsError, clearDashboardError } =
+  instructorSlice.actions;
 export default instructorSlice.reducer;
-

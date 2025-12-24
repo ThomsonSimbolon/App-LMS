@@ -15,14 +15,14 @@ const Skeleton: React.FC<SkeletonProps> = ({
   ...props
 }) => {
   const styles = {
-    text: 'h-4 w-full rounded',
-    circular: 'rounded-full',
-    rectangular: 'rounded',
+    text: "h-4 w-full rounded",
+    circular: "rounded-full",
+    rectangular: "rounded",
   };
 
   return (
     <div
-      className={cn('skeleton', styles[variant], className)}
+      className={cn("skeleton", styles[variant], className)}
       style={{ width, height }}
       {...props}
     />

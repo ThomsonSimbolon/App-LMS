@@ -91,7 +91,7 @@ export default function DashboardCourseDetailPage({
   return (
     <div>
       {/* Hero Section */}
-      <div className="bg-gradient-to-r from-primary-600 to-accent-600 text-white py-16 rounded-xl mb-8">
+      <div className="bg-primary text-white py-16 rounded-xl mb-8">
         <div className="grid lg:grid-cols-2 gap-8 items-center px-6 lg:px-8">
           <div>
             <div className="flex flex-wrap gap-2 mb-4">

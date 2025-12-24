@@ -1,29 +1,31 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { useAppDispatch, useAppSelector } from '@/store/hooks';
-import { register, clearError } from '@/store/slices/authSlice';
+import { useState, useEffect } from "react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
+import { register, clearError } from "@/store/slices/authSlice";
 
 export default function RegisterPage() {
   const router = useRouter();
   const dispatch = useAppDispatch();
   const { loading, error, user } = useAppSelector((state) => state.auth);
   const [formData, setFormData] = useState({
-    firstName: '',
-    lastName: '',
-    email: '',
-    password: '',
-    confirmPassword: '',
+    firstName: "",
+    lastName: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
   });
-  const [validationError, setValidationError] = useState('');
+  const [validationError, setValidationError] = useState("");
 
   // Redirect after successful registration
   useEffect(() => {
     if (user) {
-      alert('Registration successful! Please check your email to verify your account.');
-      router.push('/login');
+      alert(
+        "Registration successful! Please check your email to verify your account."
+      );
+      router.push("/login");
     }
   }, [user, router]);
 
@@ -35,32 +37,32 @@ export default function RegisterPage() {
     // Clear errors when user types
     if (error || validationError) {
       dispatch(clearError());
-      setValidationError('');
+      setValidationError("");
     }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setValidationError('');
+    setValidationError("");
     dispatch(clearError());
 
     // Validation
     if (formData.password !== formData.confirmPassword) {
-      setValidationError('Passwords do not match');
+      setValidationError("Passwords do not match");
       return;
     }
 
     if (formData.password.length < 6) {
-      setValidationError('Password must be at least 6 characters');
+      setValidationError("Password must be at least 6 characters");
       return;
     }
 
     dispatch(
       register({
-          firstName: formData.firstName,
-          lastName: formData.lastName,
-          email: formData.email,
-          password: formData.password,
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        email: formData.email,
+        password: formData.password,
       })
     );
   };
@@ -73,12 +75,14 @@ export default function RegisterPage() {
         {/* Logo */}
         <div className="text-center mb-8">
           <Link href="/" className="inline-flex items-center gap-2 group">
-            <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-primary-600 to-accent-600 flex items-center justify-center group-hover:scale-110 transition-transform">
+            <div className="w-12 h-12 rounded-lg bg-primary-600 dark:bg-primary-500 flex items-center justify-center group-hover:scale-110 transition-transform">
               <span className="text-white font-bold text-2xl">L</span>
             </div>
-            <span className="text-2xl font-bold gradient-text">LMS Platform</span>
+            <span className="text-2xl font-bold text-primary-600 dark:text-primary-500">
+              LMS Platform
+            </span>
           </Link>
-          <h2 className="mt-6 text-3xl font-bold text-neutral-900 dark:text-neutral-50">
+          <h2 className="mt-6 text-3xl font-bold text-neutral-900 dark:text-white">
             Create your account
           </h2>
           <p className="mt-2 text-sm text-neutral-600 dark:text-neutral-400">
@@ -90,14 +94,17 @@ export default function RegisterPage() {
         <div className="card p-8">
           <form onSubmit={handleSubmit} className="space-y-6">
             {displayError && (
-              <div className="bg-error-light/10 border border-error text-error-dark dark:text-error-light rounded-lg p-4 text-sm">
+              <div className="bg-error/10 border border-error text-error dark:text-error rounded-lg p-4 text-sm">
                 {displayError}
               </div>
             )}
 
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label htmlFor="firstName" className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
+                <label
+                  htmlFor="firstName"
+                  className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2"
+                >
                   First Name
                 </label>
                 <input
@@ -113,7 +120,10 @@ export default function RegisterPage() {
               </div>
 
               <div>
-                <label htmlFor="lastName" className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
+                <label
+                  htmlFor="lastName"
+                  className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2"
+                >
                   Last Name
                 </label>
                 <input
@@ -130,7 +140,10 @@ export default function RegisterPage() {
             </div>
 
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
+              <label
+                htmlFor="email"
+                className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2"
+              >
                 Email address
               </label>
               <input
@@ -146,7 +159,10 @@ export default function RegisterPage() {
             </div>
 
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
+              <label
+                htmlFor="password"
+                className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2"
+              >
                 Password
               </label>
               <input
@@ -162,7 +178,10 @@ export default function RegisterPage() {
             </div>
 
             <div>
-              <label htmlFor="confirmPassword" className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
+              <label
+                htmlFor="confirmPassword"
+                className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2"
+              >
                 Confirm Password
               </label>
               <input
@@ -180,16 +199,19 @@ export default function RegisterPage() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full btn bg-primary-600 hover:bg-primary-700 text-white px-6 py-3 text-base font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full btn btn-primary btn-md"
             >
-              {loading ? 'Creating account...' : 'Create account'}
+              {loading ? "Creating account..." : "Create account"}
             </button>
           </form>
 
           <div className="mt-6 text-center">
             <p className="text-sm text-neutral-600 dark:text-neutral-400">
-              Already have an account?{' '}
-              <Link href="/login" className="font-medium text-primary-600 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300">
+              Already have an account?{" "}
+              <Link
+                href="/login"
+                className="font-medium text-primary-600 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-500 transition-colors"
+              >
                 Sign in
               </Link>
             </p>

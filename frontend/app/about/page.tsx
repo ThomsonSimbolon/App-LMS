@@ -37,11 +37,10 @@ export default function AboutPage() {
   return (
     <>
       <Header />
-      <div className="min-h-screen bg-neutral-50 dark:bg-neutral-950">
+      <div className="min-h-screen bg-base dark:bg-base-dark">
         
         {/* Hero Section */}
-        <section className="bg-primary-600 dark:bg-neutral-900 text-white py-24 relative overflow-hidden transition-colors duration-200">
-          <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20"></div>
+        <section className="bg-hero text-white py-24 relative overflow-hidden transition-colors duration-200">
           <div className="container-custom relative z-10 text-center max-w-4xl mx-auto px-4">
             <span className="badge bg-white/10 text-white border border-white/20 mb-6 backdrop-blur-sm">
               Our Story
@@ -92,11 +91,11 @@ export default function AboutPage() {
               </div>
               <div className="relative h-[400px] rounded-2xl overflow-hidden shadow-2xl group">
                  {/* Abstract Image Placeholder using CSS Patterns for now to ensure it works without external assets */}
-                 <div className="absolute inset-0 bg-gradient-to-tr from-primary-600 to-accent-500 opacity-90"></div>
+                 <div className="absolute inset-0 bg-primary opacity-90"></div>
                  <div className="absolute inset-0 flex items-center justify-center text-white/20 font-bold text-9xl select-none">
                    LMS
                  </div>
-                 <div className="absolute bottom-0 left-0 right-0 p-8 bg-gradient-to-t from-black/80 to-transparent text-white">
+                 <div className="absolute bottom-0 left-0 right-0 p-8 bg-black/80 text-white">
                    <p className="font-medium">Our headquarters in Knowledge City</p>
                  </div>
               </div>

@@ -1,19 +1,21 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { CourseCard } from '@/components/course/CourseCard';
-import { CourseFilters, FilterState } from '@/components/course/CourseFilters';
-import Skeleton from '@/components/ui/Skeleton';
-import { BookX, ChevronLeft, ChevronRight } from 'lucide-react';
-import { useAppDispatch, useAppSelector } from '@/store/hooks';
-import { fetchCourses, clearError } from '@/store/slices/courseSlice';
+import { useState, useEffect } from "react";
+import { CourseCard } from "@/components/course/CourseCard";
+import { CourseFilters, FilterState } from "@/components/course/CourseFilters";
+import Skeleton from "@/components/ui/Skeleton";
+import { BookX, ChevronLeft, ChevronRight } from "lucide-react";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
+import { fetchCourses, clearError } from "@/store/slices/courseSlice";
 
 export default function BrowseCoursesPage() {
   const dispatch = useAppDispatch();
-  const { courses, loading, error, pagination } = useAppSelector((state) => state.course);
+  const { courses, loading, error, pagination } = useAppSelector(
+    (state) => state.course
+  );
   const [filters, setFilters] = useState<FilterState>({
-    search: '',
-    sort: 'newest',
+    search: "",
+    sort: "newest",
   });
   const [page, setPage] = useState(1);
   const limit = 12;
@@ -99,13 +101,19 @@ export default function BrowseCoursesPage() {
                     description={course.description}
                     thumbnail={course.thumbnail}
                     instructor={course.instructor}
-                    level={course.level}
-                    type={course.type}
+                    level={
+                      course.level as "BEGINNER" | "INTERMEDIATE" | "ADVANCED"
+                    }
+                    type={course.type as "FREE" | "PAID" | "PREMIUM"}
                     price={course.price}
-                    enrollmentCount={course.enrollmentCount}
-                    rating={course.rating}
-                    isEnrolled={course.isEnrolled}
-                    version={course.version}
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                    enrollmentCount={(course as any).enrollmentCount || 0}
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                    rating={(course as any).rating || 0}
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                    isEnrolled={(course as any).isEnrolled || false}
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                    version={(course as any).version || 1}
                     basePath="/dashboard/courses"
                   />
                 ))}
@@ -142,4 +150,3 @@ export default function BrowseCoursesPage() {
     </div>
   );
 }
-

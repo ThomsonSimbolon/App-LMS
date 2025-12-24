@@ -1,44 +1,62 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import { Header, Footer } from '@/components/layouts';
+import { useState, useEffect, useCallback } from "react";
+import { Header, Footer } from "@/components/layouts";
 
-export default function VerifyCertificatePage({ params }: { params: { certificateNumber: string } }) {
-  const router = useRouter();
-  const [certificate, setCertificate] = useState<any>(null);
+interface Certificate {
+  certificateNumber: string;
+  issuedAt: string;
+  user?: {
+    firstName?: string;
+    lastName?: string;
+  };
+  course?: {
+    title?: string;
+    instructor?: {
+      firstName?: string;
+      lastName?: string;
+    };
+  };
+}
+
+export default function VerifyCertificatePage({
+  params,
+}: {
+  params: { certificateNumber: string };
+}) {
+  const [certificate, setCertificate] = useState<Certificate | null>(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
 
-  useEffect(() => {
-    verifyCertificate();
-  }, [params.certificateNumber]);
-
-  const verifyCertificate = async () => {
+  const verifyCertificate = useCallback(async () => {
     try {
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/api/certificates/verify/${params.certificateNumber}`
       );
-      
+
       const data = await response.json();
-      
+
       if (!response.ok) {
-        throw new Error(data.error || 'Certificate not found');
+        throw new Error(data.error || "Certificate not found");
       }
 
       setCertificate(data.data);
-    } catch (err: any) {
-      setError(err.message);
+    } catch (error) {
+      setError(error instanceof Error ? error.message : "An error occurred");
     } finally {
       setLoading(false);
     }
-  };
+  }, [params.certificateNumber]);
+
+  useEffect(() => {
+    verifyCertificate();
+  }, [verifyCertificate]);
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
+    return new Date(dateString).toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
     });
   };
 
@@ -60,7 +78,9 @@ export default function VerifyCertificatePage({ params }: { params: { certificat
             {loading ? (
               <div className="card p-12 text-center">
                 <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600 mx-auto mb-4"></div>
-                <p className="text-neutral-600 dark:text-neutral-400">Verifying certificate...</p>
+                <p className="text-neutral-600 dark:text-neutral-400">
+                  Verifying certificate...
+                </p>
               </div>
             ) : error || !certificate ? (
               <div className="card p-12 text-center">
@@ -69,7 +89,7 @@ export default function VerifyCertificatePage({ params }: { params: { certificat
                   Invalid Certificate
                 </h2>
                 <p className="text-neutral-600 dark:text-neutral-400 mb-2">
-                  {error || 'This certificate could not be verified.'}
+                  {error || "This certificate could not be verified."}
                 </p>
                 <p className="text-sm text-neutral-500 dark:text-neutral-500">
                   Certificate Number: {params.certificateNumber}
@@ -78,13 +98,17 @@ export default function VerifyCertificatePage({ params }: { params: { certificat
             ) : (
               <>
                 <div className="card overflow-hidden mb-8">
-                  <div className="bg-gradient-to-r from-accent-500 to-accent-600 p-6 text-white text-center">
+                  <div className="bg-success p-6 text-white text-center">
                     <div className="text-5xl mb-2">✓</div>
-                    <h2 className="text-2xl font-bold">Certificate Verified!</h2>
-                    <p className="text-accent-100 mt-1">This is an authentic certificate</p>
+                    <h2 className="text-2xl font-bold">
+                      Certificate Verified!
+                    </h2>
+                    <p className="text-accent-100 mt-1">
+                      This is an authentic certificate
+                    </p>
                   </div>
 
-                  <div className="relative bg-gradient-to-br from-primary-50 via-white to-accent-50 dark:from-primary-900/20 dark:via-neutral-900 dark:to-accent-900/20 p-12">
+                  <div className="relative bg-surface dark:bg-base-dark p-12">
                     <div className="text-center">
                       <div className="text-6xl mb-6">🏆</div>
                       <h3 className="text-3xl font-bold text-neutral-900 dark:text-white mb-4">
@@ -94,7 +118,8 @@ export default function VerifyCertificatePage({ params }: { params: { certificat
                         This certifies that
                       </p>
                       <p className="text-2xl font-bold text-neutral-900 dark:text-white mb-6">
-                        {certificate.user?.firstName} {certificate.user?.lastName}
+                        {certificate.user?.firstName}{" "}
+                        {certificate.user?.lastName}
                       </p>
                       <p className="text-lg text-neutral-600 dark:text-neutral-400 mb-2">
                         has successfully completed
@@ -104,13 +129,17 @@ export default function VerifyCertificatePage({ params }: { params: { certificat
                       </p>
                       <div className="grid md:grid-cols-2 gap-6 max-w-md mx-auto">
                         <div>
-                          <p className="text-sm text-neutral-600 dark:text-neutral-400">Issue Date</p>
+                          <p className="text-sm text-neutral-600 dark:text-neutral-400">
+                            Issue Date
+                          </p>
                           <p className="font-semibold text-neutral-900 dark:text-white">
                             {formatDate(certificate.issuedAt)}
                           </p>
                         </div>
                         <div>
-                          <p className="text-sm text-neutral-600 dark:text-neutral-400">Certificate Number</p>
+                          <p className="text-sm text-neutral-600 dark:text-neutral-400">
+                            Certificate Number
+                          </p>
                           <p className="font-semibold text-neutral-900 dark:text-white">
                             {certificate.certificateNumber}
                           </p>
@@ -126,25 +155,35 @@ export default function VerifyCertificatePage({ params }: { params: { certificat
                   </h3>
                   <div className="grid md:grid-cols-2 gap-6">
                     <div>
-                      <p className="text-sm text-neutral-600 dark:text-neutral-400 mb-1">Recipient</p>
+                      <p className="text-sm text-neutral-600 dark:text-neutral-400 mb-1">
+                        Recipient
+                      </p>
                       <p className="font-medium text-neutral-900 dark:text-white">
-                        {certificate.user?.firstName} {certificate.user?.lastName}
+                        {certificate.user?.firstName}{" "}
+                        {certificate.user?.lastName}
                       </p>
                     </div>
                     <div>
-                      <p className="text-sm text-neutral-600 dark:text-neutral-400 mb-1">Course</p>
+                      <p className="text-sm text-neutral-600 dark:text-neutral-400 mb-1">
+                        Course
+                      </p>
                       <p className="font-medium text-neutral-900 dark:text-white">
                         {certificate.course?.title}
                       </p>
                     </div>
                     <div>
-                      <p className="text-sm text-neutral-600 dark:text-neutral-400 mb-1">Instructor</p>
+                      <p className="text-sm text-neutral-600 dark:text-neutral-400 mb-1">
+                        Instructor
+                      </p>
                       <p className="font-medium text-neutral-900 dark:text-white">
-                        {certificate.course?.instructor?.firstName} {certificate.course?.instructor?.lastName}
+                        {certificate.course?.instructor?.firstName}{" "}
+                        {certificate.course?.instructor?.lastName}
                       </p>
                     </div>
                     <div>
-                      <p className="text-sm text-neutral-600 dark:text-neutral-400 mb-1">Verification</p>
+                      <p className="text-sm text-neutral-600 dark:text-neutral-400 mb-1">
+                        Verification
+                      </p>
                       <p className="font-medium text-accent-600 dark:text-accent-400">
                         ✓ Verified
                       </p>

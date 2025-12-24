@@ -1,5 +1,5 @@
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { apiGet, apiPost, handleUnauthorized } from '../api';
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import { apiGet, apiPost, handleUnauthorized } from "../api";
 
 interface Course {
   id: number;
@@ -10,7 +10,18 @@ interface Course {
     firstName: string;
     lastName?: string;
   };
-  sections?: any[];
+  sections?: Array<{
+    id: number;
+    title: string;
+    order: number;
+    lessons?: Array<{
+      id: number;
+      title: string;
+      type: string;
+      duration?: number;
+      isCompleted?: boolean;
+    }>;
+  }>;
 }
 
 interface Enrollment {
@@ -35,37 +46,39 @@ const initialState: EnrollmentState = {
 
 // Async thunks
 export const fetchMyEnrollments = createAsyncThunk(
-  'enrollment/fetchMyEnrollments',
+  "enrollment/fetchMyEnrollments",
   async (_, { rejectWithValue }) => {
     try {
-      const response = await apiGet<{ enrollments: Enrollment[] }>('enrollments/me');
+      const response = await apiGet<{ enrollments: Enrollment[] }>(
+        "enrollments/me"
+      );
       return response.enrollments || [];
-    } catch (error: any) {
+    } catch (error) {
       if (error.status === 401) {
         handleUnauthorized();
       }
-      return rejectWithValue(error.message || 'Failed to fetch enrollments');
+      return rejectWithValue(error.message || "Failed to fetch enrollments");
     }
   }
 );
 
 export const createEnrollment = createAsyncThunk(
-  'enrollment/createEnrollment',
+  "enrollment/createEnrollment",
   async (courseId: number, { rejectWithValue }) => {
     try {
-      const response = await apiPost<Enrollment>('enrollments', { courseId });
+      const response = await apiPost<Enrollment>("enrollments", { courseId });
       return response;
-    } catch (error: any) {
+    } catch (error) {
       if (error.status === 401) {
         handleUnauthorized();
       }
-      return rejectWithValue(error.message || 'Failed to enroll in course');
+      return rejectWithValue(error.message || "Failed to enroll in course");
     }
   }
 );
 
 const enrollmentSlice = createSlice({
-  name: 'enrollment',
+  name: "enrollment",
   initialState,
   reducers: {
     clearError: (state) => {
@@ -109,4 +122,3 @@ const enrollmentSlice = createSlice({
 
 export const { clearError } = enrollmentSlice.actions;
 export default enrollmentSlice.reducer;
-

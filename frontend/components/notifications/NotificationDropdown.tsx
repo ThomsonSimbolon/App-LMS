@@ -1,8 +1,7 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { X, Check, CheckCheck } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { X, CheckCheck } from 'lucide-react';
 import NotificationItem from './NotificationItem';
 
 interface Notification {

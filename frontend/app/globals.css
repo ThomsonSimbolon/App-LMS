@@ -22,7 +22,7 @@
 @layer base {
   :root {
     /* Light mode colors */
-    --background: 255 255 255;
+    --background: 240 253 250; /* #f0fdfa - soft mint/green pastel */
     --foreground: 23 23 23;
     --card: 255 255 255;
     --card-foreground: 23 23 23;
@@ -34,7 +34,7 @@
 
   .dark {
     /* Dark mode colors */
-    --background: 10 10 10;
+    --background: 2 6 23; /* #020617 - deep slate/blue-black */
     --foreground: 250 250 250;
     --card: 23 23 23;
     --card-foreground: 250 250 250;
@@ -45,7 +45,7 @@
   }
 
   body {
-    @apply bg-neutral-50 dark:bg-neutral-950 text-neutral-900 dark:text-neutral-50;
+    @apply bg-base text-neutral-900 dark:bg-base-dark dark:text-neutral-100 antialiased;
     font-family: 'Inter', sans-serif;
     font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
   }
@@ -56,7 +56,7 @@
   }
 
   ::-webkit-scrollbar-track {
-    @apply bg-neutral-100 dark:bg-neutral-900;
+    @apply bg-base dark:bg-base-dark;
   }
 
   ::-webkit-scrollbar-thumb {
@@ -69,45 +69,104 @@
 
   /* Selection */
   ::selection {
-    @apply bg-primary-200 dark:bg-primary-800 text-primary-900 dark:text-primary-100;
+    @apply bg-primary-600 dark:bg-primary-500 text-white;
   }
 }
 
 @layer components {
+  /* Surface System - Nuxt UI style layering */
+  .surface-base {
+    @apply bg-transparent;
+  }
+
+  .surface-card {
+    @apply bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 shadow-soft rounded-xl;
+  }
+
+  .surface-muted {
+    @apply bg-neutral-100 dark:bg-neutral-900/50 border border-neutral-200/60 dark:border-neutral-800/60 rounded-xl;
+  }
+
+  /* Hero Background - NuxtJS style gradient */
+  .bg-hero {
+    background: linear-gradient(to bottom right, #ecfdf5, #f0fdfa);
+  }
+  
+  .dark .bg-hero {
+    background: linear-gradient(to bottom right, #030712, #020617);
+  }
+
   /* Card Component Base */
   .card {
-    @apply bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-xl shadow-soft;
-    @apply transition-all duration-200;
+    @apply surface-card p-4 md:p-6 transition-all duration-200;
   }
 
   .card-hover {
-    @apply hover:shadow-soft-lg hover:-translate-y-0.5;
+    @apply transition-all duration-200 hover:shadow-soft-lg hover:-translate-y-0.5;
   }
 
   /* Button Base Styles */
   .btn {
-    @apply inline-flex items-center justify-center gap-2 rounded-lg font-medium;
-    @apply transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed;
-    @apply focus:outline-none focus:ring-2 focus:ring-offset-2;
+    @apply inline-flex items-center justify-center font-medium rounded-lg transition-all duration-200;
+    @apply focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2;
+    @apply focus-visible:ring-offset-neutral-50 dark:focus-visible:ring-offset-neutral-950;
+    @apply disabled:opacity-60 disabled:cursor-not-allowed gap-2;
+  }
+
+  /* Button Variants */
+  .btn-primary {
+    @apply bg-primary-600 hover:bg-primary-700 text-white shadow-soft;
+  }
+
+  .btn-secondary {
+    @apply bg-accent-600 hover:bg-accent-700 text-white shadow-soft;
+  }
+
+  .btn-outline {
+    @apply border border-neutral-300 dark:border-neutral-700 text-neutral-800 dark:text-neutral-100;
+    @apply hover:bg-neutral-50 dark:hover:bg-neutral-900;
+  }
+
+  .btn-ghost {
+    @apply text-neutral-700 dark:text-neutral-200 hover:bg-neutral-100 dark:hover:bg-neutral-800;
+  }
+
+  .btn-danger {
+    /* Danger button uses semantic error color */
+    @apply bg-error hover:bg-error/90 text-white shadow-soft;
+  }
+
+  /* Button Sizes */
+  .btn-sm {
+    @apply px-3 py-1.5 text-sm;
+  }
+
+  .btn-md {
+    @apply px-4 py-2.5 text-base;
+  }
+
+  .btn-lg {
+    @apply px-6 py-3 text-lg;
   }
 
   /* Input Base Styles */
   .input {
-    @apply w-full px-4 py-2.5 rounded-lg border border-neutral-300 dark:border-neutral-700;
-    @apply bg-white dark:bg-neutral-900 text-neutral-900 dark:text-neutral-50;
-    @apply placeholder:text-neutral-500 dark:placeholder:text-neutral-400;
-    @apply focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent;
+    @apply w-full rounded-lg border border-neutral-300 dark:border-neutral-700;
+    @apply bg-white dark:bg-neutral-900 px-3 py-2 text-sm;
+    @apply text-neutral-900 dark:text-neutral-100;
+    @apply placeholder:text-neutral-400 dark:placeholder:text-neutral-500;
+    @apply focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500;
     @apply transition-all duration-200;
   }
 
   /* Badge Styles */
   .badge {
-    @apply inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium;
+    @apply inline-flex items-center px-2.5 py-0.5 text-xs font-medium rounded-full;
   }
 
   /* Loading Skeleton */
   .skeleton {
-    @apply animate-pulse bg-neutral-200 dark:bg-neutral-800 rounded;
+    @apply bg-neutral-200 dark:bg-neutral-800 animate-pulse-soft rounded-md;
   }
 }
 
@@ -123,11 +182,6 @@
 
   .glass {
     @apply bg-white/80 dark:bg-neutral-900/80 backdrop-blur-lg;
-  }
-
-  /* Gradient Text */
-  .gradient-text {
-    @apply bg-gradient-to-r from-primary-600 to-accent-600 bg-clip-text text-transparent;
   }
 
   /* Container with max-width */
