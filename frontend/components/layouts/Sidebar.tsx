@@ -191,7 +191,7 @@ const Sidebar: React.FC<SidebarProps> = ({ role: propRole }) => {
                 "flex items-center rounded-lg transition-all",
                 "hover:bg-primary-50 dark:hover:bg-primary-900/20",
                 isActive &&
-                  "bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-400 font-medium",
+                  "bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-400 font-medium",
                 !isActive && "text-neutral-700 dark:text-neutral-300",
                 collapsed ? "justify-center w-full py-2.5" : "gap-3 px-3 py-2.5"
               )}

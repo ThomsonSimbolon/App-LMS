@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useMemo, useRef } from "react";
+import { useState, useEffect, useMemo, useRef, use } from "react";
 import { useRouter } from "next/navigation";
 import { LessonList } from "@/components/course/LessonList";
 import { LessonRenderer } from "@/components/lesson/LessonRenderer";
@@ -30,7 +30,7 @@ interface Section {
 export default function LearnPage({
   params,
 }: {
-  params: { courseId: string };
+  params: Promise<{ courseId: string }>;
 }) {
   const router = useRouter();
   const dispatch = useAppDispatch();
@@ -39,6 +39,9 @@ export default function LearnPage({
   );
   const { lessonContent } = useAppSelector((state) => state.lesson);
   const { user } = useAppSelector((state) => state.auth);
+
+  // Unwrap params Promise
+  const { courseId } = use(params);
 
   useEffect(() => {
     if (!user) {
@@ -50,7 +53,7 @@ export default function LearnPage({
 
   // Find enrollment for this course
   const enrollment = enrollments.find(
-    (e) => e.course.id === parseInt(params.courseId)
+    (e) => e.course.id === parseInt(courseId)
   );
 
   // Get first lesson from enrollment when available
@@ -215,9 +218,9 @@ export default function LearnPage({
                 </p>
               </div>
             </div>
-            <div className="w-48 bg-border dark:bg-[#1E293B] rounded-full h-2">
+            <div className="w-48 bg-neutral-200 dark:bg-neutral-800 rounded-full h-2">
               <div
-                className="bg-primary h-2 rounded-full transition-all"
+                className="bg-primary-600 h-2 rounded-full transition-all"
                 style={{ width: `${enrollment.progress || 0}%` }}
               />
             </div>

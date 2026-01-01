@@ -33,7 +33,7 @@ export function QuizResults({
         <h2 className={`text-3xl font-bold mb-2 ${
           passed
             ? 'text-accent-600 dark:text-accent-400'
-            : 'text-error dark:text-error-light'
+            : 'text-error'
         }`}>
           {passed ? 'Congratulations!' : 'Not Quite There'}
         </h2>
@@ -45,7 +45,7 @@ export function QuizResults({
       </div>
 
       {/* Score Display */}
-      <div className="bg-primary-soft dark:bg-primary/20 p-8 rounded-xl mb-6">
+      <div className="bg-primary-50 dark:bg-primary-900/20 p-8 rounded-xl mb-6">
         <div className="text-center">
           <div className="text-6xl font-bold text-neutral-900 dark:text-white mb-2">
             {percentage}%
@@ -90,7 +90,7 @@ export function QuizResults({
         {onContinue && (
           <button
             onClick={onContinue}
-            className="flex-1 btn bg-white dark:bg-neutral-800 hover:bg-neutral-50 dark:hover:bg-neutral-700 border border-neutral-300 dark:border-neutral-700 text-neutral-900 dark:text-white px-6 py-3"
+            className="flex-1 btn btn-outline px-6 py-3"
           >
             {passed ? 'Continue Course' : 'Back to Course'}
           </button>

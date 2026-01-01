@@ -256,7 +256,8 @@ exports.submitQuiz = async (req, res) => {
     });
 
     // Send quiz result notification (non-blocking)
-    notificationService.notifyQuizResult(req.user.userId, quiz, score, isPassed).catch(err => {
+    const io = req.app.locals.io;
+    notificationService.notifyQuizResult(req.user.userId, quiz, score, isPassed, io).catch(err => {
       console.error('Failed to send quiz result notification:', err);
     });
 

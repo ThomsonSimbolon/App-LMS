@@ -16,6 +16,9 @@ const Certificate = require("./Certificate");
 const ActivityLog = require("./ActivityLog");
 const Notification = require("./Notification");
 const CourseAssessor = require("./CourseAssessor");
+const PaymentIntent = require("./PaymentIntent");
+const DiscussionThread = require("./DiscussionThread");
+const DiscussionReply = require("./DiscussionReply");
 
 // ========================================
 // AUTHENTICATION & RBAC ASSOCIATIONS
@@ -339,6 +342,98 @@ User.hasMany(CourseAssessor, {
   onDelete: "CASCADE",
 });
 
+// ========================================
+// PAYMENT ASSOCIATIONS
+// ========================================
+
+// User has many PaymentIntents
+User.hasMany(PaymentIntent, {
+  foreignKey: "userId",
+  as: "paymentIntents",
+  onDelete: "CASCADE",
+});
+
+PaymentIntent.belongsTo(User, {
+  foreignKey: "userId",
+  as: "user",
+});
+
+// Course has many PaymentIntents
+Course.hasMany(PaymentIntent, {
+  foreignKey: "courseId",
+  as: "paymentIntents",
+  onDelete: "CASCADE",
+});
+
+PaymentIntent.belongsTo(Course, {
+  foreignKey: "courseId",
+  as: "course",
+});
+
+// ========================================
+// DISCUSSION ASSOCIATIONS
+// ========================================
+
+// Lesson has many DiscussionThreads
+Lesson.hasMany(DiscussionThread, {
+  foreignKey: "lessonId",
+  as: "discussionThreads",
+  onDelete: "CASCADE",
+});
+
+DiscussionThread.belongsTo(Lesson, {
+  foreignKey: "lessonId",
+  as: "lesson",
+});
+
+// User has many DiscussionThreads
+User.hasMany(DiscussionThread, {
+  foreignKey: "userId",
+  as: "discussionThreads",
+  onDelete: "CASCADE",
+});
+
+DiscussionThread.belongsTo(User, {
+  foreignKey: "userId",
+  as: "author",
+});
+
+// DiscussionThread has many DiscussionReplies
+DiscussionThread.hasMany(DiscussionReply, {
+  foreignKey: "threadId",
+  as: "replies",
+  onDelete: "CASCADE",
+});
+
+DiscussionReply.belongsTo(DiscussionThread, {
+  foreignKey: "threadId",
+  as: "thread",
+});
+
+// User has many DiscussionReplies
+User.hasMany(DiscussionReply, {
+  foreignKey: "userId",
+  as: "discussionReplies",
+  onDelete: "CASCADE",
+});
+
+DiscussionReply.belongsTo(User, {
+  foreignKey: "userId",
+  as: "author",
+});
+
+// Nested replies (reply-to-reply)
+DiscussionReply.belongsTo(DiscussionReply, {
+  foreignKey: "parentReplyId",
+  as: "parentReply",
+});
+
+DiscussionReply.hasMany(DiscussionReply, {
+  foreignKey: "parentReplyId",
+  as: "childReplies",
+  onDelete: "CASCADE",
+});
+
 // Export all models
 module.exports = {
   // Authentication & RBAC
@@ -371,4 +466,11 @@ module.exports = {
 
   // Notifications
   Notification,
+
+  // Payments
+  PaymentIntent,
+
+  // Discussion
+  DiscussionThread,
+  DiscussionReply,
 };

@@ -2,10 +2,10 @@
 
 Modern Learning Management System dengan Certification & Assessment
 
-**Version**: 1.2.0  
+**Version**: 1.3.1  
 **Base API URL**: `http://localhost:5040/api`  
 **Frontend URL**: `http://localhost:5174`  
-**Last Updated**: 19 Desember 2025
+**Last Updated**: 1 Januari 2026
 
 ---
 
@@ -36,9 +36,12 @@ Modern Learning Management System dengan Certification & Assessment
 - 🔒 **Lesson Locking** - Sequential completion (dapat dikonfigurasi)
 - 👨‍🏫 **Assessor Assignment** - Assign assessor ke course untuk certificate approval
 - 📝 **Activity Logging** - Log semua aktivitas user untuk audit trail
-- 🔔 **Notifications** - Sistem notifikasi real-time untuk user
+- 🔔 **Notifications** - Sistem notifikasi real-time dengan Socket.IO (dual mode: socket + polling fallback)
+- 💳 **Payment System** - Integrasi payment gateway (Stripe) untuk PAID/PREMIUM courses
+- 💬 **Discussion Forum** - Backend lengkap untuk DISCUSSION lesson type dengan threads & replies
 - 📈 **Dashboard Analytics** - Dashboard statistik untuk admin dan instructor
 - ✉️ **Email Verification** - Verifikasi akun via email
+- 🔐 **Password Reset** - Forgot password & reset password dengan secure token (1 hour expiry)
 - 🌙 **Dark Mode** - Dukungan dark mode
 - 📱 **Responsive Design** - Mobile-first responsive design
 
@@ -48,12 +51,12 @@ Modern Learning Management System dengan Certification & Assessment
 app-lms/
 ├── backend/                    # Node.js + Express + Sequelize API
 │   ├── src/
-│   │   ├── models/           # 17 Sequelize models
-│   │   ├── controllers/      # 15 API controllers
-│   │   ├── routes/           # 12 route files
+│   │   ├── models/           # 20 Sequelize models
+│   │   ├── controllers/      # 18 API controllers
+│   │   ├── routes/           # 15 route files
 │   │   ├── middleware/       # Auth & RBAC middleware
 │   │   ├── services/         # Business logic services
-│   │   ├── config/           # Database, JWT, Cloudinary config
+│   │   ├── config/           # Database, JWT, Cloudinary, Socket.IO config
 │   │   └── seeders/          # Database seeders
 │   ├── server.js             # Entry point
 │   └── package.json
@@ -77,6 +80,8 @@ app-lms/
     │   └── ui/              # UI components
     ├── hooks/               # Custom React hooks
     ├── lib/                 # Utilities & helpers
+    │   ├── socket.ts        # Socket.IO client integration
+    │   └── ...
     └── package.json
 ```
 
@@ -132,9 +137,13 @@ app-lms/
 │  │notification  │  │activityLog    │  │courseVersion │ │
 │  │  Service     │  │  Service      │  │  Service     │ │
 │  └──────────────┘  └──────────────┘  └──────────────┘ │
+│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐ │
+│  │lessonCompletion│ │localFile     │  │paymentService│ │
+│  │  Service     │  │  Service     │  │              │ │
+│  └──────────────┘  └──────────────┘  └──────────────┘ │
 │  ┌──────────────┐  ┌──────────────┐                   │
-│  │lessonCompletion│ │localFile     │                   │
-│  │  Service     │  │  Service     │                   │
+│  │discussion    │  │              │                   │
+│  │  Service     │  │              │                   │
 │  └──────────────┘  └──────────────┘                   │
 └──────────────────────┬──────────────────────────────────┘
                        │
@@ -146,6 +155,10 @@ app-lms/
 │  └────┬─────┘  └────┬─────┘  └────┬─────┘  └────┬─────┘ │
 │  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐ │
 │  │Notification│ │CourseAssessor│ │Certificate│ │  Quiz   │ │
+│  └────┬─────┘  └────┬─────┘  └────┬─────┘  └────┬─────┘ │
+│  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐ │
+│  │PaymentIntent│ │Discussion│ │Discussion│ │          │ │
+│  │            │  │  Thread  │  │  Reply   │ │          │ │
 │  └────┬─────┘  └────┬─────┘  └────┬─────┘  └────┬─────┘ │
 └───────┼─────────────┼─────────────┼──────────────────┘
         │             │             │
@@ -210,6 +223,15 @@ app-lms/
 │  │   Auth    │  │  Course  │  │Enrollment│  ...        │
 │  │   Slice   │  │  Slice   │  │  Slice   │            │
 │  └──────────┘  └──────────┘  └──────────┘            │
+└──────────────────────┬──────────────────────────────────┘
+                       │
+                       ▼
+┌─────────────────────────────────────────────────────────┐
+│              Socket.IO Client (Real-time)              │
+│  ┌──────────────┐  ┌──────────────┐                   │
+│  │ Notification │  │ Auto-reconnect│                   │
+│  │  Events      │  │  & Fallback   │                   │
+│  └──────────────┘  └──────────────┘                   │
 └─────────────────────────────────────────────────────────┘
 ```
 
@@ -386,6 +408,76 @@ app-lms/
 └─────────────────┘
 ```
 
+### 1a. Password Reset Flow
+
+```
+┌─────────────────┐
+│ Forgot Password │
+│ (Enter Email)   │
+└──────┬──────────┘
+       │
+       ▼
+┌─────────────────┐
+│ Generate Reset  │
+│ Token (UUID)    │
+│ (1 hour expiry) │
+└──────┬──────────┘
+       │
+       ▼
+┌─────────────────┐      ┌──────────────┐
+│ Send Reset Email│─────▶│ Email Sent   │
+│ (with link)     │      │ (Always      │
+│                 │      │  success to  │
+│                 │      │  prevent     │
+│                 │      │  enumeration)│
+└──────┬──────────┘      └──────────────┘
+       │
+       ▼
+┌─────────────────┐
+│ User Clicks     │
+│ Reset Link      │
+└──────┬──────────┘
+       │
+       ▼
+┌─────────────────┐      ┌──────────────┐
+│ Verify Token    │─────▶│ Valid &      │
+│ & Expiration    │      │ Not Expired? │
+└──────┬──────────┘      └──────────────┘
+       │
+       ├─── INVALID ────▶ ┌─────────────────┐
+       │                  │ Show Error      │
+       │                  │ (Invalid/Expired│
+       │                  │  Token)         │
+       │                  └─────────────────┘
+       │
+       └─── VALID ──────▶ ┌─────────────────┐
+                          │ Enter New       │
+                          │ Password        │
+                          └──────┬──────────┘
+                                 │
+                                 ▼
+                          ┌─────────────────┐
+                          │ Hash Password   │
+                          │ (bcrypt)        │
+                          └──────┬──────────┘
+                                 │
+                                 ▼
+                          ┌─────────────────┐
+                          │ Clear Reset     │
+                          │ Token           │
+                          │ Invalidate      │
+                          │ Refresh Tokens  │
+                          └──────┬──────────┘
+                                 │
+                                 ▼
+                          ┌─────────────────┐
+                          │ Password Reset  │
+                          │ Successful      │
+                          │ (Redirect to    │
+                          │  Login)         │
+                          └─────────────────┘
+```
+
 ### 2. Course Creation Flow (Instructor)
 
 ```
@@ -459,39 +551,48 @@ app-lms/
 ┌─────────────────┐      ┌──────────────┐
 │ Check Lesson    │─────▶│ Locked?     │
 │ Lock Status     │      │ (Previous   │
-│                 │      │  incomplete)│
+│ (Sequential     │      │  incomplete)│
+│  Completion)    │      │  OR         │
+│                 │      │  (Free      │
+│                 │      │   lesson?)  │
 └──────┬──────────┘      └──────────────┘
        │
-       ▼ (Unlocked)
-┌─────────────────┐
-│ View Lesson     │
-│ Content         │
-│ (Video/PDF/Text)│
-└──────┬──────────┘
+       ├─── LOCKED ────▶ ┌─────────────────┐
+       │                 │ Show Locked     │
+       │                 │ Message         │
+       │                 │ (403 Error)     │
+       │                 └─────────────────┘
        │
-       ▼
-┌─────────────────┐
-│ Mark Complete   │
-│ (Update Progress)│
-└──────┬──────────┘
-       │
-       ▼
-┌─────────────────┐
-│ Take Quiz       │
-│ (if available)  │
-└──────┬──────────┘
-       │
-       ▼
-┌─────────────────┐
-│ Complete Course │
-│ (Progress = 100%)│
-└──────┬──────────┘
-       │
-       ▼
-┌─────────────────┐
-│ Request         │
-│ Certificate     │
-└─────────────────┘
+       └─── UNLOCKED ───▶ ┌─────────────────┐
+                          │ View Lesson     │
+                          │ Content         │
+                          │ (Video/PDF/Text)│
+                          └──────┬──────────┘
+                                 │
+                                 ▼
+                          ┌─────────────────┐
+                          │ Mark Complete   │
+                          │ (Type-specific  │
+                          │  Validation)    │
+                          └──────┬──────────┘
+                                 │
+                                 ▼
+                          ┌─────────────────┐
+                          │ Take Quiz       │
+                          │ (if available)  │
+                          └──────┬──────────┘
+                                 │
+                                 ▼
+                          ┌─────────────────┐
+                          │ Complete Course │
+                          │ (Progress = 100%)│
+                          └──────┬──────────┘
+                                 │
+                                 ▼
+                          ┌─────────────────┐
+                          │ Request         │
+                          │ Certificate     │
+                          └─────────────────┘
 ```
 
 ### 4. Assessor Assignment Flow (Admin)
@@ -601,6 +702,10 @@ app-lms/
                          │ Generate PDF    │
                          │ + QR Code       │
                          └──────┬──────────┘
+                            │
+                            │ QR berisi URL verifikasi:
+                            │ `${FRONTEND_URL}/verify/<certificateNumber>`
+                            │ (UI: `/verify/[certificateNumber]` → API: `GET /api/certificates/verify/:certificateNumber`)
                                  │
                                  ▼
                          ┌─────────────────┐
@@ -627,7 +732,199 @@ app-lms/
                          └─────────────────┘
 ```
 
-### 6. Quiz Flow
+### 6. Payment Flow (PAID/PREMIUM Courses)
+
+```
+┌─────────────────┐
+│ Student         │
+│ Views Course    │
+│ (PAID/PREMIUM)  │
+└──────┬──────────┘
+       │
+       ▼
+┌─────────────────┐
+│ Click "Enroll"  │
+│ Button          │
+└──────┬──────────┘
+       │
+       ▼
+┌─────────────────┐      ┌──────────────┐
+│ Check Course    │─────▶│ FREE Course? │
+│ Type            │      └──────────────┘
+└──────┬──────────┘
+       │
+       ├─── YES ────▶ ┌─────────────────┐
+       │               │ Direct Enrollment│
+       │               │ (No payment)     │
+       │               └─────────────────┘
+       │
+       └─── NO ──────▶ ┌─────────────────┐
+                       │ Create Payment  │
+                       │ Intent          │
+                       │ (Stripe)        │
+                       └──────┬──────────┘
+                              │
+                              ▼
+                       ┌─────────────────┐
+                       │ Redirect to     │
+                       │ Payment Page    │
+                       │ (Stripe Checkout)│
+                       └──────┬──────────┘
+                              │
+                              ▼
+                       ┌─────────────────┐
+                       │ User Completes  │
+                       │ Payment         │
+                       └──────┬──────────┘
+                              │
+                              ▼
+                       ┌─────────────────┐
+                       │ Stripe Webhook  │
+                       │ (payment.succeeded)│
+                       └──────┬──────────┘
+                              │
+                              ▼
+                       ┌─────────────────┐
+                       │ Update Payment  │
+                       │ Intent Status   │
+                       │ (SUCCEEDED)     │
+                       └──────┬──────────┘
+                              │
+                              ▼
+                       ┌─────────────────┐
+                       │ Auto-create    │
+                       │ Enrollment     │
+                       └──────┬──────────┘
+                              │
+                              ▼
+                       ┌─────────────────┐
+                       │ Send Notification│
+                       │ (via Socket.IO) │
+                       └──────┬──────────┘
+                              │
+                              ▼
+                       ┌─────────────────┐
+                       │ User Returns    │
+                       │ to App          │
+                       └──────┬──────────┘
+                              │
+                              ▼
+                       ┌─────────────────┐
+                       │ Verify Payment  │
+                       │ & Get Enrollment│
+                       └─────────────────┘
+```
+
+### 7. Discussion Flow (DISCUSSION Lesson Type)
+
+```
+┌─────────────────┐
+│ Student         │
+│ Accesses        │
+│ DISCUSSION      │
+│ Lesson          │
+└──────┬──────────┘
+       │
+       ▼
+┌─────────────────┐
+│ View Discussion │
+│ Forum           │
+│ (Threads List)  │
+└──────┬──────────┘
+       │
+       ▼
+┌─────────────────┐
+│ Create Thread   │
+│ or Reply        │
+└──────┬──────────┘
+       │
+       ▼
+┌─────────────────┐
+│ Save Thread/    │
+│ Reply           │
+└──────┬──────────┘
+       │
+       ▼
+┌─────────────────┐
+│ Update Thread   │
+│ Stats           │
+│ (replyCount,    │
+│  lastReplyAt)   │
+└──────┬──────────┘
+       │
+       ▼
+┌─────────────────┐      ┌──────────────┐
+│ Check           │─────▶│ Requirements │
+│ Participation   │      │ Met?         │
+│ Stats           │      │ (min threads │
+│                 │      │  & replies)  │
+└──────┬──────────┘      └──────────────┘
+       │
+       ├─── YES ────▶ ┌─────────────────┐
+       │               │ Allow Lesson   │
+       │               │ Completion     │
+       │               └─────────────────┘
+       │
+       └─── NO ──────▶ ┌─────────────────┐
+                       │ Show Message:   │
+                       │ "You must      │
+                       │  create X      │
+                       │  threads and   │
+                       │  Y replies"    │
+                       └─────────────────┘
+```
+
+### 8. Real-time Notification Flow (Socket.IO)
+
+```
+┌─────────────────┐
+│ Backend Event   │
+│ (Enrollment,    │
+│  Quiz Result,   │
+│  Certificate)   │
+└──────┬──────────┘
+       │
+       ▼
+┌─────────────────┐
+│ Create          │
+│ Notification    │
+│ (Database)      │
+└──────┬──────────┘
+       │
+       ▼
+┌─────────────────┐      ┌──────────────┐
+│ Check Socket.IO │─────▶│ Available?   │
+│ Available       │      └──────────────┘
+└──────┬──────────┘
+       │
+       ├─── YES ────▶ ┌─────────────────┐
+       │               │ Emit to        │
+       │               │ user:${userId} │
+       │               │ Room           │
+       │               └──────┬─────────┘
+       │                       │
+       │                       ▼
+       │               ┌─────────────────┐
+       │               │ Frontend        │
+       │               │ Receives Event  │
+       │               └──────┬─────────┘
+       │                       │
+       │                       ▼
+       │               ┌─────────────────┐
+       │               │ Update Redux    │
+       │               │ State           │
+       │               │ (Real-time)     │
+       │               └─────────────────┘
+       │
+       └─── NO ──────▶ ┌─────────────────┐
+                       │ Fallback:       │
+                       │ Polling (30s)   │
+                       │ (Backward       │
+                       │  Compatible)    │
+                       └─────────────────┘
+```
+
+### 9. Quiz Flow
 
 ```
 ┌─────────────────┐
@@ -718,6 +1015,9 @@ backend/
 │   │   ├── CourseAssessor.js
 │   │   ├── ActivityLog.js
 │   │   ├── Notification.js
+│   │   ├── PaymentIntent.js
+│   │   ├── DiscussionThread.js
+│   │   ├── DiscussionReply.js
 │   │   └── index.js        # Model associations
 │   │
 │   ├── controllers/        # 15 Controllers
@@ -735,7 +1035,9 @@ backend/
 │   │   ├── notificationController.js
 │   │   ├── quizController.js
 │   │   ├── sectionController.js
-│   │   └── userController.js
+│   │   ├── userController.js
+│   │   ├── paymentController.js
+│   │   └── discussionController.js
 │   │
 │   ├── routes/            # 12 Route Files
 │   │   ├── authRoutes.js
@@ -749,7 +1051,9 @@ backend/
 │   │   ├── dashboardRoutes.js
 │   │   ├── instructorRoutes.js
 │   │   ├── activityLogRoutes.js
-│   │   └── notificationRoutes.js
+│   │   ├── notificationRoutes.js
+│   │   ├── paymentRoutes.js
+│   │   └── discussionRoutes.js
 │   │
 │   ├── middleware/        # Middleware
 │   │   └── auth.js        # verifyToken, hasRole
@@ -763,19 +1067,22 @@ backend/
 │   │   ├── activityLogService.js
 │   │   ├── courseVersionService.js
 │   │   ├── localFileService.js
-│   │   └── lessonCompletionService.js
+│   │   ├── lessonCompletionService.js
+│   │   ├── paymentService.js
+│   │   └── discussionService.js
 │   │
 │   ├── config/            # Configuration
 │   │   ├── database.js
 │   │   ├── jwt.js
-│   │   └── cloudinary.js
+│   │   ├── cloudinary.js
+│   │   └── socket.js        # Socket.IO server configuration
 │   │
 │   ├── seeders/           # Database Seeders
 │   │   └── seed.js
 │   │
 │   └── app.js             # Express App Setup
 │
-├── server.js               # Server Entry Point
+├── server.js               # Server Entry Point (with Socket.IO integration)
 └── package.json
 ```
 
@@ -1068,6 +1375,83 @@ backend/
 
 ---
 
+#### 12. PaymentIntent Model
+
+**File**: `src/models/PaymentIntent.js`
+
+**Fields**:
+
+- `id` (INTEGER, PK, Auto Increment)
+- `userId` (INTEGER, FK to users)
+- `courseId` (INTEGER, FK to courses)
+- `amount` (DECIMAL(10,2), Required)
+- `status` (ENUM: PENDING, PROCESSING, SUCCEEDED, FAILED, CANCELLED, Default: PENDING)
+- `paymentGateway` (STRING, Default: 'STRIPE')
+- `gatewayTransactionId` (STRING, Optional)
+- `gatewayPaymentIntentId` (STRING, Unique, Optional)
+- `metadata` (JSON, Optional - gateway response, webhook data)
+- `createdAt`, `updatedAt` (Timestamps)
+
+**Relations**:
+
+- `belongsTo(User)` - PaymentIntent dimiliki oleh User
+- `belongsTo(Course)` - PaymentIntent untuk Course
+
+**Indexes**: userId, courseId, status, gatewayTransactionId, gatewayPaymentIntentId, (userId, courseId)
+
+---
+
+#### 13. DiscussionThread Model
+
+**File**: `src/models/DiscussionThread.js`
+
+**Fields**:
+
+- `id` (INTEGER, PK, Auto Increment)
+- `lessonId` (INTEGER, FK to lessons)
+- `userId` (INTEGER, FK to users)
+- `title` (STRING, Required)
+- `content` (TEXT, Required)
+- `isPinned` (BOOLEAN, Default: false)
+- `isLocked` (BOOLEAN, Default: false)
+- `replyCount` (INTEGER, Default: 0, Cached)
+- `lastReplyAt` (DATE, Optional)
+- `createdAt`, `updatedAt` (Timestamps)
+
+**Relations**:
+
+- `belongsTo(Lesson)` - Thread berada dalam Lesson
+- `belongsTo(User)` - Thread dibuat oleh User (author)
+- `hasMany(DiscussionReply)` - Thread memiliki banyak Replies
+
+**Indexes**: lessonId, userId, isPinned, createdAt, lastReplyAt, (lessonId, isPinned, createdAt)
+
+---
+
+#### 14. DiscussionReply Model
+
+**File**: `src/models/DiscussionReply.js`
+
+**Fields**:
+
+- `id` (INTEGER, PK, Auto Increment)
+- `threadId` (INTEGER, FK to discussion_threads)
+- `userId` (INTEGER, FK to users)
+- `content` (TEXT, Required)
+- `parentReplyId` (INTEGER, FK to discussion_replies, Optional - untuk nested replies)
+- `createdAt`, `updatedAt` (Timestamps)
+
+**Relations**:
+
+- `belongsTo(DiscussionThread)` - Reply berada dalam Thread
+- `belongsTo(User)` - Reply dibuat oleh User (author)
+- `belongsTo(DiscussionReply)` - Parent reply (untuk nested replies)
+- `hasMany(DiscussionReply)` - Child replies (nested structure)
+
+**Indexes**: threadId, userId, parentReplyId, createdAt, (threadId, createdAt)
+
+---
+
 ### Controllers
 
 #### 1. authController.js
@@ -1081,8 +1465,8 @@ backend/
 - `verifyEmail(req, res)` - Verify email dengan token
 - `refreshToken(req, res)` - Refresh access token
 - `logout(req, res)` - Logout user, invalidate refresh token
-- `forgotPassword(req, res)` - Request password reset
-- `resetPassword(req, res)` - Reset password dengan token
+- `forgotPassword(req, res)` - Request password reset, generate token & send email
+- `resetPassword(req, res)` - Reset password dengan token, verify expiration
 
 **Dependencies**:
 
@@ -1158,7 +1542,7 @@ backend/
 
 - `enrollCourse(req, res)` - Enroll student ke course
 - `getMyEnrollments(req, res)` - Get enrollments milik user
-- `getLearningData(req, res)` - Get learning page data dengan lesson locking
+- `getLearningData(req, res)` - Get learning page data dengan lesson locking (sequential completion support)
 - `getEnrollmentProgress(req, res)` - Get progress detail
 - `unenrollCourse(req, res)` - Unenroll dari course
 
@@ -1174,7 +1558,7 @@ backend/
 
 **Methods**:
 
-- `getLessonContent(req, res)` - Get lesson content dengan JSON structure (protected)
+- `getLessonContent(req, res)` - Get lesson content dengan JSON structure (protected, dengan lesson lock check)
 - `markLessonComplete(req, res)` - Mark lesson as complete dengan type-specific validation via lessonCompletionService
 - `updateWatchTime(req, res)` - Update video watch time
 
@@ -1302,6 +1686,46 @@ backend/
 **Dependencies**:
 
 - `Notification`, `User` models
+- Socket.IO integration untuk real-time notifications
+
+---
+
+#### 12. paymentController.js
+
+**Fungsi**: Handle payment processing untuk PAID/PREMIUM courses
+
+**Methods**:
+
+- `createPaymentIntent(req, res)` - Create payment intent untuk course enrollment
+- `verifyPayment(req, res)` - Verify payment dan create enrollment
+- `handleWebhook(req, res)` - Handle payment webhook dari Stripe (idempotent)
+
+**Dependencies**:
+
+- `paymentService` - Stripe integration
+- `PaymentIntent`, `Course`, `Enrollment` models
+
+---
+
+#### 13. discussionController.js
+
+**Fungsi**: Handle discussion forum operations
+
+**Methods**:
+
+- `createThread(req, res)` - Create discussion thread untuk lesson
+- `getThreads(req, res)` - Get all threads untuk lesson (with pagination)
+- `getThread(req, res)` - Get single thread dengan replies
+- `createReply(req, res)` - Create reply ke thread (support nested replies)
+- `updateThread(req, res)` - Update thread (author only)
+- `deleteThread(req, res)` - Delete thread (author or instructor)
+- `pinThread(req, res)` - Pin/unpin thread (instructor only)
+- `getParticipation(req, res)` - Get user participation stats untuk lesson
+
+**Dependencies**:
+
+- `discussionService` - Participation tracking
+- `DiscussionThread`, `DiscussionReply`, `Lesson`, `User`, `Enrollment` models
 
 ---
 
@@ -1351,8 +1775,8 @@ POST   /api/auth/login
 GET    /api/auth/verify-email/:token
 POST   /api/auth/refresh
 POST   /api/auth/logout (protected)
-POST   /api/auth/forgot-password
-POST   /api/auth/reset-password
+POST   /api/auth/forgot-password (public)
+POST   /api/auth/reset-password/:token (public)
 ```
 
 #### 2. userRoutes.js
@@ -1468,6 +1892,27 @@ PATCH  /api/notifications/mark-all-read (protected)
 DELETE /api/notifications/:id (protected)
 ```
 
+#### 13. paymentRoutes.js
+
+```javascript
+POST   /api/payments/webhook (public - Stripe signature verification)
+POST   /api/payments/intent (protected)
+GET    /api/payments/verify (protected)
+```
+
+#### 14. discussionRoutes.js
+
+```javascript
+GET    /api/discussions/lessons/:lessonId/threads (protected)
+GET    /api/discussions/threads/:threadId (protected)
+POST   /api/discussions/lessons/:lessonId/threads (protected)
+POST   /api/discussions/threads/:threadId/replies (protected)
+PATCH  /api/discussions/threads/:threadId (protected)
+DELETE /api/discussions/threads/:threadId (protected)
+PATCH  /api/discussions/threads/:threadId/pin (protected - INSTRUCTOR/ADMIN)
+GET    /api/discussions/lessons/:lessonId/participation (protected)
+```
+
 ---
 
 ### Middleware
@@ -1496,6 +1941,49 @@ DELETE /api/notifications/:id (protected)
 ```javascript
 router.get("/protected", verifyToken, controller.method);
 router.post("/admin-only", verifyToken, hasRole(["ADMIN"]), controller.method);
+```
+
+---
+
+#### socket.js
+
+**File**: `src/config/socket.js`
+
+**Fungsi**: Socket.IO server configuration dengan JWT authentication
+
+**Functions**:
+
+1. **initializeSocket(httpServer)**
+
+   - Initialize Socket.IO server dengan Express HTTP server
+   - JWT authentication middleware untuk socket connections
+   - Room-based targeting: `user:${userId}`
+   - Connection event handlers
+
+2. **getIO()**
+
+   - Get Socket.IO instance (untuk use di services)
+
+3. **emitNotification(userId, notification)**
+
+   - Emit notification ke specific user room
+
+4. **emitUnreadCount(userId, unreadCount)**
+   - Emit unread count update ke specific user
+
+**Features**:
+
+- JWT authentication untuk socket connections
+- User-specific rooms untuk targeted delivery
+- Auto-reconnection support
+- Error handling dan logging
+
+**Usage**:
+
+```javascript
+const { initializeSocket } = require("./config/socket");
+const io = initializeSocket(httpServer);
+app.locals.io = io; // Make available to controllers
 ```
 
 ---
@@ -1558,14 +2046,23 @@ router.post("/admin-only", verifyToken, hasRole(["ADMIN"]), controller.method);
 
 #### 5. notificationService.js
 
-**Fungsi**: Create dan manage notifications
+**Fungsi**: Create dan manage notifications dengan Socket.IO real-time support
 
 **Methods**:
 
-- `createNotification(userId, title, message, type, entityType, entityId)` - Create notification
-- `sendNotificationToUser(userId, notificationData)` - Send notification ke user
+- `notify(userId, payload, io)` - Create notification dengan optional Socket.IO emission
+- `notifyBatch(userIds, payload, io)` - Create batch notifications dengan Socket.IO emission
+- `notifyCourseEnrollment(userId, course, io)` - Notify enrollment success
+- `notifyQuizResult(userId, quiz, score, isPassed, io)` - Notify quiz result
+- `notifyCertificateStatus(userId, certificate, status, rejectionReason, io)` - Notify certificate status
 
-**Dependencies**: `Notification` model
+**Features**:
+
+- Socket.IO integration untuk real-time notifications (optional, backward compatible)
+- Fallback ke database jika Socket.IO tidak tersedia
+- Dual mode: Socket.IO + Polling (polling sebagai fallback)
+
+**Dependencies**: `Notification` model, Socket.IO instance (optional)
 
 ---
 
@@ -1616,12 +2113,54 @@ router.post("/admin-only", verifyToken, hasRole(["ADMIN"]), controller.method);
 
 **Features**:
 
-- Type-specific completion rules (VIDEO: minWatchPercentage, ASSIGNMENT: submission required, etc.)
+- Type-specific completion rules (VIDEO: minWatchPercentage, ASSIGNMENT: submission required, DISCUSSION: min threads/replies, etc.)
 - Prevents client-side spoofing
 - Enforces sequential completion when required
 - Handles QUIZ/EXAM completion via quiz submission
+- DISCUSSION completion dengan participation tracking (min threads & replies)
 
-**Dependencies**: `Lesson`, `LessonProgress`, `Enrollment`, `Quiz`, `ExamResult` models
+**Dependencies**: `Lesson`, `LessonProgress`, `Enrollment`, `Quiz`, `ExamResult`, `discussionService` models
+
+---
+
+#### 10. paymentService.js
+
+**Fungsi**: Payment gateway integration (Stripe-first, gateway-agnostic design)
+
+**Methods**:
+
+- `createPaymentIntent(userId, courseId, amount)` - Create Stripe PaymentIntent dan database record
+- `verifyPayment(paymentIntentId)` - Verify payment status dengan gateway
+- `handleWebhook(event)` - Handle webhook dari payment gateway (idempotent)
+
+**Features**:
+
+- Stripe integration (primary)
+- Gateway-agnostic design (extensible ke Midtrans, PayPal, dll)
+- Webhook-safe handling dengan idempotency
+- Auto-enrollment setelah payment succeeded
+- Payment status lifecycle tracking
+
+**Dependencies**: `PaymentIntent`, `Course`, `Enrollment` models, Stripe SDK
+
+---
+
+#### 11. discussionService.js
+
+**Fungsi**: Discussion forum operations dan participation tracking
+
+**Methods**:
+
+- `getUserParticipation(lessonId, userId)` - Get user participation stats (thread count, reply count)
+- `updateThreadStats(threadId)` - Update thread reply count dan last reply timestamp
+
+**Features**:
+
+- Participation tracking untuk lesson completion requirements
+- Thread statistics caching (replyCount, lastReplyAt)
+- Integration dengan lessonCompletionService untuk DISCUSSION completion validation
+
+**Dependencies**: `DiscussionThread`, `DiscussionReply`, `Lesson`, `User` models
 
 ---
 
@@ -1777,12 +2316,13 @@ frontend/
 ├── lib/                      # Utilities
 │   ├── auth.ts              # Auth utilities
 │   ├── api.ts               # API client utilities
+│   ├── socket.ts            # Socket.IO client integration
 │   ├── theme.tsx            # Theme provider
 │   ├── utils.ts             # General utilities
 │   └── lessonUtils.ts       # Lesson utilities
 │
 ├── store/                    # Redux Store
-│   ├── slices/              # Redux Slices (12 slices)
+│   ├── slices/              # Redux Slices (13 slices)
 │   │   ├── activityLogSlice.ts
 │   │   ├── authSlice.ts
 │   │   ├── categorySlice.ts
@@ -1794,6 +2334,7 @@ frontend/
 │   │   ├── instructorSlice.ts
 │   │   ├── lessonSlice.ts
 │   │   ├── notificationSlice.ts
+│   │   ├── paymentSlice.ts
 │   │   └── userSlice.ts
 │   ├── api.ts               # RTK Query API
 │   ├── hooks.ts             # Typed hooks
@@ -2350,8 +2891,9 @@ const isAdmin = hasRole(["ADMIN", "SUPER_ADMIN"]);
 8. **enrollmentSlice** - Enrollment management (enroll, unenroll, progress)
 9. **instructorSlice** - Instructor-specific data (students, analytics, dashboard stats)
 10. **lessonSlice** - Lesson data management dengan 7 lesson types support
-11. **notificationSlice** - Notification management (read, unread count, delete)
-12. **userSlice** - User profile management (update profile, change password, role management)
+11. **notificationSlice** - Notification management (read, unread count, delete, socket integration)
+12. **paymentSlice** - Payment intent management (create, verify)
+13. **userSlice** - User profile management (update profile, change password, role management)
 
 **Typed Hooks**:
 
@@ -2406,6 +2948,36 @@ const { courses, loading } = useAppSelector((state) => state.course);
 - `apiPut<T>(endpoint, data, options)` - PUT request
 - `apiPatch<T>(endpoint, data, options)` - PATCH request
 - `apiDelete<T>(endpoint, options)` - DELETE request
+
+---
+
+#### socket.ts
+
+**File**: `lib/socket.ts`
+
+**Fungsi**: Socket.IO client integration untuk real-time notifications
+
+**Functions**:
+
+- `initializeSocket(token, appDispatch)` - Initialize Socket.IO connection dengan JWT token
+- `disconnectSocket()` - Disconnect socket connection
+- `getSocket()` - Get current socket instance
+- `isSocketConnected()` - Check if socket is connected
+
+**Features**:
+
+- JWT authentication untuk socket connections
+- Auto-reconnection dengan configurable attempts
+- Event handlers untuk notifications dan unread count
+- Integration dengan Redux store
+- Fallback ke polling jika socket disconnected
+
+**Usage**:
+
+```typescript
+import { initializeSocket } from "@/lib/socket";
+const socket = initializeSocket(token, dispatch);
+```
 
 ---
 
@@ -2854,6 +3426,30 @@ Custom spacing values:
 ┌──────────────┐  ┌──────────────┐
 │ ActivityLog  │  │ Notification │
 └──────────────┘  └──────────────┘
+
+┌──────────────┐         ┌──────────────┐
+│   User       │────────▶│ PaymentIntent│
+└──────┬───────┘         └──────┬───────┘
+       │                         │
+       │                         ▼
+       │                  ┌──────────┐
+       │                  │  Course  │
+       │                  └──────────┘
+
+┌──────────────┐         ┌──────────────┐
+│   Lesson     │────────▶│DiscussionThread│
+└──────┬───────┘         └──────┬───────┘
+       │                         │
+       │                         ▼
+       │                  ┌──────────────┐
+       │                  │DiscussionReply│
+       │                  └──────┬───────┘
+       │                         │
+       │                         ▼ (nested)
+       │                  ┌──────────────┐
+       │                  │DiscussionReply│
+       │                  │  (child)     │
+       │                  └──────────────┘
 ```
 
 ### Table Details
@@ -2891,7 +3487,25 @@ Custom spacing values:
 #### System Tables
 
 16. **activity_logs** - Activity logging untuk audit trail
-17. **notifications** - User notifications
+17. **notifications** - User notifications (dengan Socket.IO real-time support)
+
+#### Payment Tables
+
+18. **payment_intents** - Payment transactions untuk PAID/PREMIUM courses (Stripe integration)
+
+#### Discussion Tables
+
+19. **discussion_threads** - Discussion threads per lesson (dengan pinning & locking)
+20. **discussion_replies** - Replies dalam threads (support nested replies untuk reply-to-reply)
+
+#### Payment Tables
+
+18. **payment_intents** - Payment transactions untuk PAID/PREMIUM courses
+
+#### Discussion Tables
+
+19. **discussion_threads** - Discussion threads per lesson
+20. **discussion_replies** - Replies dalam threads (support nested replies)
 
 ---
 
@@ -2905,15 +3519,15 @@ http://localhost:5040/api
 
 ### Authentication Endpoints
 
-| Method | Endpoint                    | Auth | Role | Description               |
-| ------ | --------------------------- | ---- | ---- | ------------------------- |
-| POST   | `/auth/register`            | ❌   | -    | Register user baru        |
-| POST   | `/auth/login`               | ❌   | -    | Login user                |
-| GET    | `/auth/verify-email/:token` | ❌   | -    | Verify email              |
-| POST   | `/auth/refresh`             | ❌   | -    | Refresh access token      |
-| POST   | `/auth/logout`              | ✅   | -    | Logout user               |
-| POST   | `/auth/forgot-password`     | ❌   | -    | Request password reset    |
-| POST   | `/auth/reset-password`      | ❌   | -    | Reset password with token |
+| Method | Endpoint                      | Auth | Role | Description                               |
+| ------ | ----------------------------- | ---- | ---- | ----------------------------------------- |
+| POST   | `/auth/register`              | ❌   | -    | Register user baru                        |
+| POST   | `/auth/login`                 | ❌   | -    | Login user                                |
+| GET    | `/auth/verify-email/:token`   | ❌   | -    | Verify email                              |
+| POST   | `/auth/refresh`               | ❌   | -    | Refresh access token                      |
+| POST   | `/auth/logout`                | ✅   | -    | Logout user                               |
+| POST   | `/auth/forgot-password`       | ❌   | -    | Request password reset (email sent)       |
+| POST   | `/auth/reset-password/:token` | ❌   | -    | Reset password with token (1 hour expiry) |
 
 ### User Endpoints
 
@@ -3030,6 +3644,29 @@ http://localhost:5040/api
 | PATCH  | `/notifications/mark-all-read` | ✅   | -    | Mark all notifications as read |
 | DELETE | `/notifications/:id`           | ✅   | -    | Delete notification            |
 
+**Real-time Support**: Notifications juga dikirim via Socket.IO untuk real-time updates. Polling tetap berfungsi sebagai fallback.
+
+### Payment Endpoints
+
+| Method | Endpoint            | Auth | Role | Description                                     |
+| ------ | ------------------- | ---- | ---- | ----------------------------------------------- |
+| POST   | `/payments/webhook` | ❌   | -    | Stripe webhook handler (signature verification) |
+| POST   | `/payments/intent`  | ✅   | -    | Create payment intent untuk course              |
+| GET    | `/payments/verify`  | ✅   | -    | Verify payment dan create enrollment            |
+
+### Discussion Endpoints
+
+| Method | Endpoint                                       | Auth | Role             | Description                           |
+| ------ | ---------------------------------------------- | ---- | ---------------- | ------------------------------------- |
+| GET    | `/discussions/lessons/:lessonId/threads`       | ✅   | -                | Get threads untuk lesson (pagination) |
+| GET    | `/discussions/threads/:threadId`               | ✅   | -                | Get thread dengan replies             |
+| POST   | `/discussions/lessons/:lessonId/threads`       | ✅   | -                | Create discussion thread              |
+| POST   | `/discussions/threads/:threadId/replies`       | ✅   | -                | Create reply (support nested replies) |
+| PATCH  | `/discussions/threads/:threadId`               | ✅   | -                | Update thread (author only)           |
+| DELETE | `/discussions/threads/:threadId`               | ✅   | -                | Delete thread (author or instructor)  |
+| PATCH  | `/discussions/threads/:threadId/pin`           | ✅   | INSTRUCTOR/ADMIN | Pin/unpin thread                      |
+| GET    | `/discussions/lessons/:lessonId/participation` | ✅   | -                | Get user participation stats          |
+
 ---
 
 ## Setup & Konfigurasi
@@ -3084,6 +3721,11 @@ EMAIL_FROM=your-email@gmail.com
 CLOUDINARY_CLOUD_NAME=your_cloud_name
 CLOUDINARY_API_KEY=your_api_key
 CLOUDINARY_API_SECRET=your_api_secret
+
+# Payment (Stripe)
+STRIPE_SECRET_KEY=sk_test_your_stripe_secret_key
+STRIPE_WEBHOOK_SECRET=whsec_your_webhook_secret
+STRIPE_CURRENCY=usd
 
 # Frontend
 FRONTEND_URL=http://localhost:5174
@@ -3170,6 +3812,8 @@ npm run dev
 - **Rate Limiting**: express-rate-limit 7.1.5
 - **CORS**: cors 2.8.5
 - **UUID**: uuid 9.0.1
+- **Real-time**: Socket.IO 4.7.5
+- **Payment**: Stripe 14.21.0
 
 ### Frontend
 
@@ -3179,6 +3823,7 @@ npm run dev
 - **UI Icons**: Lucide React 0.562.0
 - **State Management**: Redux Toolkit 2.11.2, React Redux 9.2.0
 - **HTTP Client**: Fetch API (custom api.ts wrapper)
+- **Real-time**: Socket.IO Client 4.7.5
 - **Utils**: clsx 2.1.1, tailwind-merge 3.4.0
 - **Theme**: Custom dark mode implementation
 - **Emoji Picker**: emoji-picker-react 4.16.1
@@ -3303,16 +3948,20 @@ curl -X POST http://localhost:5040/api/enrollments \
 
 ## Future Enhancements
 
-### Phase 2 Features
+### Phase 2 Features (Completed)
 
-- [ ] Payment integration (Stripe/PayPal)
+- ✅ **Payment Integration** - Stripe integration untuk PAID/PREMIUM courses
+- ✅ **Discussion Forums** - Backend lengkap untuk DISCUSSION lesson type
+- ✅ **Real-time Notifications** - Socket.IO integration dengan polling fallback
+
+### Phase 3 Features (Future)
+
 - [ ] Course ratings & reviews
-- [ ] Discussion forums
 - [ ] Live chat support
 - [ ] Video streaming optimization
 - [ ] Mobile app (React Native)
 - [ ] Advanced analytics
-- [ ] Email notifications
+- [ ] Email notifications (selain in-app)
 - [ ] Push notifications
 - [ ] Multi-language support
 
@@ -3471,3 +4120,208 @@ Untuk issues dan pertanyaan:
 **Last Updated**: 19 Desember 2025  
 **Version**: 1.2.0  
 **Status**: ✅ Production Ready - All UI Complete & Type-Safe
+
+---
+
+### Version 1.3.0 (20 Desember 2025)
+
+**Added Features**:
+
+- ✅ **Socket.IO Real-time Notifications** - Real-time notification system dengan dual mode (socket + polling fallback)
+- ✅ **Payment System Integration** - Stripe integration untuk PAID/PREMIUM courses dengan webhook handling
+- ✅ **Discussion Backend Completion** - Full backend untuk DISCUSSION lesson type dengan threads, replies, dan participation tracking
+
+**Backend Enhancements**:
+
+- 🔌 **Socket.IO Server** - JWT-authenticated socket connections dengan room-based targeting
+- 💳 **PaymentIntent Model** - Payment transaction tracking dengan gateway integration
+- 💬 **Discussion Models** - DiscussionThread dan DiscussionReply dengan nested reply support
+- 🔧 **Payment Service** - Gateway-agnostic payment service dengan Stripe implementation
+- 🔧 **Discussion Service** - Participation tracking untuk lesson completion requirements
+- 🔧 **Enhanced Notification Service** - Socket.IO emission support (backward compatible)
+- 🔧 **Enhanced Lesson Completion** - DISCUSSION completion validation dengan min threads/replies
+
+**Frontend Enhancements**:
+
+- 🔌 **Socket.IO Client** - Real-time notification updates dengan auto-reconnect
+- 💳 **Payment Slice** - Redux slice untuk payment intent management
+- 🔔 **Enhanced Notification Slice** - Socket event handlers untuk real-time updates
+- 🔔 **Enhanced NotificationBell** - Dual mode (socket + polling) dengan smart polling intervals
+
+**Updated**:
+
+- 📝 **Enrollment Controller** - Payment verification untuk PAID/PREMIUM courses
+- 📝 **Lesson Completion Service** - DISCUSSION completion dengan participation requirements
+- 📝 **Notification Service** - Optional Socket.IO parameter untuk all notification methods
+- 📝 **Server Setup** - HTTP server dengan Socket.IO integration
+- 📝 **Models Index** - Added PaymentIntent, DiscussionThread, DiscussionReply associations
+
+**Technical Improvements**:
+
+- 🏗️ Backend: 20 models (added PaymentIntent, DiscussionThread, DiscussionReply)
+- 🏗️ Backend: 18 controllers (added paymentController, discussionController)
+- 🏗️ Backend: 15 routes (added paymentRoutes, discussionRoutes)
+- 🏗️ Backend: 11 services (added paymentService, discussionService)
+- 🏗️ Backend: Socket.IO server dengan JWT authentication
+- 🎨 Frontend: 13 Redux slices (added paymentSlice)
+- 🎨 Frontend: Socket.IO client dengan Redux integration
+- 🔐 Security: Webhook signature verification untuk payment
+- ✅ Backward Compatibility: Semua changes additive, tidak ada breaking changes
+
+**Architecture**:
+
+- ✅ **Enterprise-Ready** - Scalable architecture dengan service layer abstraction
+- ✅ **Real-time Capable** - Socket.IO integration dengan fallback mechanism
+- ✅ **Payment-Ready** - Payment gateway integration dengan webhook handling
+- ✅ **Discussion-Ready** - Full discussion backend dengan participation tracking
+- ✅ **Backward Compatible** - Semua existing flows tetap berfungsi
+
+**Documentation Updates**:
+
+- 📝 Updated README.md dengan Socket.IO, Payment, dan Discussion documentation
+- 📝 Added API endpoints untuk payment dan discussion
+- 📝 Updated models documentation (20 models)
+- 📝 Updated services documentation (11 services)
+- 📝 Updated routes documentation (15 routes)
+- 📝 Added Socket.IO configuration documentation
+- 📝 Added payment flow documentation
+- 📝 Added discussion API documentation
+
+---
+
+**Last Updated**: 20 Desember 2025  
+**Version**: 1.3.0  
+**Status**: ✅ Enterprise-Ready - Real-time, Payment, & Discussion Complete
+
+---
+
+### Version 1.3.1 (20 Desember 2025)
+
+**Critical Fixes**:
+
+- ✅ **Password Reset Flow** - Complete implementation dengan forgot-password & reset-password endpoints
+- ✅ **Lesson Locking** - Sequential completion enforcement dengan cross-section support
+
+**Backend Enhancements**:
+
+- 🔐 **Password Reset Endpoints** - `POST /api/auth/forgot-password` & `POST /api/auth/reset-password/:token`
+  - Token generation dengan UUID
+  - 1 hour expiration
+  - Email enumeration prevention
+  - Refresh token invalidation on reset
+- 🔒 **Lesson Locking Logic** - Implemented di `enrollmentController` dan `lessonProgressController`
+  - Sequential completion check untuk courses dengan `requireSequentialCompletion = true`
+  - Cross-section sequential locking
+  - Free lessons bypass locks
+  - Instructor/Admin bypass locks
+  - Proper 403 error responses untuk locked lessons
+
+**Frontend Enhancements**:
+
+- 🔧 **authSlice Fix** - Updated reset password endpoint untuk menggunakan token di path
+- ✅ **Lesson Locking Support** - Frontend ready untuk handle `isLocked` flag dari API
+
+**Updated**:
+
+- 📝 **enrollmentController.js** - Added `isLessonLocked()` helper function dan updated `getLearningData()` untuk return locked state
+- 📝 **lessonProgressController.js** - Added lesson lock check di `getLessonContent()` sebelum allowing access
+- 📝 **authController.js** - Added `forgotPassword()` dan `resetPassword()` functions
+- 📝 **authRoutes.js** - Added password reset routes
+- 📝 **README.md** - Updated documentation dengan password reset flow dan lesson locking details
+
+**Technical Improvements**:
+
+- ✅ Password reset dengan security best practices (email enumeration prevention, token expiration, one-time use)
+- ✅ Lesson locking dengan proper sequential validation (cross-section, free lesson handling)
+- ✅ Backend is single source of truth untuk lesson lock status
+- ✅ Proper error messages untuk locked lessons
+- ✅ Role-based bypass untuk instructors dan admins
+
+**Security**:
+
+- 🔐 Password reset tokens expire setelah 1 hour
+- 🔐 Tokens cleared setelah successful reset
+- 🔐 Refresh tokens invalidated on password reset
+- 🔐 Email enumeration prevention (always returns success)
+- 🔒 Lesson access properly enforced server-side
+
+**Documentation Updates**:
+
+- 📝 Added password reset flow diagram
+- 📝 Updated authentication endpoints documentation
+- 📝 Updated student learning flow dengan lesson locking details
+- 📝 Updated controller documentation dengan new methods
+- 📝 Updated API endpoints table
+- 📝 Updated security features section
+
+---
+
+**Last Updated**: 20 Desember 2025  
+**Version**: 1.3.1  
+**Status**: ✅ Production Ready - All Blockers Resolved
+
+---
+
+### Version 1.3.1 (20 Desember 2025)
+
+**Critical Fixes**:
+
+- ✅ **Password Reset Flow** - Complete implementation dengan forgot-password & reset-password endpoints
+- ✅ **Lesson Locking** - Sequential completion enforcement dengan cross-section support
+
+**Backend Enhancements**:
+
+- 🔐 **Password Reset Endpoints** - `POST /api/auth/forgot-password` & `POST /api/auth/reset-password/:token`
+  - Token generation dengan UUID
+  - 1 hour expiration
+  - Email enumeration prevention
+  - Refresh token invalidation on reset
+- 🔒 **Lesson Locking Logic** - Implemented di `enrollmentController` dan `lessonProgressController`
+  - Sequential completion check untuk courses dengan `requireSequentialCompletion = true`
+  - Cross-section sequential locking
+  - Free lessons bypass locks
+  - Instructor/Admin bypass locks
+  - Proper 403 error responses untuk locked lessons
+
+**Frontend Enhancements**:
+
+- 🔧 **authSlice Fix** - Updated reset password endpoint untuk menggunakan token di path
+- ✅ **Lesson Locking Support** - Frontend ready untuk handle `isLocked` flag dari API
+
+**Updated**:
+
+- 📝 **enrollmentController.js** - Added `isLessonLocked()` helper function dan updated `getLearningData()` untuk return locked state
+- 📝 **lessonProgressController.js** - Added lesson lock check di `getLessonContent()` sebelum allowing access
+- 📝 **authController.js** - Added `forgotPassword()` dan `resetPassword()` functions
+- 📝 **authRoutes.js** - Added password reset routes
+- 📝 **README.md** - Updated documentation dengan password reset flow dan lesson locking details
+
+**Technical Improvements**:
+
+- ✅ Password reset dengan security best practices (email enumeration prevention, token expiration, one-time use)
+- ✅ Lesson locking dengan proper sequential validation (cross-section, free lesson handling)
+- ✅ Backend is single source of truth untuk lesson lock status
+- ✅ Proper error messages untuk locked lessons
+- ✅ Role-based bypass untuk instructors dan admins
+
+**Security**:
+
+- 🔐 Password reset tokens expire setelah 1 hour
+- 🔐 Tokens cleared setelah successful reset
+- 🔐 Refresh tokens invalidated on password reset
+- 🔐 Email enumeration prevention (always returns success)
+- 🔒 Lesson access properly enforced server-side
+
+**Documentation Updates**:
+
+- 📝 Added password reset flow diagram
+- 📝 Updated authentication endpoints documentation
+- 📝 Updated student learning flow dengan lesson locking details
+- 📝 Updated controller documentation dengan new methods
+- 📝 Updated API endpoints table
+
+---
+
+**Last Updated**: 20 Desember 2025  
+**Version**: 1.3.1  
+**Status**: ✅ Production Ready - All Blockers Resolved

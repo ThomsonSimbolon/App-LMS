@@ -22,10 +22,10 @@ const Header: React.FC = () => {
         <div className="flex h-16 items-center justify-between">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2 group">
-            <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center group-hover:scale-110 transition-transform">
+            <div className="w-8 h-8 rounded-lg bg-primary-600 flex items-center justify-center group-hover:scale-110 transition-transform">
               <span className="text-white font-bold text-lg">L</span>
             </div>
-            <span className="text-xl font-bold text-primary dark:text-primary">
+            <span className="text-xl font-bold text-primary-600 dark:text-primary-400">
               LMS Platform
             </span>
           </Link>

@@ -66,7 +66,7 @@ export default function CoursesPage() {
             {/* Courses Grid */}
             <div className="lg:col-span-3">
               {error && (
-                <div className="bg-error-light/10 border border-error text-error-dark dark:text-error-light rounded-lg p-4 mb-6">
+                <div className="bg-error/10 border border-error text-error rounded-lg p-4 mb-6">
                   {error}
                 </div>
               )}
@@ -131,7 +131,7 @@ export default function CoursesPage() {
                       <button
                         onClick={() => setPage((p) => Math.max(1, p - 1))}
                         disabled={page === 1}
-                        className="btn bg-white dark:bg-neutral-800 hover:bg-neutral-50 dark:hover:bg-neutral-700 text-neutral-900 dark:text-white px-4 py-2 disabled:opacity-50 flex items-center gap-2"
+                        className="btn btn-outline px-4 py-2 disabled:opacity-50 flex items-center gap-2"
                       >
                         <ChevronLeft className="w-4 h-4" />
                         Previous
@@ -142,7 +142,7 @@ export default function CoursesPage() {
                       <button
                         onClick={() => setPage((p) => p + 1)}
                         disabled={page >= pagination.pages}
-                        className="btn bg-white dark:bg-neutral-800 hover:bg-neutral-50 dark:hover:bg-neutral-700 text-neutral-900 dark:text-white px-4 py-2 disabled:opacity-50 flex items-center gap-2"
+                        className="btn btn-outline px-4 py-2 disabled:opacity-50 flex items-center gap-2"
                       >
                         Next
                         <ChevronRight className="w-4 h-4" />

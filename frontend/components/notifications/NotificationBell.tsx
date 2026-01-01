@@ -10,6 +10,7 @@ import {
   markAsRead,
   markAllAsRead,
 } from "@/store/slices/notificationSlice";
+import { initializeSocket, disconnectSocket, isSocketConnected } from "@/lib/socket";
 
 const NotificationBell: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -17,22 +18,50 @@ const NotificationBell: React.FC = () => {
     (state) => state.notification
   );
   const [isOpen, setIsOpen] = useState(false);
+  const [socketConnected, setSocketConnected] = useState(false);
+
+  // Initialize socket connection
+  useEffect(() => {
+    const token = localStorage.getItem("accessToken");
+    if (token) {
+      const socket = initializeSocket(token, dispatch);
+      if (socket) {
+        socket.on("connect", () => {
+          setSocketConnected(true);
+        });
+        socket.on("disconnect", () => {
+          setSocketConnected(false);
+        });
+        // Check initial connection status
+        setSocketConnected(socket.connected);
+      }
+    }
+
+    return () => {
+      disconnectSocket();
+    };
+  }, [dispatch]);
 
   // Initial fetch
   useEffect(() => {
     dispatch(fetchUnreadCount());
     dispatch(fetchNotifications(10));
 
-    // Poll for updates every 30 seconds
+    // Poll for updates - use longer interval if socket is connected
+    const pollInterval = socketConnected ? 60000 : 30000; // 60s if socket connected, 30s if not
+
     const interval = setInterval(() => {
-      dispatch(fetchUnreadCount());
-      if (isOpen) {
-        dispatch(fetchNotifications(10));
+      // Only poll if socket is not connected or dropdown is open
+      if (!socketConnected || isOpen) {
+        dispatch(fetchUnreadCount());
+        if (isOpen) {
+          dispatch(fetchNotifications(10));
+        }
       }
-    }, 30000);
+    }, pollInterval);
 
     return () => clearInterval(interval);
-  }, [dispatch, isOpen]);
+  }, [dispatch, isOpen, socketConnected]);
 
   // Fetch notifications when dropdown opens
   useEffect(() => {

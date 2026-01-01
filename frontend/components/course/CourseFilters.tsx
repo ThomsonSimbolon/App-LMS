@@ -119,7 +119,7 @@ export function CourseFilters({ onFilterChange }: CourseFiltersProps) {
       {/* Reset Button */}
       <button
         onClick={handleReset}
-        className="w-full btn bg-neutral-100 dark:bg-neutral-800 hover:bg-neutral-200 dark:hover:bg-neutral-700 text-neutral-900 dark:text-white px-4 py-2 text-sm flex items-center justify-center gap-2"
+        className="w-full btn btn-outline px-4 py-2 text-sm flex items-center justify-center gap-2"
       >
         <RotateCcw className="w-4 h-4" />
         Reset Filters

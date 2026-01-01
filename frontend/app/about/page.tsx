@@ -60,7 +60,7 @@ export default function AboutPage() {
         {/* Stats Section */}
         <section className="py-12 -mt-16 px-4 relative z-20">
           <div className="container-custom">
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-8 bg-white dark:bg-neutral-900 rounded-2xl p-8 shadow-xl border border-neutral-100 dark:border-neutral-800">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-8 bg-white dark:bg-neutral-900 rounded-2xl p-8 shadow-soft-lg border border-neutral-100 dark:border-neutral-800">
               {stats.map((stat, index) => (
                 <div key={index} className="text-center space-y-1">
                   <div className="text-3xl md:text-4xl font-bold text-primary-600 dark:text-primary-400">
@@ -98,9 +98,9 @@ export default function AboutPage() {
                   </p>
                 </div>
               </div>
-              <div className="relative h-[400px] rounded-2xl overflow-hidden shadow-2xl group">
+              <div className="relative h-[400px] rounded-2xl overflow-hidden shadow-soft-lg group">
                 {/* Abstract Image Placeholder using CSS Patterns for now to ensure it works without external assets */}
-                <div className="absolute inset-0 bg-primary opacity-90"></div>
+                <div className="absolute inset-0 bg-primary-600 opacity-90"></div>
                 <div className="absolute inset-0 flex items-center justify-center text-white/20 font-bold text-9xl select-none">
                   LMS
                 </div>
@@ -131,9 +131,9 @@ export default function AboutPage() {
               {values.map((val, i) => (
                 <Card
                   key={i}
-                  className="p-6 hover:-translate-y-1 transition-transform duration-300 border-none shadow-lg dark:shadow-none dark:bg-neutral-800/50"
+                  className="p-6 hover:-translate-y-1 transition-transform duration-300 border-none shadow-soft-lg dark:shadow-none dark:bg-neutral-800/50"
                 >
-                  <div className="w-12 h-12 rounded-lg bg-primary-100 dark:bg-primary-900/40 text-2xl flex items-center justify-center mb-4">
+                  <div className="w-12 h-12 rounded-lg bg-primary-50 dark:bg-primary-900/40 text-2xl flex items-center justify-center mb-4">
                     {val.icon}
                   </div>
                   <h3 className="text-xl font-bold text-neutral-900 dark:text-white mb-3">

@@ -79,7 +79,7 @@ export default function UserManagementPage() {
       </div>
 
       {error && (
-        <div className="bg-error-light/10 border border-error text-error-dark dark:text-error-light rounded-lg p-4 mb-6">
+        <div className="bg-error/10 border border-error text-error rounded-lg p-4 mb-6">
           {error}
         </div>
       )}
@@ -114,7 +114,7 @@ export default function UserManagementPage() {
                 >
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-full bg-border dark:bg-[#1E293B] flex items-center justify-center text-xs font-bold text-text-primary dark:text-[#E5E7EB]">
+                      <div className="w-8 h-8 rounded-full bg-neutral-200 dark:bg-neutral-800 flex items-center justify-center text-xs font-bold text-neutral-900 dark:text-neutral-100">
                         {user.firstName?.[0]}
                         {user.lastName?.[0]}
                       </div>
@@ -154,7 +154,7 @@ export default function UserManagementPage() {
                     <button
                       onClick={() => handleDeleteUser(user.id)}
                       disabled={updating === user.id}
-                      className="text-error hover:text-error-dark dark:hover:text-error-light font-medium text-xs disabled:opacity-50"
+                      className="text-error hover:text-error font-medium text-xs disabled:opacity-50"
                     >
                       {updating === user.id ? "..." : "Delete"}
                     </button>

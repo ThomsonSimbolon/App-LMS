@@ -63,10 +63,10 @@ export default function VerifyEmailPage({
         <div className="max-w-md w-full">
           <div className="text-center mb-8">
             <Link href="/" className="inline-flex items-center gap-2 group">
-              <div className="w-12 h-12 rounded-lg bg-primary flex items-center justify-center group-hover:scale-110 transition-transform">
+              <div className="w-12 h-12 rounded-lg bg-primary-600 flex items-center justify-center group-hover:scale-110 transition-transform">
                 <span className="text-white font-bold text-2xl">L</span>
               </div>
-              <span className="text-2xl font-bold text-primary dark:text-primary">
+              <span className="text-2xl font-bold text-primary-600 dark:text-primary-400">
                 LMS Platform
               </span>
             </Link>
@@ -87,7 +87,7 @@ export default function VerifyEmailPage({
 
             {status === "success" && (
               <div className="text-center">
-                <div className="w-16 h-16 bg-accent-100 dark:bg-accent-900/30 rounded-full flex items-center justify-center mx-auto mb-6">
+                <div className="w-16 h-16 bg-accent-50 dark:bg-accent-900/30 rounded-full flex items-center justify-center mx-auto mb-6">
                   <svg
                     className="w-10 h-10 text-accent-600 dark:text-accent-400"
                     fill="none"
@@ -119,7 +119,7 @@ export default function VerifyEmailPage({
                 </div>
                 <Link
                   href="/login"
-                  className="inline-block w-full btn bg-primary hover:bg-primary-hover text-white px-6 py-3 text-center"
+                  className="inline-block w-full btn btn-primary px-6 py-3 text-center"
                 >
                   Go to Login Now
                 </Link>
@@ -128,9 +128,9 @@ export default function VerifyEmailPage({
 
             {status === "error" && (
               <div className="text-center">
-                <div className="w-16 h-16 bg-error-light/20 rounded-full flex items-center justify-center mx-auto mb-6">
+                <div className="w-16 h-16 bg-error/20 rounded-full flex items-center justify-center mx-auto mb-6">
                   <svg
-                    className="w-10 h-10 text-error dark:text-error-light"
+                    className="w-10 h-10 text-error"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -164,13 +164,13 @@ export default function VerifyEmailPage({
                 <div className="flex flex-col gap-3">
                   <Link
                     href="/register"
-                    className="btn bg-primary hover:bg-primary-hover text-white px-6 py-3 text-center"
+                    className="btn btn-primary px-6 py-3 text-center"
                   >
                     Register Again
                   </Link>
                   <Link
                     href="/login"
-                    className="btn bg-white dark:bg-neutral-800 hover:bg-neutral-50 dark:hover:bg-neutral-700 border border-neutral-300 dark:border-neutral-700 text-neutral-900 dark:text-white px-6 py-3 text-center"
+                    className="btn btn-outline px-6 py-3 text-center"
                   >
                     Go to Login
                   </Link>

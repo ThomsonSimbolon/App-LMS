@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, use } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Header, Footer } from "@/components/layouts";
@@ -8,7 +8,7 @@ import { Header, Footer } from "@/components/layouts";
 export default function ResetPasswordPage({
   params,
 }: {
-  params: { token: string };
+  params: Promise<{ token: string }>;
 }) {
   const router = useRouter();
   const [formData, setFormData] = useState({
@@ -17,6 +17,9 @@ export default function ResetPasswordPage({
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+
+  // Unwrap params Promise
+  const { token } = use(params);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -36,7 +39,7 @@ export default function ResetPasswordPage({
 
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/auth/reset-password/${params.token}`,
+        `${process.env.NEXT_PUBLIC_API_URL}/api/auth/reset-password/${token}`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -66,10 +69,10 @@ export default function ResetPasswordPage({
         <div className="max-w-md w-full">
           <div className="text-center mb-8">
             <Link href="/" className="inline-flex items-center gap-2 group">
-              <div className="w-12 h-12 rounded-lg bg-primary flex items-center justify-center group-hover:scale-110 transition-transform">
+              <div className="w-12 h-12 rounded-lg bg-primary-600 flex items-center justify-center group-hover:scale-110 transition-transform">
                 <span className="text-white font-bold text-2xl">L</span>
               </div>
-              <span className="text-2xl font-bold text-primary dark:text-primary">
+              <span className="text-2xl font-bold text-primary-600 dark:text-primary-400">
                 LMS Platform
               </span>
             </Link>
@@ -84,7 +87,7 @@ export default function ResetPasswordPage({
           <div className="card p-8">
             <form onSubmit={handleSubmit} className="space-y-6">
               {error && (
-                <div className="bg-error-light/10 border border-error text-error-dark dark:text-error-light rounded-lg p-4 text-sm">
+                <div className="bg-error/10 border border-error text-error rounded-lg p-4 text-sm">
                   {error}
                 </div>
               )}
@@ -137,7 +140,7 @@ export default function ResetPasswordPage({
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full btn bg-primary hover:bg-primary-hover text-white px-6 py-3 text-base font-semibold disabled:opacity-50"
+                className="w-full btn btn-primary px-6 py-3 text-base font-semibold disabled:opacity-50"
               >
                 {loading ? "Resetting..." : "Reset Password"}
               </button>

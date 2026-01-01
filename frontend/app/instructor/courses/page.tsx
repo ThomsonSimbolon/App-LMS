@@ -124,7 +124,7 @@ export default function InstructorCoursesPage() {
         </div>
         <button
           onClick={() => router.push("/instructor/courses/create")}
-          className="btn bg-primary-600 hover:bg-primary-700 text-white px-6 py-3 flex items-center gap-2"
+          className="btn btn-primary px-6 py-3 flex items-center gap-2"
         >
           <Plus className="w-5 h-5" />
           Create New Course
@@ -132,7 +132,7 @@ export default function InstructorCoursesPage() {
       </div>
 
       {error && (
-        <div className="bg-error-light/10 border border-error text-error-dark dark:text-error-light rounded-lg p-4 mb-6">
+        <div className="bg-error/10 border border-error text-error rounded-lg p-4 mb-6">
           {error}
         </div>
       )}
@@ -162,7 +162,7 @@ export default function InstructorCoursesPage() {
                     unoptimized
                   />
                 ) : (
-                  <div className="w-full h-full flex items-center justify-center bg-neutral-100 dark:bg-neutral-700">
+                  <div className="w-full h-full flex items-center justify-center bg-neutral-200 dark:bg-neutral-800">
                     <BookOpen className="w-16 h-16 text-neutral-400 dark:text-neutral-500" />
                   </div>
                 )}
@@ -195,7 +195,7 @@ export default function InstructorCoursesPage() {
                   <div className="flex gap-2">
                     <button
                       onClick={() => handleEdit(course.id)}
-                      className="flex-1 btn bg-neutral-100 dark:bg-neutral-800 hover:bg-neutral-200 dark:hover:bg-neutral-700 text-neutral-900 dark:text-white py-2 text-sm"
+                      className="flex-1 btn btn-outline py-2 text-sm"
                     >
                       Edit
                     </button>
@@ -209,7 +209,7 @@ export default function InstructorCoursesPage() {
                   </div>
                   <button
                     onClick={() => handlePublishNewVersion(course)}
-                    className="w-full btn bg-primary-50 dark:bg-primary-900/20 hover:bg-primary-100 dark:hover:bg-primary-900/30 text-primary-600 dark:text-primary-400 py-2 text-sm flex items-center justify-center gap-2"
+                    className="w-full btn bg-primary-50 dark:bg-primary-900/20 hover:bg-primary-200 dark:hover:bg-primary-800/30 text-primary-600 dark:text-primary-400 py-2 text-sm flex items-center justify-center gap-2"
                     title="Publish New Version"
                   >
                     <GitBranch className="w-4 h-4" />

@@ -150,9 +150,9 @@ export default function DashboardPage() {
 
       {/* Quick Actions */}
       <div className="grid md:grid-cols-2 gap-6">
-        <div className="card p-6 cursor-pointer hover:shadow-md transition-shadow" onClick={() => router.push('/dashboard/browse-courses')} role="button">
+        <div className="card card-hover p-6 cursor-pointer" onClick={() => router.push('/dashboard/browse-courses')} role="button">
           <div className="flex items-center gap-3 mb-2">
-            <div className="p-2 rounded-lg bg-primary-100 dark:bg-primary-900/30">
+            <div className="p-2 rounded-lg bg-primary-50 dark:bg-primary-900/30">
               <Search className="w-5 h-5 text-primary-600 dark:text-primary-400" />
             </div>
             <h3 className="text-lg font-semibold text-neutral-900 dark:text-white">
@@ -163,7 +163,7 @@ export default function DashboardPage() {
             Discover courses to expand your knowledge
           </p>
         </div>
-        <div className="card p-6 cursor-pointer hover:shadow-md transition-shadow" onClick={() => router.push('/dashboard/profile')} role="button">
+        <div className="card card-hover p-6 cursor-pointer" onClick={() => router.push('/dashboard/profile')} role="button">
           <div className="flex items-center gap-3 mb-2">
             <div className="p-2 rounded-lg bg-neutral-100 dark:bg-neutral-800">
               <Settings className="w-5 h-5 text-neutral-600 dark:text-neutral-400" />

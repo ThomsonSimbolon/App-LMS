@@ -79,7 +79,7 @@ export default function DashboardCourseDetailPage({
           </p>
           <button
             onClick={() => router.push("/dashboard/browse-courses")}
-            className="btn bg-primary-600 hover:bg-primary-700 text-white px-6 py-3"
+            className="btn btn-primary px-6 py-3"
           >
             Browse Courses
           </button>
@@ -91,7 +91,7 @@ export default function DashboardCourseDetailPage({
   return (
     <div>
       {/* Hero Section */}
-      <div className="bg-primary text-white py-16 rounded-xl mb-8">
+      <div className="bg-primary-600 text-white py-16 rounded-xl mb-8">
         <div className="grid lg:grid-cols-2 gap-8 items-center px-6 lg:px-8">
           <div>
             <div className="flex flex-wrap gap-2 mb-4">
@@ -129,7 +129,7 @@ export default function DashboardCourseDetailPage({
             {course.isEnrolled ? (
               <button
                 onClick={goToCourse}
-                className="btn bg-white hover:bg-white/90 text-primary-600 px-8 py-3 text-lg font-semibold"
+                className="btn bg-white hover:bg-white/90 text-primary-600 px-8 py-3 text-lg font-semibold rounded-lg shadow-soft"
               >
                 Go to Course
               </button>
@@ -137,7 +137,7 @@ export default function DashboardCourseDetailPage({
               <button
                 onClick={handleEnroll}
                 disabled={enrolling}
-                className="btn bg-white hover:bg-white/90 text-primary-600 px-8 py-3 text-lg font-semibold disabled:opacity-50"
+                className="btn bg-white hover:bg-white/90 text-primary-600 px-8 py-3 text-lg font-semibold rounded-lg shadow-soft disabled:opacity-50"
               >
                 {enrolling
                   ? "Enrolling..."
@@ -147,7 +147,7 @@ export default function DashboardCourseDetailPage({
               </button>
             )}
           </div>
-          <div className="relative h-80 rounded-xl overflow-hidden shadow-2xl">
+          <div className="relative h-80 rounded-xl overflow-hidden shadow-soft-lg">
             {course.thumbnail ? (
               <Image
                 src={getFileUrl(course.thumbnail)}
@@ -269,7 +269,7 @@ export default function DashboardCourseDetailPage({
                                   {lesson.title}
                                 </span>
                                 {lesson.isFree && (
-                                  <Badge className="bg-accent-100 text-accent-700">
+                                  <Badge className="bg-accent-50 text-accent-700">
                                     Free Preview
                                   </Badge>
                                 )}

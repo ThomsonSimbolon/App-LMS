@@ -32,7 +32,7 @@ export function QuestionCard({
         <span className="text-sm font-medium text-neutral-600 dark:text-neutral-400">
           Question {questionNumber} of {totalQuestions}
         </span>
-        <span className="badge bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300">
+        <span className="badge bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300">
           {question.points} {question.points === 1 ? 'point' : 'points'}
         </span>
       </div>

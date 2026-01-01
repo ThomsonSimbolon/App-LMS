@@ -213,7 +213,7 @@ class LessonCompletionService {
         return await this._validateQuizExamCompletion(lesson, userId, enrollment);
 
       case 'DISCUSSION':
-        return this._validateDiscussionCompletion();
+        return await this._validateDiscussionCompletion(lesson, userId, enrollment);
 
       default:
         return {
@@ -613,10 +613,60 @@ class LessonCompletionService {
   /**
    * Validate DISCUSSION completion
    */
-  _validateDiscussionCompletion() {
-    // Discussion participation (basic check)
-    // For now, allow basic completion (forum participation tracking can be added later)
-    return { allowed: true };
+  async _validateDiscussionCompletion(lesson, userId, enrollment) {
+    try {
+      const content = lesson.getContentObject();
+      const minThreads = content?.minThreads || 1;
+      const minReplies = content?.minReplies || 2;
+
+      // Get user participation stats
+      const discussionService = require('./discussionService');
+      const participation = await discussionService.getUserParticipation(lesson.id, userId);
+
+      // Check minimum threads requirement
+      if (participation.threadCount < minThreads) {
+        return {
+          allowed: false,
+          message: `You must create at least ${minThreads} discussion thread(s). You have created ${participation.threadCount}.`,
+          details: {
+            threadCount: participation.threadCount,
+            requiredThreads: minThreads,
+            replyCount: participation.replyCount,
+            requiredReplies: minReplies
+          }
+        };
+      }
+
+      // Check minimum replies requirement
+      if (participation.replyCount < minReplies) {
+        return {
+          allowed: false,
+          message: `You must reply at least ${minReplies} time(s) in discussions. You have replied ${participation.replyCount} time(s).`,
+          details: {
+            threadCount: participation.threadCount,
+            requiredThreads: minThreads,
+            replyCount: participation.replyCount,
+            requiredReplies: minReplies
+          }
+        };
+      }
+
+      return {
+        allowed: true,
+        message: 'Discussion participation requirements met',
+        details: {
+          threadCount: participation.threadCount,
+          replyCount: participation.replyCount
+        }
+      };
+    } catch (error) {
+      console.error('[LessonCompletionService] Failed to validate discussion completion:', error);
+      // On error, allow completion (fail open) - can be changed to fail closed if needed
+      return {
+        allowed: true,
+        message: 'Discussion validation error, allowing completion'
+      };
+    }
   }
 
   /**

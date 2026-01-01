@@ -46,10 +46,10 @@ export default function ForgotPasswordPage() {
         <div className="max-w-md w-full">
           <div className="text-center mb-8">
             <Link href="/" className="inline-flex items-center gap-2 group">
-              <div className="w-12 h-12 rounded-lg bg-primary flex items-center justify-center group-hover:scale-110 transition-transform">
+              <div className="w-12 h-12 rounded-lg bg-primary-600 flex items-center justify-center group-hover:scale-110 transition-transform">
                 <span className="text-white font-bold text-2xl">L</span>
               </div>
-              <span className="text-2xl font-bold text-primary dark:text-primary">
+              <span className="text-2xl font-bold text-primary-600 dark:text-primary-400">
                 LMS Platform
               </span>
             </Link>
@@ -82,7 +82,7 @@ export default function ForgotPasswordPage() {
             ) : (
               <form onSubmit={handleSubmit} className="space-y-6">
                 {error && (
-                  <div className="bg-error-light/10 border border-error text-error-dark dark:text-error-light rounded-lg p-4 text-sm">
+                  <div className="bg-error/10 border border-error text-error rounded-lg p-4 text-sm">
                     {error}
                   </div>
                 )}
@@ -109,7 +109,7 @@ export default function ForgotPasswordPage() {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full btn bg-primary hover:bg-primary-hover text-white px-6 py-3 text-base font-semibold disabled:opacity-50"
+                  className="w-full btn btn-primary px-6 py-3 text-base font-semibold disabled:opacity-50"
                 >
                   {loading ? "Sending..." : "Send Reset Link"}
                 </button>

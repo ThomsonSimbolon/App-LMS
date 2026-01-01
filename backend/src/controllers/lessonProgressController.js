@@ -54,8 +54,9 @@ exports.getLessonContent = async (req, res) => {
       req.user.roleName === "ADMIN" || req.user.roleName === "SUPER_ADMIN";
 
     // Check if user is enrolled (for STUDENT role)
+    let enrollment = null;
     if (!isCourseInstructor && !isAdmin) {
-      const enrollment = await Enrollment.findOne({
+      enrollment = await Enrollment.findOne({
         where: {
           userId: req.user.userId,
           courseId: lesson.section.course.id,
@@ -72,8 +73,74 @@ exports.getLessonContent = async (req, res) => {
       }
     }
 
-    // TODO: Check if lesson is locked (previous lesson not completed)
-    // For now, allow all lessons
+    // Check lesson lock for sequential completion (only for students)
+    if (!isCourseInstructor && !isAdmin && enrollment && lesson.section.course.requireSequentialCompletion) {
+      // Free lessons are never locked
+      if (!lesson.isFree) {
+        // Get all lessons in course (sorted by section order, then lesson order)
+        const allSections = await Section.findAll({
+          where: { courseId: lesson.section.course.id },
+          include: [{
+            model: Lesson,
+            as: 'lessons',
+            order: [['order', 'ASC']],
+            attributes: ['id', 'order', 'isFree']
+          }],
+          order: [['order', 'ASC']]
+        });
+
+        // Flatten lessons
+        const allLessonsFlat = [];
+        allSections.forEach(section => {
+          section.lessons.forEach(l => {
+            allLessonsFlat.push({
+              id: l.id,
+              order: l.order,
+              isFree: l.isFree,
+              sectionOrder: section.order
+            });
+          });
+        });
+
+        // Sort by section order, then lesson order
+        allLessonsFlat.sort((a, b) => {
+          if (a.sectionOrder !== b.sectionOrder) {
+            return a.sectionOrder - b.sectionOrder;
+          }
+          return a.order - b.order;
+        });
+
+        // Get lesson progress
+        const lessonProgress = await LessonProgress.findAll({
+          where: { enrollmentId: enrollment.id }
+        });
+
+        // Find current lesson index
+        const currentIndex = allLessonsFlat.findIndex(l => l.id === lesson.id);
+
+        // Check if previous lessons are completed
+        if (currentIndex > 0) {
+          for (let i = 0; i < currentIndex; i++) {
+            const previousLesson = allLessonsFlat[i];
+            
+            // Skip free lessons (they don't block)
+            if (previousLesson.isFree) {
+              continue;
+            }
+
+            // Check if previous lesson is completed
+            const previousProgress = lessonProgress.find(p => p.lessonId === previousLesson.id);
+            if (!previousProgress || !previousProgress.isCompleted) {
+              return res.status(403).json({
+                success: false,
+                error: "Lesson locked",
+                message: "You must complete the previous lessons in order to access this lesson"
+              });
+            }
+          }
+        }
+      }
+    }
 
     // Update last accessed
     if (enrollment) {

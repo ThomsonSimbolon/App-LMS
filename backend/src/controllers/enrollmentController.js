@@ -3,6 +3,52 @@ const { Op } = require('sequelize');
 const activityLogService = require('../services/activityLogService');
 const notificationService = require('../services/notificationService');
 
+/**
+ * Check if a lesson is locked based on sequential completion requirement
+ * @param {Object} lesson - Lesson object with section info
+ * @param {Array} allLessons - All lessons in course (flattened, sorted)
+ * @param {Array} lessonProgress - All lesson progress for enrollment
+ * @param {Object} course - Course object with requireSequentialCompletion
+ * @returns {boolean} - True if lesson is locked
+ */
+function isLessonLocked(lesson, allLessons, lessonProgress, course) {
+  // If course doesn't require sequential completion, no lessons are locked
+  if (!course.requireSequentialCompletion) {
+    return false;
+  }
+
+  // Free lessons are never locked
+  if (lesson.isFree) {
+    return false;
+  }
+
+  // Find current lesson index in flattened list
+  const currentIndex = allLessons.findIndex(l => l.id === lesson.id);
+  
+  // First lesson is never locked
+  if (currentIndex === 0) {
+    return false;
+  }
+
+  // Check all previous lessons (in order) are completed
+  for (let i = 0; i < currentIndex; i++) {
+    const previousLesson = allLessons[i];
+    
+    // Skip free lessons (they don't block)
+    if (previousLesson.isFree) {
+      continue;
+    }
+
+    // Check if previous lesson is completed
+    const previousProgress = lessonProgress.find(p => p.lessonId === previousLesson.id);
+    if (!previousProgress || !previousProgress.isCompleted) {
+      return true; // Locked because previous lesson not completed
+    }
+  }
+
+  return false; // Not locked
+}
+
 // Enroll in a course
 exports.enrollCourse = async (req, res) => {
   try {
@@ -50,14 +96,28 @@ exports.enrollCourse = async (req, res) => {
       });
     }
 
-    // For paid courses, check payment (TODO: implement payment verification)
+    // For paid courses, check payment verification
     if (course.type !== 'FREE') {
-      // TODO: Verify payment before enrollment
-      return res.status(402).json({
-        success: false,
-        error: 'Payment required',
-        message: 'This is a paid course. Payment integration coming soon.'
+      const { PaymentIntent } = require('../models');
+      const { Op } = require('sequelize');
+      
+      // Check if user has a succeeded payment intent for this course
+      const paymentIntent = await PaymentIntent.findOne({
+        where: {
+          userId: req.user.userId,
+          courseId,
+          status: 'SUCCEEDED'
+        }
       });
+
+      if (!paymentIntent) {
+        return res.status(402).json({
+          success: false,
+          error: 'Payment required',
+          message: 'This is a paid course. Please complete payment first.',
+          requiresPayment: true
+        });
+      }
     }
 
     // Create enrollment with course version
@@ -86,7 +146,8 @@ exports.enrollCourse = async (req, res) => {
     });
 
     // Send enrollment success notification (non-blocking)
-    notificationService.notifyCourseEnrollment(req.user.userId, course).catch(err => {
+    const io = req.app.locals.io;
+    notificationService.notifyCourseEnrollment(req.user.userId, course, io).catch(err => {
       console.error('Failed to send enrollment notification:', err);
     });
 
@@ -239,17 +300,45 @@ exports.getLearningData = async (req, res) => {
       where: { enrollmentId }
     });
 
-    // Add completion status to each lesson
+    // Flatten all lessons for sequential checking (across sections)
+    const allLessonsFlat = [];
+    courseWithRelations.sections.forEach(section => {
+      section.lessons.forEach(lesson => {
+        allLessonsFlat.push({
+          id: lesson.id,
+          sectionId: lesson.sectionId,
+          order: lesson.order,
+          isFree: lesson.isFree,
+          sectionOrder: section.order
+        });
+      });
+    });
+
+    // Sort by section order, then lesson order
+    allLessonsFlat.sort((a, b) => {
+      if (a.sectionOrder !== b.sectionOrder) {
+        return a.sectionOrder - b.sectionOrder;
+      }
+      return a.order - b.order;
+    });
+
+    // Add completion status and locking to each lesson
     const courseData = courseWithRelations.toJSON();
     courseData.sections = courseData.sections.map(section => ({
       ...section,
       lessons: section.lessons.map(lesson => {
         const progress = lessonProgress.find(p => p.lessonId === lesson.id);
+        const isLocked = isLessonLocked(
+          lesson,
+          allLessonsFlat,
+          lessonProgress,
+          courseWithRelations
+        );
         return {
           ...lesson,
           isCompleted: progress?.isCompleted || false,
           watchTime: progress?.watchTime || 0,
-          isLocked: false // TODO: Implement lesson locking logic
+          isLocked
         };
       })
     }));

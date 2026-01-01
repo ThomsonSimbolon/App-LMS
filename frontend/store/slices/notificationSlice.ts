@@ -107,6 +107,33 @@ const notificationSlice = createSlice({
     clearError: (state) => {
       state.error = null;
     },
+    // Add notification from socket (prevent duplicates)
+    addNotification: (state, action) => {
+      const newNotification = action.payload;
+      // Check if notification already exists
+      const exists = state.notifications.some(
+        (notif) => notif.id === newNotification.id
+      );
+      if (!exists) {
+        // Add to beginning of array
+        state.notifications = [newNotification, ...state.notifications];
+        // Increment unread count if not read
+        if (!newNotification.isRead) {
+          state.unreadCount += 1;
+        }
+      }
+    },
+    // Update unread count (from socket)
+    updateUnreadCount: (state, action) => {
+      if (typeof action.payload === "number") {
+        // Direct count update (absolute value)
+        state.unreadCount = Math.max(0, action.payload);
+      } else {
+        // Increment/decrement (relative change)
+        const delta = action.payload;
+        state.unreadCount = Math.max(0, state.unreadCount + delta);
+      }
+    },
   },
   extraReducers: (builder) => {
     // Fetch Notifications
@@ -153,5 +180,5 @@ const notificationSlice = createSlice({
   },
 });
 
-export const { clearError } = notificationSlice.actions;
+export const { clearError, addNotification, updateUnreadCount } = notificationSlice.actions;
 export default notificationSlice.reducer;

@@ -58,7 +58,7 @@ export default function CertificatesPage() {
           {certificates.map((certificate) => (
             <div key={certificate.id} className="card overflow-hidden">
               {/* Certificate Preview */}
-              <div className="relative h-48 bg-primary p-6 flex items-center justify-center text-center">
+              <div className="relative h-48 bg-primary-600 p-6 flex items-center justify-center text-center">
                 <div className="text-white">
                   <div className="text-4xl mb-2">🏆</div>
                   <h3 className="font-bold text-lg">
@@ -100,7 +100,7 @@ export default function CertificatesPage() {
                         "_blank"
                       );
                     }}
-                    className="flex-1 btn bg-white dark:bg-neutral-800 hover:bg-neutral-50 dark:hover:bg-neutral-700 border border-neutral-300 dark:border-neutral-700 text-neutral-900 dark:text-white px-4 py-2 text-sm"
+                    className="flex-1 btn btn-outline px-4 py-2 text-sm"
                   >
                     Download
                   </button>

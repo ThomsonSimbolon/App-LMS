@@ -18,9 +18,10 @@ const { Notification } = require('../models');
  * @param {string} payload.type - Notification type (INFO, SUCCESS, WARNING, ERROR)
  * @param {string} payload.entityType - Related entity type (optional)
  * @param {number} payload.entityId - Related entity ID (optional)
+ * @param {Object} io - Socket.IO instance (optional, for real-time notifications)
  * @returns {Promise<Object>} Created notification
  */
-const notify = async (userId, payload) => {
+const notify = async (userId, payload, io = null) => {
   try {
     const { title, message, type = 'INFO', entityType = null, entityId = null } = payload;
 
@@ -38,10 +39,15 @@ const notify = async (userId, payload) => {
       isRead: false
     });
 
-    // TODO: Emit Socket.io event if enabled (optional)
-    // if (io) {
-    //   io.to(`user:${userId}`).emit('notification', notification);
-    // }
+    // Emit Socket.io event if enabled (optional)
+    if (io) {
+      try {
+        io.to(`user:${userId}`).emit('notification', notification.toJSON());
+      } catch (socketError) {
+        console.warn(`[NotificationService] Failed to emit socket notification:`, socketError);
+        // Don't fail the notification creation if socket fails
+      }
+    }
 
     return notification;
   } catch (error) {
@@ -55,9 +61,10 @@ const notify = async (userId, payload) => {
  * 
  * @param {number[]} userIds - Array of user IDs
  * @param {Object} payload - Notification payload (same as notify)
+ * @param {Object} io - Socket.IO instance (optional, for real-time notifications)
  * @returns {Promise<Object[]>} Array of created notifications
  */
-const notifyBatch = async (userIds, payload) => {
+const notifyBatch = async (userIds, payload, io = null) => {
   try {
     if (!Array.isArray(userIds) || userIds.length === 0) {
       throw new Error('User IDs array is required');
@@ -82,12 +89,17 @@ const notifyBatch = async (userIds, payload) => {
       }))
     );
 
-    // TODO: Emit Socket.io events if enabled (optional)
-    // if (io) {
-    //   notifications.forEach(notification => {
-    //     io.to(`user:${notification.userId}`).emit('notification', notification);
-    //   });
-    // }
+    // Emit Socket.io events if enabled (optional)
+    if (io) {
+      notifications.forEach(notification => {
+        try {
+          io.to(`user:${notification.userId}`).emit('notification', notification.toJSON());
+        } catch (socketError) {
+          console.warn(`[NotificationService] Failed to emit socket notification for user ${notification.userId}:`, socketError);
+          // Don't fail the notification creation if socket fails
+        }
+      });
+    }
 
     return notifications;
   } catch (error) {
@@ -100,15 +112,16 @@ const notifyBatch = async (userIds, payload) => {
  * Notify user about course enrollment success
  * @param {number} userId - User ID
  * @param {Object} course - Course object
+ * @param {Object} io - Socket.IO instance (optional)
  */
-const notifyCourseEnrollment = async (userId, course) => {
+const notifyCourseEnrollment = async (userId, course, io = null) => {
   return await notify(userId, {
     title: 'Enrollment Successful',
     message: `You have successfully enrolled in "${course.title}"`,
     type: 'SUCCESS',
     entityType: 'COURSE',
     entityId: course.id
-  });
+  }, io);
 };
 
 /**
@@ -117,8 +130,9 @@ const notifyCourseEnrollment = async (userId, course) => {
  * @param {Object} quiz - Quiz object
  * @param {number} score - Quiz score
  * @param {boolean} isPassed - Whether user passed
+ * @param {Object} io - Socket.IO instance (optional)
  */
-const notifyQuizResult = async (userId, quiz, score, isPassed) => {
+const notifyQuizResult = async (userId, quiz, score, isPassed, io = null) => {
   return await notify(userId, {
     title: isPassed ? 'Quiz Passed!' : 'Quiz Result',
     message: isPassed
@@ -127,7 +141,7 @@ const notifyQuizResult = async (userId, quiz, score, isPassed) => {
     type: isPassed ? 'SUCCESS' : 'INFO',
     entityType: 'QUIZ',
     entityId: quiz.id
-  });
+  }, io);
 };
 
 /**
@@ -136,8 +150,9 @@ const notifyQuizResult = async (userId, quiz, score, isPassed) => {
  * @param {Object} certificate - Certificate object
  * @param {string} status - Certificate status (APPROVED, REJECTED)
  * @param {string} rejectionReason - Reason for rejection (if rejected)
+ * @param {Object} io - Socket.IO instance (optional)
  */
-const notifyCertificateStatus = async (userId, certificate, status, rejectionReason = null) => {
+const notifyCertificateStatus = async (userId, certificate, status, rejectionReason = null, io = null) => {
   if (status === 'APPROVED') {
     return await notify(userId, {
       title: 'Certificate Approved',
@@ -145,7 +160,7 @@ const notifyCertificateStatus = async (userId, certificate, status, rejectionRea
       type: 'SUCCESS',
       entityType: 'CERTIFICATE',
       entityId: certificate.id
-    });
+    }, io);
   } else if (status === 'REJECTED') {
     return await notify(userId, {
       title: 'Certificate Rejected',
@@ -153,7 +168,7 @@ const notifyCertificateStatus = async (userId, certificate, status, rejectionRea
       type: 'WARNING',
       entityType: 'CERTIFICATE',
       entityId: certificate.id
-    });
+    }, io);
   } else if (status === 'PENDING') {
     return await notify(userId, {
       title: 'Certificate Request Submitted',
@@ -161,7 +176,7 @@ const notifyCertificateStatus = async (userId, certificate, status, rejectionRea
       type: 'INFO',
       entityType: 'CERTIFICATE',
       entityId: certificate.id
-    });
+    }, io);
   }
 };
 

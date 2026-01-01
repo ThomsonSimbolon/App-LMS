@@ -10,7 +10,7 @@ export default function Home() {
           <div className="text-center space-y-8 animate-fade-in">
             {/* Badge */}
             <div className="inline-flex">
-              <span className="badge bg-primary-100 dark:bg-primary-900/20 text-primary-600 dark:text-primary-400 px-4 py-2">
+              <span className="badge bg-primary-50 dark:bg-primary-900/20 text-primary-600 dark:text-primary-400 px-4 py-2">
                 🚀 Now in Beta
               </span>
             </div>

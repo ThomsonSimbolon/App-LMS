@@ -70,7 +70,7 @@ export function QuizStart({ quiz, attempts = 0, onStart }: QuizStartProps) {
       </div>
 
       {attemptsLeft === 0 ? (
-        <div className="bg-error-light/10 border border-error text-error-dark dark:text-error-light rounded-lg p-4 mb-6">
+        <div className="bg-error/10 border border-error text-error rounded-lg p-4 mb-6">
           You have used all available attempts for this quiz.
         </div>
       ) : (

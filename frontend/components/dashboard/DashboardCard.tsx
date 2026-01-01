@@ -26,7 +26,7 @@ function CardContent({
   variant?: "primary" | "success" | "warning" | "error" | "info";
 }) {
   const variantColors = {
-    primary: "bg-primary",
+    primary: "bg-primary-600",
     success: "bg-success",
     warning: "bg-warning",
     error: "bg-error",
@@ -44,14 +44,14 @@ function CardContent({
           <Icon className="w-6 h-6 text-white" />
         )}
       </div>
-      <div className="text-3xl font-bold text-text-primary dark:text-[#E5E7EB] mb-1">
+      <div className="text-3xl font-bold text-neutral-900 dark:text-neutral-100 mb-1">
         {value}
       </div>
-      <div className="text-sm font-medium text-text-secondary dark:text-[#94A3B8] mb-1">
+      <div className="text-sm font-medium text-neutral-600 dark:text-neutral-400 mb-1">
         {title}
       </div>
       {subtitle && (
-        <div className="text-xs text-text-muted dark:text-[#94A3B8]">
+        <div className="text-xs text-neutral-500 dark:text-neutral-500">
           {subtitle}
         </div>
       )}

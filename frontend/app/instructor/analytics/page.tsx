@@ -109,7 +109,7 @@ export default function InstructorAnalyticsPage() {
                     const maxCount = Math.max(...analytics.trends.enrollmentGrowth.map(e => e.count), 1);
                     const height = maxCount > 0 ? (item.count / maxCount) * 100 : 0;
                     return (
-                      <div key={i} className="flex-1 bg-primary-100 dark:bg-primary-900/30 rounded-t-sm relative group cursor-pointer">
+                      <div key={i} className="flex-1 bg-primary-50 dark:bg-primary-900/30 rounded-t-sm relative group cursor-pointer">
                         <div 
                           className="absolute bottom-0 left-0 right-0 bg-primary-600 rounded-t-sm transition-all group-hover:bg-primary-500"
                           style={{ height: `${height}%` }}
@@ -146,7 +146,7 @@ export default function InstructorAnalyticsPage() {
                     {analytics.trends.engagement.active}
                   </p>
                 </div>
-                <div className="w-16 h-16 rounded-full bg-primary-100 dark:bg-primary-900/30 flex items-center justify-center">
+                <div className="w-16 h-16 rounded-full bg-primary-50 dark:bg-primary-900/30 flex items-center justify-center">
                   <span className="text-primary-600 dark:text-primary-400 font-bold">
                     {analytics.trends.engagement.active}
                   </span>

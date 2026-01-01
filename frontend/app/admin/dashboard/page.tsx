@@ -32,9 +32,9 @@ export default function AdminDashboardPage() {
 
   const getEventTypeColor = (eventType: string) => {
     const colors: Record<string, string> = {
-      USER_LOGIN: 'bg-primary-100 text-primary-700 dark:bg-primary-900/30 dark:text-primary-400',
+      USER_LOGIN: 'bg-primary-50 text-primary-700 dark:bg-primary-900/30 dark:text-primary-400',
       COURSE_ENROLL: 'bg-success/10 text-success dark:bg-success/20 dark:text-success',
-      LESSON_COMPLETE: 'bg-accent-100 text-accent-700 dark:bg-accent-900/30 dark:text-accent-400',
+      LESSON_COMPLETE: 'bg-accent-50 text-accent-700 dark:bg-accent-900/30 dark:text-accent-400',
       QUIZ_SUBMIT: 'bg-warning/10 text-warning dark:bg-warning/20 dark:text-warning',
       CERT_REQUESTED: 'bg-info/10 text-info dark:bg-info/20 dark:text-info',
       CERT_APPROVED: 'bg-success/10 text-success dark:bg-success/20 dark:text-success',
@@ -67,8 +67,8 @@ export default function AdminDashboardPage() {
 
       <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
         {[
-          { label: 'Total Users', value: stats?.totalUsers ?? 0, Icon: Users, color: 'bg-primary-100 dark:bg-primary-900/30 text-primary-600 dark:text-primary-400' },
-          { label: 'Total Courses', value: stats?.totalCourses ?? 0, Icon: BookOpen, color: 'bg-accent-100 dark:bg-accent-900/30 text-accent-600 dark:text-accent-400' },
+          { label: 'Total Users', value: stats?.totalUsers ?? 0, Icon: Users, color: 'bg-primary-50 dark:bg-primary-900/30 text-primary-600 dark:text-primary-400' },
+          { label: 'Total Courses', value: stats?.totalCourses ?? 0, Icon: BookOpen, color: 'bg-accent-50 dark:bg-accent-900/30 text-accent-600 dark:text-accent-400' },
           { label: 'Enrollments', value: stats?.totalEnrollments ?? 0, Icon: GraduationCap, color: 'bg-success/10 dark:bg-success/20 text-success dark:text-success' },
           { label: 'Instructors', value: stats?.activeInstructors ?? 0, Icon: UserCheck, color: 'bg-warning/10 dark:bg-warning/20 text-warning dark:text-warning' },
         ].map((stat, i) => {

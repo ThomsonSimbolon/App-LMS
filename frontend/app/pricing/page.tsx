@@ -147,8 +147,8 @@ export default function PricingPage() {
                   className={cn(
                     "p-8 relative flex flex-col",
                     plan.popular
-                      ? "border-primary-500 ring-1 ring-primary-500 shadow-xl scale-105 z-10"
-                      : "hover:shadow-lg transition-shadow"
+                      ? "border-primary-500 ring-1 ring-primary-500 shadow-soft-lg scale-105 z-10"
+                      : "hover:shadow-soft-lg transition-shadow"
                   )}
                 >
                   {plan.popular && (
@@ -241,7 +241,7 @@ export default function PricingPage() {
         </section>
 
         {/* CTA */}
-        <section className="py-20 bg-primary relative overflow-hidden">
+        <section className="py-20 bg-primary-600 relative overflow-hidden">
           <div className="container-custom text-center relative z-10 px-4">
             <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">
               Ready to start your learning journey?

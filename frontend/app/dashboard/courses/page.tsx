@@ -58,7 +58,7 @@ export default function MyCoursesPage() {
             className={`px-6 py-2 rounded-lg font-medium transition-colors ${
               activeFilter === filter.key
                 ? 'bg-primary-600 text-white'
-                : 'bg-white dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-700'
+                : 'btn-outline'
             }`}
           >
             {filter.label}
@@ -111,7 +111,7 @@ export default function MyCoursesPage() {
           {activeFilter === 'all' && (
             <button
               onClick={() => router.push('/dashboard/browse-courses')}
-              className="btn bg-primary-600 hover:bg-primary-700 text-white px-6 py-3"
+              className="btn btn-primary px-6 py-3"
             >
               Browse Courses
             </button>

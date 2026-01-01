@@ -150,7 +150,7 @@ const AdminHeader: React.FC = () => {
                       setProfileMenuOpen(false);
                       handleLogout();
                     }}
-                    className="w-full flex items-center gap-2 px-4 py-2 text-sm text-error dark:text-error-light hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors"
+                    className="w-full flex items-center gap-2 px-4 py-2 text-sm text-error hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors"
                   >
                     <LogOut className="w-4 h-4" />
                     <span>Logout</span>

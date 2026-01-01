@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, use } from "react";
 import { Header, Footer } from "@/components/layouts";
 
 interface Certificate {
@@ -22,16 +22,19 @@ interface Certificate {
 export default function VerifyCertificatePage({
   params,
 }: {
-  params: { certificateNumber: string };
+  params: Promise<{ certificateNumber: string }>;
 }) {
   const [certificate, setCertificate] = useState<Certificate | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
+  // Unwrap params Promise
+  const { certificateNumber } = use(params);
+
   const verifyCertificate = useCallback(async () => {
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/certificates/verify/${params.certificateNumber}`
+        `${process.env.NEXT_PUBLIC_API_URL}/api/certificates/verify/${certificateNumber}`
       );
 
       const data = await response.json();
@@ -46,7 +49,7 @@ export default function VerifyCertificatePage({
     } finally {
       setLoading(false);
     }
-  }, [params.certificateNumber]);
+  }, [certificateNumber]);
 
   useEffect(() => {
     verifyCertificate();
@@ -92,7 +95,7 @@ export default function VerifyCertificatePage({
                   {error || "This certificate could not be verified."}
                 </p>
                 <p className="text-sm text-neutral-500 dark:text-neutral-500">
-                  Certificate Number: {params.certificateNumber}
+                  Certificate Number: {certificateNumber}
                 </p>
               </div>
             ) : (

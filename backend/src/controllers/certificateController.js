@@ -83,7 +83,8 @@ exports.requestCertificate = async (req, res) => {
       .toUpperCase()}`;
 
     // Generate QR code
-    const verifyUrl = `${process.env.FRONTEND_URL}/verify-certificate/${certificateNumber}`;
+    const frontendBaseUrl = (process.env.FRONTEND_URL || "").replace(/\/$/, "");
+    const verifyUrl = `${frontendBaseUrl}/verify/${certificateNumber}`;
     const qrCode = await qrService.generateQRCode(verifyUrl);
 
     // Get user data
@@ -141,8 +142,15 @@ exports.requestCertificate = async (req, res) => {
     const certStatus = enrollment.course.requireManualApproval
       ? "PENDING"
       : "APPROVED";
+    const io = req.app.locals.io;
     notificationService
-      .notifyCertificateStatus(req.user.userId, certificate, certStatus)
+      .notifyCertificateStatus(
+        req.user.userId,
+        certificate,
+        certStatus,
+        null,
+        io
+      )
       .catch((err) => {
         console.error("Failed to send certificate notification:", err);
       });
@@ -311,12 +319,14 @@ exports.approveCertificate = async (req, res) => {
     }
 
     // Send certificate status notification to student (non-blocking)
+    const io = req.app.locals.io;
     notificationService
       .notifyCertificateStatus(
         certificate.userId,
         certificate,
         status,
-        rejectionReason
+        rejectionReason,
+        io
       )
       .catch((err) => {
         console.error("Failed to send certificate status notification:", err);

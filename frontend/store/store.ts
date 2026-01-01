@@ -11,6 +11,7 @@ import categoryReducer from "./slices/categorySlice";
 import dashboardReducer from "./slices/dashboardSlice";
 import courseAssessorReducer from "./slices/courseAssessorSlice";
 import instructorReducer from "./slices/instructorSlice";
+import paymentReducer from "./slices/paymentSlice";
 
 export const store = configureStore({
   reducer: {
@@ -26,6 +27,7 @@ export const store = configureStore({
     dashboard: dashboardReducer,
     courseAssessor: courseAssessorReducer,
     instructor: instructorReducer,
+    payment: paymentReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

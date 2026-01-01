@@ -70,7 +70,7 @@ export default function AssessorDashboardPage() {
 
         <div className="card p-6">
           <div className="flex items-center gap-4">
-            <div className="w-12 h-12 rounded-lg bg-primary-100 dark:bg-primary-900/20 flex items-center justify-center">
+            <div className="w-12 h-12 rounded-lg bg-primary-50 dark:bg-primary-900/20 flex items-center justify-center">
               <Award className="w-6 h-6 text-primary-600 dark:text-primary-400" />
             </div>
             <div>
@@ -164,7 +164,7 @@ export default function AssessorDashboardPage() {
               className="p-4 border border-neutral-200 dark:border-neutral-800 rounded-lg hover:bg-neutral-50 dark:hover:bg-neutral-800/50 transition-colors text-left"
             >
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-lg bg-primary-100 dark:bg-primary-900/20 flex items-center justify-center">
+                <div className="w-10 h-10 rounded-lg bg-primary-50 dark:bg-primary-900/20 flex items-center justify-center">
                   <Award className="w-5 h-5 text-primary-600 dark:text-primary-400" />
                 </div>
                 <div>

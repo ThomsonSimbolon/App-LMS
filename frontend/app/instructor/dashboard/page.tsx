@@ -85,14 +85,14 @@ export default function InstructorDashboardPage() {
             value: stats.totalCourses,
             icon: BookOpen,
             color:
-              "bg-primary-100 text-primary-600 dark:bg-primary-900/30 dark:text-primary-400",
+              "bg-primary-50 text-primary-600 dark:bg-primary-900/30 dark:text-primary-400",
           },
           {
             label: "Total Students",
             value: stats.totalStudents,
             icon: Users,
             color:
-              "bg-accent-100 text-accent-600 dark:bg-accent-900/30 dark:text-accent-400",
+              "bg-accent-50 text-accent-600 dark:bg-accent-900/30 dark:text-accent-400",
           },
           {
             label: "Reviews",
@@ -140,14 +140,14 @@ export default function InstructorDashboardPage() {
             <div className="flex gap-4">
               <button
                 onClick={() => router.push("/instructor/courses/create")}
-                className="btn bg-primary-600 hover:bg-primary-700 text-white px-6 py-3 flex items-center gap-2"
+                className="btn btn-primary px-6 py-3 flex items-center gap-2"
               >
                 <Plus className="w-5 h-5" />
                 Create New Course
               </button>
               <button
                 onClick={() => router.push("/instructor/courses")}
-                className="btn bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 hover:bg-neutral-50 dark:hover:bg-neutral-700 text-neutral-900 dark:text-white px-6 py-3 flex items-center gap-2"
+                className="btn btn-outline px-6 py-3 flex items-center gap-2"
               >
                 <Settings className="w-5 h-5" />
                 Manage Courses

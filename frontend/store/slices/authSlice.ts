@@ -136,7 +136,7 @@ export const resetPassword = createAsyncThunk(
   "auth/resetPassword",
   async (data: ResetPasswordData, { rejectWithValue }) => {
     try {
-      await apiPost("auth/reset-password", data, { includeAuth: false });
+      await apiPost(`auth/reset-password/${data.token}`, { password: data.password }, { includeAuth: false });
       return { message: "Password reset successful" };
     } catch (error: unknown) {
       const apiError = error as ApiError;

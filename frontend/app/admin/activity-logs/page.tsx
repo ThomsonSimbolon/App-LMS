@@ -299,7 +299,7 @@ export default function ActivityLogsPage() {
 
       {/* Error Message */}
       {error && (
-        <div className="bg-error-light/10 border border-error text-error-dark dark:text-error-light rounded-lg p-4 mb-4">
+        <div className="bg-error/10 border border-error text-error rounded-lg p-4 mb-4">
           {error}
         </div>
       )}
@@ -311,7 +311,7 @@ export default function ActivityLogsPage() {
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600"></div>
           </div>
         ) : error ? (
-          <div className="text-center py-12 text-error dark:text-error-light">
+          <div className="text-center py-12 text-error">
             {error}
           </div>
         ) : logs.length === 0 ? (

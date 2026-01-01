@@ -52,7 +52,7 @@ export function EnrolledCourseCard({
               unoptimized
             />
           ) : (
-            <div className="w-full h-full flex items-center justify-center bg-primary">
+            <div className="w-full h-full flex items-center justify-center bg-primary-600">
               <span className="text-white text-4xl font-bold">
                 {title.charAt(0)}
               </span>
@@ -85,20 +85,20 @@ export function EnrolledCourseCard({
             <div className="flex items-center gap-2">
               {instructor ? (
                 <>
-                  <div className="w-6 h-6 rounded-full bg-primary flex items-center justify-center text-white text-xs font-medium">
+                  <div className="w-6 h-6 rounded-full bg-primary-600 flex items-center justify-center text-white text-xs font-medium">
                     {instructor.firstName.charAt(0)}
                     {instructor.lastName?.charAt(0) || ""}
                   </div>
-                  <span className="text-text-secondary dark:text-[#94A3B8]">
+                  <span className="text-neutral-600 dark:text-neutral-400">
                     {instructor.firstName} {instructor.lastName || ""}
                   </span>
                 </>
               ) : (
                 <>
-                  <div className="w-6 h-6 rounded-full bg-primary flex items-center justify-center text-white text-xs font-medium">
+                  <div className="w-6 h-6 rounded-full bg-primary-600 flex items-center justify-center text-white text-xs font-medium">
                     ?
                   </div>
-                  <span className="text-text-secondary dark:text-[#94A3B8]">
+                  <span className="text-neutral-600 dark:text-neutral-400">
                     Unknown Instructor
                   </span>
                 </>

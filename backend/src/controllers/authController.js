@@ -392,3 +392,142 @@ exports.logout = async (req, res) => {
     });
   }
 };
+
+// Forgot Password
+exports.forgotPassword = async (req, res) => {
+  try {
+    const { email } = req.body;
+
+    // Validation
+    if (!email) {
+      return res.status(400).json({
+        success: false,
+        error: 'Validation error',
+        message: 'Email is required'
+      });
+    }
+
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      return res.status(400).json({
+        success: false,
+        error: 'Validation error',
+        message: 'Invalid email format'
+      });
+    }
+
+    // Find user
+    const user = await User.findOne({ where: { email } });
+
+    // Always return success to prevent email enumeration
+    // But only send email if user exists
+    if (user) {
+      // Generate password reset token
+      const passwordResetToken = uuidv4();
+      const passwordResetExpires = new Date(Date.now() + 60 * 60 * 1000); // 1 hour
+
+      // Save token to user
+      await user.update({
+        passwordResetToken,
+        passwordResetExpires
+      });
+
+      // Send password reset email (non-blocking)
+      try {
+        await emailService.sendPasswordResetEmail(user.email, passwordResetToken);
+      } catch (emailError) {
+        console.error('Failed to send password reset email:', emailError);
+        // Continue even if email fails - token is still saved
+      }
+    }
+
+    // Always return success message (security best practice)
+    res.status(200).json({
+      success: true,
+      message: 'If an account with that email exists, a password reset link has been sent.'
+    });
+
+  } catch (error) {
+    console.error('Forgot password error:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Internal server error',
+      message: error.message
+    });
+  }
+};
+
+// Reset Password
+exports.resetPassword = async (req, res) => {
+  try {
+    const { token } = req.params;
+    const { password } = req.body;
+
+    // Validation
+    if (!password) {
+      return res.status(400).json({
+        success: false,
+        error: 'Validation error',
+        message: 'Password is required'
+      });
+    }
+
+    // Validate password strength
+    if (password.length < 8) {
+      return res.status(400).json({
+        success: false,
+        error: 'Validation error',
+        message: 'Password must be at least 8 characters'
+      });
+    }
+
+    // Find user by reset token
+    const user = await User.findOne({
+      where: { passwordResetToken: token }
+    });
+
+    if (!user) {
+      return res.status(400).json({
+        success: false,
+        error: 'Invalid token',
+        message: 'Password reset token is invalid'
+      });
+    }
+
+    // Check if token expired
+    if (!user.passwordResetExpires || new Date() > user.passwordResetExpires) {
+      return res.status(400).json({
+        success: false,
+        error: 'Token expired',
+        message: 'Password reset token has expired. Please request a new one.'
+      });
+    }
+
+    // Hash new password
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // Update password and clear reset token
+    await user.update({
+      password: hashedPassword,
+      passwordResetToken: null,
+      passwordResetExpires: null
+    });
+
+    // Invalidate all refresh tokens (optional security measure)
+    await user.update({ refreshToken: null });
+
+    res.status(200).json({
+      success: true,
+      message: 'Password has been reset successfully. Please login with your new password.'
+    });
+
+  } catch (error) {
+    console.error('Reset password error:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Internal server error',
+      message: error.message
+    });
+  }
+};

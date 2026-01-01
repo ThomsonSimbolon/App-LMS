@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, use } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { Header, Footer } from "@/components/layouts";
@@ -14,7 +14,7 @@ import { getFileUrl } from "@/lib/api";
 export default function CourseDetailPage({
   params,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }) {
   const router = useRouter();
   const dispatch = useAppDispatch();
@@ -25,9 +25,12 @@ export default function CourseDetailPage({
   const [enrolling, setEnrolling] = useState(false);
   const [activeTab, setActiveTab] = useState("overview");
 
+  // Unwrap params Promise
+  const { id } = use(params);
+
   useEffect(() => {
-    dispatch(fetchCourseById(parseInt(params.id)));
-  }, [dispatch, params.id]);
+    dispatch(fetchCourseById(parseInt(id)));
+  }, [dispatch, id]);
 
   const handleEnroll = async () => {
     if (!user) {
@@ -38,14 +41,39 @@ export default function CourseDetailPage({
     setEnrolling(true);
     dispatch(clearError());
 
-    const result = await dispatch(createEnrollment(parseInt(params.id)));
+    // Check if course is paid/premium
+    if (course && (course.type === "PAID" || course.type === "PREMIUM")) {
+      // For paid courses, redirect to payment flow
+      // In a full implementation, you would:
+      // 1. Create payment intent
+      // 2. Redirect to Stripe Checkout or show payment modal
+      // 3. After payment, verify and create enrollment
+      alert(
+        "Payment integration: Please use the payment endpoint to complete enrollment for paid courses."
+      );
+      setEnrolling(false);
+      return;
+    }
+
+    // For free courses, enroll directly
+    const result = await dispatch(createEnrollment(parseInt(id)));
 
     if (createEnrollment.fulfilled.match(result)) {
       alert("Successfully enrolled!");
       // Refresh course data to update isEnrolled status
-      dispatch(fetchCourseById(parseInt(params.id)));
+      dispatch(fetchCourseById(parseInt(id)));
     } else {
-      alert((result.payload as string) || "Enrollment failed");
+      const errorMessage = result.payload as string;
+      if (
+        errorMessage?.includes("Payment required") ||
+        errorMessage?.includes("requiresPayment")
+      ) {
+        alert(
+          "This is a paid course. Payment integration is ready - please implement payment UI."
+        );
+      } else {
+        alert(errorMessage || "Enrollment failed");
+      }
     }
     setEnrolling(false);
   };
@@ -53,7 +81,7 @@ export default function CourseDetailPage({
   const course = currentCourse;
 
   const goToCourse = () => {
-    router.push(`/learn/${params.id}`);
+    router.push(`/learn/${id}`);
   };
 
   if (loading) {
@@ -88,7 +116,7 @@ export default function CourseDetailPage({
               </p>
               <button
                 onClick={() => router.push("/courses")}
-                className="btn bg-primary-600 hover:bg-primary-700 text-white px-6 py-3"
+                className="btn btn-primary px-6 py-3"
               >
                 Browse Courses
               </button>
@@ -105,21 +133,27 @@ export default function CourseDetailPage({
       <Header />
       <div className="min-h-screen bg-background dark:bg-base-dark">
         {/* Hero Section */}
-        <div className="bg-primary text-white py-16">
+        <div className="bg-primary-600 text-white py-16">
           <div className="container-custom">
             <div className="grid lg:grid-cols-2 gap-8 items-center">
               <div>
                 <div className="flex flex-wrap gap-2 mb-4">
-                  <Badge className="bg-white/20">
+                  <Badge className="bg-white/20 text-white border-0">
                     {course.category?.name || "General"}
                   </Badge>
-                  <Badge className="bg-white/20">{course.level}</Badge>
-                  <Badge className="bg-white/20">{course.type}</Badge>
+                  <Badge className="bg-white/20 text-white border-0">
+                    {course.level}
+                  </Badge>
+                  <Badge className="bg-white/20 text-white border-0">
+                    {course.type}
+                  </Badge>
                   {course.version && (
-                    <Badge className="bg-white/20">v{course.version}</Badge>
+                    <Badge className="bg-white/20 text-white border-0">
+                      v{course.version}
+                    </Badge>
                   )}
                 </div>
-                <h1 className="text-4xl font-bold  mb-4">{course.title}</h1>
+                <h1 className="text-4xl font-bold mb-4">{course.title}</h1>
                 <p className="text-lg text-white/90 mb-6">
                   {course.description}
                 </p>
@@ -146,7 +180,7 @@ export default function CourseDetailPage({
                 {course.isEnrolled ? (
                   <button
                     onClick={goToCourse}
-                    className="btn bg-white hover:bg-white/90 text-primary-600 px-8 py-3 text-lg font-semibold"
+                    className="btn bg-white hover:bg-white/90 text-primary-600 px-8 py-3 text-lg font-semibold rounded-lg shadow-soft"
                   >
                     Go to Course
                   </button>
@@ -154,7 +188,7 @@ export default function CourseDetailPage({
                   <button
                     onClick={handleEnroll}
                     disabled={enrolling}
-                    className="btn bg-white hover:bg-white/90 text-primary-600 px-8 py-3 text-lg font-semibold disabled:opacity-50"
+                    className="btn bg-white hover:bg-white/90 text-primary-600 px-8 py-3 text-lg font-semibold rounded-lg shadow-soft disabled:opacity-50"
                   >
                     {enrolling
                       ? "Enrolling..."
@@ -164,7 +198,7 @@ export default function CourseDetailPage({
                   </button>
                 )}
               </div>
-              <div className="relative h-80 rounded-xl overflow-hidden shadow-2xl">
+              <div className="relative h-80 rounded-xl overflow-hidden shadow-soft-lg">
                 {course.thumbnail ? (
                   <Image
                     src={getFileUrl(course.thumbnail)}
@@ -287,7 +321,7 @@ export default function CourseDetailPage({
                                     {lesson.title}
                                   </span>
                                   {lesson.isFree && (
-                                    <Badge className="bg-accent-100 text-accent-700">
+                                    <Badge className="bg-accent-50 text-accent-700">
                                       Free Preview
                                     </Badge>
                                   )}

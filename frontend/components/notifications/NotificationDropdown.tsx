@@ -54,7 +54,7 @@ const NotificationDropdown: React.FC<NotificationDropdownProps> = ({
   };
 
   return (
-    <div className="absolute right-0 mt-2 w-80 md:w-96 bg-white dark:bg-neutral-900 rounded-lg shadow-lg border border-neutral-200 dark:border-neutral-800 z-50 max-h-96 overflow-hidden flex flex-col">
+    <div className="absolute right-0 mt-2 w-80 md:w-96 bg-white dark:bg-neutral-900 rounded-lg shadow-soft-lg border border-neutral-200 dark:border-neutral-800 z-50 max-h-96 overflow-hidden flex flex-col">
       {/* Header */}
       <div className="flex items-center justify-between p-4 border-b border-neutral-200 dark:border-neutral-800">
         <div className="flex items-center gap-2">
@@ -62,7 +62,7 @@ const NotificationDropdown: React.FC<NotificationDropdownProps> = ({
             Notifications
           </h3>
           {unreadCount > 0 && (
-            <span className="px-2 py-0.5 bg-primary-100 dark:bg-primary-900 text-primary-700 dark:text-primary-300 text-xs font-medium rounded-full">
+            <span className="px-2 py-0.5 bg-primary-50 dark:bg-primary-900 text-primary-700 dark:text-primary-300 text-xs font-medium rounded-full">
               {unreadCount} new
             </span>
           )}

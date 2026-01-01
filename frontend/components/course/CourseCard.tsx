@@ -26,7 +26,7 @@ const levelColors = {
   BEGINNER:
     "bg-success/10 dark:bg-success/20 text-success dark:text-success",
   INTERMEDIATE:
-    "bg-primary-soft dark:bg-primary/20 text-primary dark:text-primary",
+    "bg-primary-50 dark:bg-primary-900/20 text-primary-600 dark:text-primary-400",
   ADVANCED: "bg-error/10 dark:bg-error/20 text-error dark:text-error",
 };
 
@@ -34,7 +34,7 @@ const typeColors = {
   FREE: "bg-success/10 dark:bg-success/20 text-success dark:text-success",
   PAID: "bg-warning/10 dark:bg-warning/20 text-warning dark:text-warning",
   PREMIUM:
-    "bg-primary-soft dark:bg-primary/20 text-primary dark:text-primary",
+    "bg-primary-50 dark:bg-primary-900/20 text-primary-600 dark:text-primary-400",
 };
 
 export function CourseCard({
@@ -67,7 +67,7 @@ export function CourseCard({
               unoptimized
             />
           ) : (
-            <div className="w-full h-full flex items-center justify-center bg-primary">
+            <div className="w-full h-full flex items-center justify-center bg-primary-600">
               <span className="text-white text-5xl font-bold">
                 {title.charAt(0)}
               </span>
@@ -115,20 +115,20 @@ export function CourseCard({
             <div className="flex items-center gap-2">
               {instructor ? (
                 <>
-                  <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-white text-sm font-medium">
+                  <div className="w-8 h-8 rounded-full bg-primary-600 flex items-center justify-center text-white text-sm font-medium">
                     {instructor.firstName.charAt(0)}
                     {instructor.lastName?.charAt(0) || ""}
                   </div>
-                  <span className="text-sm text-text-secondary dark:text-[#94A3B8]">
+                  <span className="text-sm text-neutral-600 dark:text-neutral-400">
                     {instructor.firstName} {instructor.lastName || ""}
                   </span>
                 </>
               ) : (
                 <>
-                  <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-white text-sm font-medium">
+                  <div className="w-8 h-8 rounded-full bg-primary-600 flex items-center justify-center text-white text-sm font-medium">
                     ?
                   </div>
-                  <span className="text-sm text-text-secondary dark:text-[#94A3B8]">
+                  <span className="text-sm text-neutral-600 dark:text-neutral-400">
                     Unknown Instructor
                   </span>
                 </>

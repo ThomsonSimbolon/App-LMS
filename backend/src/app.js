@@ -37,6 +37,8 @@ const activityLogRoutes = require("./routes/activityLogRoutes");
 const notificationRoutes = require("./routes/notificationRoutes");
 const dashboardRoutes = require("./routes/dashboardRoutes");
 const instructorRoutes = require("./routes/instructorRoutes");
+const paymentRoutes = require("./routes/paymentRoutes");
+const discussionRoutes = require("./routes/discussionRoutes");
 
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
@@ -50,6 +52,8 @@ app.use("/api/activity-logs", activityLogRoutes);
 app.use("/api/notifications", notificationRoutes);
 app.use("/api/admin/dashboard", dashboardRoutes);
 app.use("/api/instructor", instructorRoutes);
+app.use("/api/payments", paymentRoutes);
+app.use("/api/discussions", discussionRoutes);
 
 app.get("/api", (req, res) => {
   res.json({
@@ -86,4 +90,6 @@ app.use((err, req, res, next) => {
   });
 });
 
+// Export app for use in server.js
+// Note: Socket.IO integration happens in server.js after HTTP server is created
 module.exports = app;
