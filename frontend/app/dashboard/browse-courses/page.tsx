@@ -40,10 +40,10 @@ export default function BrowseCoursesPage() {
     <div>
       {/* Page Header */}
       <div className="mb-10">
-        <h1 className="text-4xl font-bold text-neutral-900 dark:text-white mb-2">
+        <h1 className="text-4xl font-bold text-slate-900 dark:text-white mb-2">
           Browse Courses
         </h1>
-        <p className="text-lg text-neutral-600 dark:text-neutral-400">
+        <p className="text-lg text-slate-600 dark:text-slate-400">
           Discover your next learning adventure
         </p>
       </div>
@@ -52,7 +52,7 @@ export default function BrowseCoursesPage() {
         {/* Filters Sidebar */}
         <div className="lg:col-span-1">
           <div className="card p-6 sticky top-24">
-            <h2 className="text-lg font-semibold text-neutral-900 dark:text-white mb-4">
+            <h2 className="text-lg font-semibold text-slate-900 dark:text-white mb-4">
               Filters
             </h2>
             <CourseFilters onFilterChange={handleFilterChange} />
@@ -80,13 +80,13 @@ export default function BrowseCoursesPage() {
             </div>
           ) : courses.length === 0 ? (
             <div className="card p-12 text-center flex flex-col items-center">
-              <div className="w-20 h-20 rounded-full bg-neutral-100 dark:bg-neutral-800 flex items-center justify-center mb-4">
-                <BookX className="w-10 h-10 text-neutral-400 dark:text-neutral-500" />
+              <div className="w-20 h-20 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center mb-4">
+                <BookX className="w-10 h-10 text-slate-400 dark:text-slate-500" />
               </div>
-              <h3 className="text-xl font-semibold text-neutral-900 dark:text-white mb-2">
+              <h3 className="text-xl font-semibold text-slate-900 dark:text-white mb-2">
                 No courses found
               </h3>
-              <p className="text-neutral-600 dark:text-neutral-400">
+              <p className="text-slate-600 dark:text-slate-400">
                 Try adjusting your filters to see more results
               </p>
             </div>
@@ -130,7 +130,7 @@ export default function BrowseCoursesPage() {
                     <ChevronLeft className="w-4 h-4" />
                     Previous
                   </button>
-                  <span className="flex items-center px-4 text-neutral-700 dark:text-neutral-300">
+                  <span className="flex items-center px-4 text-slate-700 dark:text-slate-300">
                     Page {page} of {pagination.pages}
                   </span>
                   <button

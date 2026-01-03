@@ -50,7 +50,7 @@ export default function AboutPage() {
             <h1 className="text-4xl md:text-6xl font-bold mb-6 text-white">
               Empowering the World to Learn
             </h1>
-            <p className="text-primary-100 dark:text-neutral-400 text-lg md:text-xl leading-relaxed max-w-2xl mx-auto">
+            <p className="text-primary-100 dark:text-slate-400 text-lg md:text-xl leading-relaxed max-w-2xl mx-auto">
               We&apos;re on a mission to democratize education by connecting
               expert instructors with eager learners worldwide.
             </p>
@@ -60,13 +60,13 @@ export default function AboutPage() {
         {/* Stats Section */}
         <section className="py-12 -mt-16 px-4 relative z-20">
           <div className="container-custom">
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-8 bg-white dark:bg-neutral-900 rounded-2xl p-8 shadow-soft-lg border border-neutral-100 dark:border-neutral-800">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-8 bg-white dark:bg-slate-900 rounded-2xl p-8 shadow-soft-lg border border-slate-100 dark:border-slate-700">
               {stats.map((stat, index) => (
                 <div key={index} className="text-center space-y-1">
                   <div className="text-3xl md:text-4xl font-bold text-primary-600 dark:text-primary-400">
                     {stat.value}
                   </div>
-                  <div className="text-sm font-medium text-neutral-500 dark:text-neutral-400 uppercase tracking-wider">
+                  <div className="text-sm font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">
                     {stat.label}
                   </div>
                 </div>
@@ -80,12 +80,12 @@ export default function AboutPage() {
           <div className="container-custom">
             <div className="grid lg:grid-cols-2 gap-12 items-center">
               <div className="space-y-6">
-                <h2 className="text-3xl md:text-4xl font-bold text-neutral-900 dark:text-white">
+                <h2 className="text-3xl md:text-4xl font-bold text-slate-900 dark:text-white">
                   Bridging the gap between{" "}
                   <span className="text-primary-600">potential</span> and{" "}
                   <span className="text-primary-600">success</span>.
                 </h2>
-                <div className="space-y-4 text-neutral-600 dark:text-neutral-400 text-lg">
+                <div className="space-y-4 text-slate-600 dark:text-slate-400 text-lg">
                   <p>
                     Founded in 2023, LMS Platform started with a simple idea:
                     quality education should be accessible to everyone. What
@@ -115,13 +115,13 @@ export default function AboutPage() {
         </section>
 
         {/* Values Section */}
-        <section className="py-20 bg-neutral-100 dark:bg-neutral-900/50 border-y border-neutral-200 dark:border-neutral-800">
+        <section className="py-20 bg-slate-100 dark:bg-slate-900/50 border-y border-slate-200 dark:border-slate-700">
           <div className="container-custom px-4">
             <div className="text-center max-w-3xl mx-auto mb-16">
-              <h2 className="text-3xl font-bold text-neutral-900 dark:text-white mb-4">
+              <h2 className="text-3xl font-bold text-slate-900 dark:text-white mb-4">
                 Our Core Values
               </h2>
-              <p className="text-neutral-600 dark:text-neutral-400">
+              <p className="text-slate-600 dark:text-slate-400">
                 These principles guide every decision we make and how we serve
                 our community.
               </p>
@@ -131,15 +131,15 @@ export default function AboutPage() {
               {values.map((val, i) => (
                 <Card
                   key={i}
-                  className="p-6 hover:-translate-y-1 transition-transform duration-300 border-none shadow-soft-lg dark:shadow-none dark:bg-neutral-800/50"
+                  className="p-6 hover:-translate-y-1 transition-transform duration-300 border-none shadow-soft-lg dark:shadow-none dark:bg-slate-800/50"
                 >
                   <div className="w-12 h-12 rounded-lg bg-primary-50 dark:bg-primary-900/40 text-2xl flex items-center justify-center mb-4">
                     {val.icon}
                   </div>
-                  <h3 className="text-xl font-bold text-neutral-900 dark:text-white mb-3">
+                  <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-3">
                     {val.title}
                   </h3>
-                  <p className="text-neutral-600 dark:text-neutral-400 text-sm leading-relaxed">
+                  <p className="text-slate-600 dark:text-slate-400 text-sm leading-relaxed">
                     {val.description}
                   </p>
                 </Card>
@@ -151,10 +151,10 @@ export default function AboutPage() {
         {/* Join Us CTA */}
         <section className="py-24 px-4 text-center">
           <div className="container-custom max-w-3xl mx-auto space-y-8">
-            <h2 className="text-4xl font-bold text-neutral-900 dark:text-white">
+            <h2 className="text-4xl font-bold text-slate-900 dark:text-white">
               Join our growing team
             </h2>
-            <p className="text-xl text-neutral-600 dark:text-neutral-400">
+            <p className="text-xl text-slate-600 dark:text-slate-400">
               We&apos;re always looking for talented individuals who are
               passionate about education and technology.
             </p>

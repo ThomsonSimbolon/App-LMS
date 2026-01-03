@@ -29,7 +29,7 @@ export function MaterialLesson({
       <div className="flex items-center gap-2 mb-4">
         <Badge variant="default">Material</Badge>
         {content.fileType && (
-          <span className="text-sm text-neutral-600 dark:text-neutral-400">
+          <span className="text-sm text-slate-600 dark:text-slate-400">
             {content.fileType}
           </span>
         )}
@@ -52,12 +52,12 @@ export function MaterialLesson({
           )}
         </div>
       ) : textContent ? (
-        <div className="prose dark:prose-invert max-w-none bg-white dark:bg-neutral-900 p-6 rounded-lg border border-neutral-200 dark:border-neutral-800">
+        <div className="prose dark:prose-invert max-w-none bg-white dark:bg-slate-900 p-6 rounded-lg border border-slate-200 dark:border-slate-700">
           <div dangerouslySetInnerHTML={{ __html: textContent }} />
         </div>
       ) : (
-        <div className="p-6 bg-neutral-100 dark:bg-neutral-800 rounded-lg">
-          <p className="text-neutral-600 dark:text-neutral-400">
+        <div className="p-6 bg-slate-100 dark:bg-slate-800 rounded-lg">
+          <p className="text-slate-600 dark:text-slate-400">
             Material content not available
           </p>
         </div>
@@ -65,14 +65,14 @@ export function MaterialLesson({
 
       {lesson.description && (
         <div className="mt-4 prose dark:prose-invert max-w-none">
-          <p className="text-neutral-700 dark:text-neutral-300">
+          <p className="text-slate-700 dark:text-slate-300">
             {lesson.description}
           </p>
         </div>
       )}
 
       {onComplete && (
-        <div className="mt-6 pt-6 border-t border-neutral-200 dark:border-neutral-800">
+        <div className="mt-6 pt-6 border-t border-slate-200 dark:border-slate-700">
           {isCompleted ? (
             <div className="flex items-center gap-2 text-success-600 dark:text-success-400">
               <CheckCircle className="w-5 h-5" />

@@ -1,21 +1,22 @@
-import React from 'react';
-import { cn } from '@/lib/utils';
+import React from "react";
+import { cn } from "@/lib/utils";
 
 export interface BadgeProps extends React.HTMLAttributes<HTMLSpanElement> {
-  variant?: 'default' | 'primary' | 'success' | 'warning' | 'error' | 'info';
+  variant?: "default" | "primary" | "success" | "warning" | "error" | "info";
   children: React.ReactNode;
 }
 
 const Badge = React.forwardRef<HTMLSpanElement, BadgeProps>(
-  ({ className, variant = 'default', children, ...props }, ref) => {
-    // Nuxt UI style semantic badge variants - using solid colors for better contrast
+  ({ className, variant = "default", children, ...props }, ref) => {
+    // Crypto/SaaS style semantic badge variants - using solid colors for better contrast
     const variants = {
-      default: "bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-200",
-      primary: "bg-primary-600 text-white dark:bg-primary-500",
-      success: "bg-success text-white dark:bg-success-500",
-      warning: "bg-warning text-white dark:bg-warning",
-      error: "bg-error text-white dark:bg-error-500",
-      info: "bg-info text-white dark:bg-info-500",
+      default:
+        "bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200",
+      primary: "bg-primary-500 text-white",
+      success: "bg-success text-white",
+      warning: "bg-warning text-white",
+      error: "bg-error text-white",
+      info: "bg-info text-white",
     };
 
     return (
@@ -30,6 +31,6 @@ const Badge = React.forwardRef<HTMLSpanElement, BadgeProps>(
   }
 );
 
-Badge.displayName = 'Badge';
+Badge.displayName = "Badge";
 
 export default Badge;

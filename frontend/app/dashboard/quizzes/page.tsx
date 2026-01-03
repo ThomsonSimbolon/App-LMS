@@ -36,10 +36,10 @@ export default function StudentQuizzesPage() {
   return (
     <div>
       <div className="mb-10">
-        <h1 className="text-4xl font-bold text-neutral-900 dark:text-white mb-2">
+        <h1 className="text-4xl font-bold text-slate-900 dark:text-white mb-2">
           My Quizzes
         </h1>
-        <p className="text-lg text-neutral-600 dark:text-neutral-400">
+        <p className="text-lg text-slate-600 dark:text-slate-400">
           Track your quiz attempts and scores
         </p>
       </div>
@@ -47,39 +47,39 @@ export default function StudentQuizzesPage() {
       <div className="card overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-sm">
-            <thead className="bg-neutral-50 dark:bg-neutral-800 border-b border-neutral-200 dark:border-neutral-700">
+            <thead className="bg-slate-50 dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700">
               <tr>
-                <th className="px-6 py-4 font-semibold text-neutral-900 dark:text-white">
+                <th className="px-6 py-4 font-semibold text-slate-900 dark:text-white">
                   Quiz Title
                 </th>
-                <th className="px-6 py-4 font-semibold text-neutral-900 dark:text-white">
+                <th className="px-6 py-4 font-semibold text-slate-900 dark:text-white">
                   Course
                 </th>
-                <th className="px-6 py-4 font-semibold text-neutral-900 dark:text-white">
+                <th className="px-6 py-4 font-semibold text-slate-900 dark:text-white">
                   Status
                 </th>
-                <th className="px-6 py-4 font-semibold text-neutral-900 dark:text-white">
+                <th className="px-6 py-4 font-semibold text-slate-900 dark:text-white">
                   Score
                 </th>
-                <th className="px-6 py-4 font-semibold text-neutral-900 dark:text-white">
+                <th className="px-6 py-4 font-semibold text-slate-900 dark:text-white">
                   Date
                 </th>
-                <th className="px-6 py-4 font-semibold text-neutral-900 dark:text-white text-right">
+                <th className="px-6 py-4 font-semibold text-slate-900 dark:text-white text-right">
                   Actions
                 </th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-neutral-200 dark:divide-neutral-700">
+            <tbody className="divide-y divide-slate-200 dark:divide-slate-700">
               {quizzes.length > 0 ? (
                 quizzes.map((quiz) => (
                   <tr
                     key={quiz.id}
-                    className="hover:bg-neutral-50 dark:hover:bg-neutral-800/50 transition-colors"
+                    className="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors"
                   >
-                    <td className="px-6 py-4 font-medium text-neutral-900 dark:text-white">
+                    <td className="px-6 py-4 font-medium text-slate-900 dark:text-white">
                       {quiz.title}
                     </td>
-                    <td className="px-6 py-4 text-neutral-600 dark:text-neutral-300">
+                    <td className="px-6 py-4 text-slate-600 dark:text-slate-300">
                       {quiz.course}
                     </td>
                     <td className="px-6 py-4">
@@ -95,10 +95,10 @@ export default function StudentQuizzesPage() {
                         {quiz.status}
                       </Badge>
                     </td>
-                    <td className="px-6 py-4 font-medium text-neutral-900 dark:text-white">
+                    <td className="px-6 py-4 font-medium text-slate-900 dark:text-white">
                       {quiz.score ? `${quiz.score}%` : "-"}
                     </td>
-                    <td className="px-6 py-4 text-neutral-600 dark:text-neutral-300">
+                    <td className="px-6 py-4 text-slate-600 dark:text-slate-300">
                       {quiz.date || "-"}
                     </td>
                     <td className="px-6 py-4 text-right">
@@ -108,7 +108,7 @@ export default function StudentQuizzesPage() {
                           Start Quiz
                         </button>
                       ) : (
-                        <button className="inline-flex items-center text-neutral-500 hover:text-neutral-600 font-medium text-sm">
+                        <button className="inline-flex items-center text-slate-500 hover:text-slate-600 font-medium text-sm">
                           <FileText className="w-4 h-4 mr-1.5" />
                           View Results
                         </button>
@@ -120,7 +120,7 @@ export default function StudentQuizzesPage() {
                 <tr>
                   <td
                     colSpan={6}
-                    className="px-6 py-8 text-center text-neutral-500"
+                    className="px-6 py-8 text-center text-slate-500"
                   >
                     No quizzes found.
                   </td>

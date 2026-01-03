@@ -70,7 +70,7 @@ export default function RegisterPage() {
   const displayError = validationError || error;
 
   return (
-    <div className="min-h-screen bg-neutral-50 dark:bg-neutral-950 flex items-center justify-center py-12 px-4">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex items-center justify-center py-12 px-4">
       <div className="max-w-md w-full">
         {/* Logo */}
         <div className="text-center mb-8">
@@ -82,10 +82,10 @@ export default function RegisterPage() {
               LMS Platform
             </span>
           </Link>
-          <h2 className="mt-6 text-3xl font-bold text-neutral-900 dark:text-white">
+          <h2 className="mt-6 text-3xl font-bold text-slate-900 dark:text-white">
             Create your account
           </h2>
-          <p className="mt-2 text-sm text-neutral-600 dark:text-neutral-400">
+          <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">
             Start your learning journey today
           </p>
         </div>
@@ -103,7 +103,7 @@ export default function RegisterPage() {
               <div>
                 <label
                   htmlFor="firstName"
-                  className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2"
+                  className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2"
                 >
                   First Name
                 </label>
@@ -122,7 +122,7 @@ export default function RegisterPage() {
               <div>
                 <label
                   htmlFor="lastName"
-                  className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2"
+                  className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2"
                 >
                   Last Name
                 </label>
@@ -142,7 +142,7 @@ export default function RegisterPage() {
             <div>
               <label
                 htmlFor="email"
-                className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2"
+                className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2"
               >
                 Email address
               </label>
@@ -161,7 +161,7 @@ export default function RegisterPage() {
             <div>
               <label
                 htmlFor="password"
-                className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2"
+                className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2"
               >
                 Password
               </label>
@@ -180,7 +180,7 @@ export default function RegisterPage() {
             <div>
               <label
                 htmlFor="confirmPassword"
-                className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2"
+                className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2"
               >
                 Confirm Password
               </label>
@@ -206,7 +206,7 @@ export default function RegisterPage() {
           </form>
 
           <div className="mt-6 text-center">
-            <p className="text-sm text-neutral-600 dark:text-neutral-400">
+            <p className="text-sm text-slate-600 dark:text-slate-400">
               Already have an account?{" "}
               <Link
                 href="/login"

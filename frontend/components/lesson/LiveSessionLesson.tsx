@@ -35,14 +35,14 @@ export function LiveSessionLesson({
       </div>
 
       <div className="bg-primary-50 dark:bg-primary-900/20 border border-primary-200 dark:border-primary-800 rounded-lg p-6">
-        <h3 className="text-lg font-semibold text-neutral-900 dark:text-white mb-4 flex items-center gap-2">
+        <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
           <Calendar className="w-5 h-5" />
           Live Session Details
         </h3>
 
         {meetingUrl && (
           <div className="mb-4">
-            <p className="text-sm text-neutral-600 dark:text-neutral-400 mb-2">
+            <p className="text-sm text-slate-600 dark:text-slate-400 mb-2">
               Meeting URL:
             </p>
             <a
@@ -59,11 +59,11 @@ export function LiveSessionLesson({
 
         {scheduledAt && (
           <div className="mb-4">
-            <p className="text-sm text-neutral-600 dark:text-neutral-400 mb-1 flex items-center gap-2">
+            <p className="text-sm text-slate-600 dark:text-slate-400 mb-1 flex items-center gap-2">
               <Clock className="w-4 h-4" />
               Scheduled:
             </p>
-            <p className="text-neutral-900 dark:text-white">
+            <p className="text-slate-900 dark:text-white">
               {new Date(scheduledAt).toLocaleString()}
             </p>
           </div>
@@ -71,10 +71,10 @@ export function LiveSessionLesson({
 
         {duration > 0 && (
           <div>
-            <p className="text-sm text-neutral-600 dark:text-neutral-400 mb-1">
+            <p className="text-sm text-slate-600 dark:text-slate-400 mb-1">
               Duration:
             </p>
-            <p className="text-neutral-900 dark:text-white">
+            <p className="text-slate-900 dark:text-white">
               {Math.floor(duration / 60)} minutes
             </p>
           </div>
@@ -91,14 +91,14 @@ export function LiveSessionLesson({
 
       {lesson.description && (
         <div className="mt-4 prose dark:prose-invert max-w-none">
-          <p className="text-neutral-700 dark:text-neutral-300">
+          <p className="text-slate-700 dark:text-slate-300">
             {lesson.description}
           </p>
         </div>
       )}
 
       {onComplete && (
-        <div className="mt-6 pt-6 border-t border-neutral-200 dark:border-neutral-800">
+        <div className="mt-6 pt-6 border-t border-slate-200 dark:border-slate-700">
           {isCompleted ? (
             <div className="flex items-center gap-2 text-success-600 dark:text-success-400">
               <CheckCircle className="w-5 h-5" />

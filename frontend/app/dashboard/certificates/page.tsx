@@ -34,10 +34,10 @@ export default function CertificatesPage() {
   return (
     <div>
       <div className="mb-10">
-        <h1 className="text-4xl font-bold text-neutral-900 dark:text-white mb-2">
+        <h1 className="text-4xl font-bold text-slate-900 dark:text-white mb-2">
           My Certificates
         </h1>
-        <p className="text-lg text-neutral-600 dark:text-neutral-400">
+        <p className="text-lg text-slate-600 dark:text-slate-400">
           View and download your earned certificates
         </p>
       </div>
@@ -47,9 +47,9 @@ export default function CertificatesPage() {
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {[...Array(3)].map((_, i) => (
             <div key={i} className="card p-6 animate-pulse">
-              <div className="h-48 bg-neutral-200 dark:bg-neutral-700 rounded mb-4"></div>
-              <div className="h-4 bg-neutral-200 dark:bg-neutral-700 rounded mb-2"></div>
-              <div className="h-3 bg-neutral-200 dark:bg-neutral-700 rounded"></div>
+              <div className="h-48 bg-slate-200 dark:bg-slate-700 rounded mb-4"></div>
+              <div className="h-4 bg-slate-200 dark:bg-slate-700 rounded mb-2"></div>
+              <div className="h-3 bg-slate-200 dark:bg-slate-700 rounded"></div>
             </div>
           ))}
         </div>
@@ -72,10 +72,10 @@ export default function CertificatesPage() {
 
               {/* Certificate Info */}
               <div className="p-6">
-                <h4 className="font-semibold text-neutral-900 dark:text-white mb-2 line-clamp-2">
+                <h4 className="font-semibold text-slate-900 dark:text-white mb-2 line-clamp-2">
                   {certificate.course?.title || "Course Title"}
                 </h4>
-                <p className="text-sm text-neutral-600 dark:text-neutral-400 mb-4">
+                <p className="text-sm text-slate-600 dark:text-slate-400 mb-4">
                   Issued:{" "}
                   {formatDate(certificate.issuedAt || certificate.createdAt)}
                 </p>
@@ -112,10 +112,10 @@ export default function CertificatesPage() {
       ) : (
         <div className="card p-12 text-center">
           <div className="text-6xl mb-4">🏆</div>
-          <h3 className="text-xl font-semibold text-neutral-900 dark:text-white mb-2">
+          <h3 className="text-xl font-semibold text-slate-900 dark:text-white mb-2">
             No certificates yet
           </h3>
-          <p className="text-neutral-600 dark:text-neutral-400 mb-6">
+          <p className="text-slate-600 dark:text-slate-400 mb-6">
             Complete a course to earn your first certificate
           </p>
           <button

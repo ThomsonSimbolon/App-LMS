@@ -53,7 +53,7 @@ export function QuizLesson({ lesson }: QuizLessonProps) {
       </div>
 
       <div className="bg-warning-50 dark:bg-warning-900/20 border border-warning-200 dark:border-warning-800 rounded-lg p-6">
-        <h3 className="text-lg font-semibold text-neutral-900 dark:text-white mb-4 flex items-center gap-2">
+        <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
           <CheckCircle className="w-5 h-5" />
           Quiz Information
         </h3>
@@ -61,10 +61,10 @@ export function QuizLesson({ lesson }: QuizLessonProps) {
         <div className="space-y-3 mb-6">
           {typeof quizId === "number" && quizId > 0 && (
             <div>
-              <span className="font-medium text-neutral-700 dark:text-neutral-300">
+              <span className="font-medium text-slate-700 dark:text-slate-300">
                 Quiz ID:
               </span>{" "}
-              <span className="text-neutral-600 dark:text-neutral-400">
+              <span className="text-slate-600 dark:text-slate-400">
                 #{quizId}
               </span>
             </div>
@@ -72,10 +72,10 @@ export function QuizLesson({ lesson }: QuizLessonProps) {
 
           {typeof passingScore === "number" && (
             <div>
-              <span className="font-medium text-neutral-700 dark:text-neutral-300">
+              <span className="font-medium text-slate-700 dark:text-slate-300">
                 Passing Score:
               </span>{" "}
-              <span className="text-neutral-600 dark:text-neutral-400">
+              <span className="text-slate-600 dark:text-slate-400">
                 {passingScore}%
               </span>
             </div>
@@ -83,19 +83,19 @@ export function QuizLesson({ lesson }: QuizLessonProps) {
 
           {typeof timeLimit === "number" && timeLimit > 0 && (
             <div className="flex items-center gap-2">
-              <Clock className="w-4 h-4 text-neutral-600 dark:text-neutral-400" />
-              <span className="font-medium text-neutral-700 dark:text-neutral-300">
+              <Clock className="w-4 h-4 text-slate-600 dark:text-slate-400" />
+              <span className="font-medium text-slate-700 dark:text-slate-300">
                 Time Limit:
               </span>{" "}
-              <span className="text-neutral-600 dark:text-neutral-400">
+              <span className="text-slate-600 dark:text-slate-400">
                 {Math.floor(timeLimit / 60)} minutes
               </span>
             </div>
           )}
         </div>
 
-        <div className="mt-6 p-4 bg-neutral-100 dark:bg-neutral-800 rounded-lg">
-          <p className="text-sm text-neutral-600 dark:text-neutral-400 mb-3">
+        <div className="mt-6 p-4 bg-slate-100 dark:bg-slate-800 rounded-lg">
+          <p className="text-sm text-slate-600 dark:text-slate-400 mb-3">
             Complete this quiz through the quiz system. You must pass the quiz
             to complete this lesson.
           </p>
@@ -113,7 +113,7 @@ export function QuizLesson({ lesson }: QuizLessonProps) {
 
       {lesson.description && (
         <div className="mt-4 prose dark:prose-invert max-w-none">
-          <p className="text-neutral-700 dark:text-neutral-300">
+          <p className="text-slate-700 dark:text-slate-300">
             {lesson.description}
           </p>
         </div>

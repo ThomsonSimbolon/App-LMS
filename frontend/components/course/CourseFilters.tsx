@@ -45,11 +45,11 @@ export function CourseFilters({ onFilterChange }: CourseFiltersProps) {
     <div className="space-y-6">
       {/* Search */}
       <div>
-        <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
+        <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
           Search
         </label>
         <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-400" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
           <input
             type="text"
             value={filters.search}
@@ -62,7 +62,7 @@ export function CourseFilters({ onFilterChange }: CourseFiltersProps) {
 
       {/* Level Filter */}
       <div>
-        <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
+        <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
           Level
         </label>
         <select
@@ -81,7 +81,7 @@ export function CourseFilters({ onFilterChange }: CourseFiltersProps) {
 
       {/* Type Filter */}
       <div>
-        <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
+        <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
           Type
         </label>
         <select
@@ -100,7 +100,7 @@ export function CourseFilters({ onFilterChange }: CourseFiltersProps) {
 
       {/* Sort */}
       <div>
-        <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
+        <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
           Sort By
         </label>
         <select

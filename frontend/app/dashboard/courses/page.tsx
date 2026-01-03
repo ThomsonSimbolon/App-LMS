@@ -37,10 +37,10 @@ export default function MyCoursesPage() {
   return (
     <div>
       <div className="mb-10">
-        <h1 className="text-4xl font-bold text-neutral-900 dark:text-white mb-2">
+        <h1 className="text-4xl font-bold text-slate-900 dark:text-white mb-2">
           My Courses
         </h1>
-        <p className="text-lg text-neutral-600 dark:text-neutral-400">
+        <p className="text-lg text-slate-600 dark:text-slate-400">
           Manage your enrolled courses
         </p>
       </div>
@@ -71,9 +71,9 @@ export default function MyCoursesPage() {
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {[...Array(8)].map((_, i) => (
             <div key={i} className="card p-4 animate-pulse">
-              <div className="h-40 bg-neutral-200 dark:bg-neutral-700 rounded mb-4"></div>
-              <div className="h-4 bg-neutral-200 dark:bg-neutral-700 rounded mb-2"></div>
-              <div className="h-3 bg-neutral-200 dark:bg-neutral-700 rounded"></div>
+              <div className="h-40 bg-slate-200 dark:bg-slate-700 rounded mb-4"></div>
+              <div className="h-4 bg-slate-200 dark:bg-slate-700 rounded mb-2"></div>
+              <div className="h-3 bg-slate-200 dark:bg-slate-700 rounded"></div>
             </div>
           ))}
         </div>
@@ -96,14 +96,14 @@ export default function MyCoursesPage() {
           <div className="text-6xl mb-4">
             {activeFilter === 'completed' ? '🎓' : '📚'}
           </div>
-          <h3 className="text-xl font-semibold text-neutral-900 dark:text-white mb-2">
+          <h3 className="text-xl font-semibold text-slate-900 dark:text-white mb-2">
             {activeFilter === 'completed'
               ? 'No completed courses yet'
               : activeFilter === 'active'
               ? 'No courses in progress'
               : 'No enrolled courses yet'}
           </h3>
-          <p className="text-neutral-600 dark:text-neutral-400 mb-6">
+          <p className="text-slate-600 dark:text-slate-400 mb-6">
             {activeFilter === 'all'
               ? 'Start learning by enrolling in a course'
               : 'Complete a course to see it here'}

@@ -76,10 +76,10 @@ export default function VerifyEmailPage({
             {status === "loading" && (
               <div className="text-center">
                 <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-primary-600 mx-auto mb-6"></div>
-                <h2 className="text-2xl font-bold text-neutral-900 dark:text-white mb-2">
+                <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-2">
                   Verifying Your Email
                 </h2>
-                <p className="text-neutral-600 dark:text-neutral-400">
+                <p className="text-slate-600 dark:text-slate-400">
                   Please wait while we verify your email address...
                 </p>
               </div>
@@ -102,14 +102,14 @@ export default function VerifyEmailPage({
                     />
                   </svg>
                 </div>
-                <h2 className="text-2xl font-bold text-neutral-900 dark:text-white mb-2">
+                <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-2">
                   Email Verified!
                 </h2>
-                <p className="text-neutral-600 dark:text-neutral-400 mb-6">
+                <p className="text-slate-600 dark:text-slate-400 mb-6">
                   {message}
                 </p>
                 <div className="bg-accent-50 dark:bg-accent-900/10 border border-accent-200 dark:border-accent-900/30 rounded-lg p-4 mb-6">
-                  <p className="text-sm text-neutral-700 dark:text-neutral-300">
+                  <p className="text-sm text-slate-700 dark:text-slate-300">
                     Redirecting to login in{" "}
                     <span className="font-bold text-accent-600 dark:text-accent-400">
                       {countdown}
@@ -143,18 +143,18 @@ export default function VerifyEmailPage({
                     />
                   </svg>
                 </div>
-                <h2 className="text-2xl font-bold text-neutral-900 dark:text-white mb-2">
+                <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-2">
                   Verification Failed
                 </h2>
-                <p className="text-neutral-600 dark:text-neutral-400 mb-6">
+                <p className="text-slate-600 dark:text-slate-400 mb-6">
                   {message}
                 </p>
 
-                <div className="bg-neutral-100 dark:bg-neutral-800 rounded-lg p-4 mb-6">
-                  <p className="text-sm text-neutral-600 dark:text-neutral-400 mb-2">
+                <div className="bg-slate-100 dark:bg-slate-800 rounded-lg p-4 mb-6">
+                  <p className="text-sm text-slate-600 dark:text-slate-400 mb-2">
                     Common reasons for verification failure:
                   </p>
-                  <ul className="text-sm text-neutral-700 dark:text-neutral-300 text-left space-y-1">
+                  <ul className="text-sm text-slate-700 dark:text-slate-300 text-left space-y-1">
                     <li>• Link has expired (24 hours validity)</li>
                     <li>• Email already verified</li>
                     <li>• Invalid verification link</li>

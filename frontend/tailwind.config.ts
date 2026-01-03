@@ -11,48 +11,80 @@ export default {
   theme: {
     extend: {
       /* -------------------------------------------------
-       * COLORS — Nuxt UI–STYLE SEMANTIC SYSTEM
+       * COLORS — CRYPTO / MODERN SAAS STYLE
+       * Standardized color system with full light/dark support
        * ------------------------------------------------- */
       colors: {
-        /* Primary (Nuxt UI Indigo) */
+        /* Primary - Blue CTA / Active states */
         primary: {
+          50: "#eff6ff",
+          100: "#dbeafe",
+          200: "#bfdbfe",
+          300: "#93c5fd",
+          400: "#60a5fa", // dark hover
+          500: "#3b82f6", // main CTA
+          600: "#3b82f6", // default action (same as 500 for consistency)
+          700: "#2563eb", // light hover
+          800: "#1d4ed8",
+          900: "#1e40af",
+        },
+
+        /* Secondary - Indigo */
+        secondary: {
           50: "#eef2ff",
           100: "#e0e7ff",
           200: "#c7d2fe",
           300: "#a5b4fc",
           400: "#818cf8",
           500: "#6366f1", // main
-          600: "#4f46e5", // default action
-          700: "#4338ca", // hover
-          800: "#3730a3",
-          900: "#312e81",
+          600: "#6366f1",
+          700: "#4f46e5",
+          800: "#4338ca",
+          900: "#3730a3",
         },
 
-        /* Accent / Success */
+        /* Accent - Violet */
         accent: {
-          50: "#ecfdf5",
-          100: "#d1fae5",
-          200: "#a7f3d0",
-          300: "#6ee7b7",
-          400: "#34d399",
-          500: "#10b981",
-          600: "#059669",
-          700: "#047857",
+          50: "#f5f3ff",
+          100: "#ede9fe",
+          200: "#ddd6fe",
+          300: "#c4b5fd",
+          400: "#a78bfa",
+          500: "#8b5cf6", // main
+          600: "#8b5cf6",
+          700: "#7c3aed",
+          800: "#6d28d9",
+          900: "#5b21b6",
         },
 
-        /* Neutral — FOUNDATION */
+        /* Slate - Foundation for text/borders (replacing neutral & gray) */
+        slate: {
+          50: "#f8fafc", // text main light
+          100: "#f1f5f9",
+          200: "#e2e8f0", // border light
+          300: "#cbd5e1", // text body dark
+          400: "#94a3b8", // text muted dark
+          500: "#64748b", // text muted light
+          600: "#475569", // text body light
+          700: "#334155",
+          800: "#1e293b", // border dark
+          900: "#0f172a", // bg card/surface dark
+          950: "#020617",
+        },
+
+        /* Neutral - For compatibility (maps to slate) */
         neutral: {
-          50: "#fafafa",
-          100: "#f5f5f5",
-          200: "#e5e5e5",
-          300: "#d4d4d4",
-          400: "#a3a3a3",
-          500: "#737373",
-          600: "#525252",
-          700: "#404040",
-          800: "#262626",
-          900: "#171717",
-          950: "#0a0a0a",
+          50: "#f8fafc",
+          100: "#f1f5f9",
+          200: "#e2e8f0",
+          300: "#cbd5e1",
+          400: "#94a3b8",
+          500: "#64748b",
+          600: "#475569",
+          700: "#334155",
+          800: "#1e293b",
+          900: "#0f172a",
+          950: "#020617",
         },
 
         /* Semantic Status */
@@ -61,11 +93,13 @@ export default {
         error: "#ef4444",
         info: "#3b82f6",
 
-        /* Background semantic tokens - NuxtJS style */
-        base: "#f0fdfa", // Light: soft mint/green pastel
-        "base-dark": "#020617", // Dark: deep slate/blue-black
-        hero: "#ecfdf5", // Light: softer mint for hero gradient start
-        "hero-dark": "#030712", // Dark: slightly lighter slate for hero
+        /* Background semantic tokens - Crypto/SaaS style */
+        base: "#f8faff", // Light: main background
+        "base-dark": "#0b1220", // Dark: main background
+        surface: "#ffffff", // Light: card/surface
+        "surface-dark": "#111827", // Dark: card/surface
+        soft: "#eef2ff", // Light: soft background
+        "soft-dark": "#0f172a", // Dark: soft background (same as card)
       },
 
       /* -------------------------------------------------

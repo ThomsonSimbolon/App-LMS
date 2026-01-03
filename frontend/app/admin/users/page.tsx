@@ -66,10 +66,10 @@ export default function UserManagementPage() {
     <div>
       <div className="mb-8 flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-bold text-neutral-900 dark:text-white mb-2">
+          <h1 className="text-3xl font-bold text-slate-900 dark:text-white mb-2">
             User Management
           </h1>
-          <p className="text-neutral-600 dark:text-neutral-400">
+          <p className="text-slate-600 dark:text-slate-400">
             Manage system users and their roles
           </p>
         </div>
@@ -87,45 +87,45 @@ export default function UserManagementPage() {
       <div className="card overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-sm">
-            <thead className="bg-neutral-50 dark:bg-neutral-900 border-b border-neutral-200 dark:border-neutral-800">
+            <thead className="bg-slate-50 dark:bg-slate-900 border-b border-slate-200 dark:border-slate-700">
               <tr>
-                <th className="px-6 py-4 font-semibold text-neutral-900 dark:text-white">
+                <th className="px-6 py-4 font-semibold text-slate-900 dark:text-white">
                   User
                 </th>
-                <th className="px-6 py-4 font-semibold text-neutral-900 dark:text-white">
+                <th className="px-6 py-4 font-semibold text-slate-900 dark:text-white">
                   Email
                 </th>
-                <th className="px-6 py-4 font-semibold text-neutral-900 dark:text-white">
+                <th className="px-6 py-4 font-semibold text-slate-900 dark:text-white">
                   Role
                 </th>
-                <th className="px-6 py-4 font-semibold text-neutral-900 dark:text-white">
+                <th className="px-6 py-4 font-semibold text-slate-900 dark:text-white">
                   Joined
                 </th>
-                <th className="px-6 py-4 font-semibold text-neutral-900 dark:text-white text-right">
+                <th className="px-6 py-4 font-semibold text-slate-900 dark:text-white text-right">
                   Actions
                 </th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-neutral-200 dark:divide-neutral-800">
+            <tbody className="divide-y divide-slate-200 dark:divide-slate-800">
               {users.map((user) => (
                 <tr
                   key={user.id}
-                  className="hover:bg-neutral-50 dark:hover:bg-neutral-800/50 transition-colors"
+                  className="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors"
                 >
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-full bg-neutral-200 dark:bg-neutral-800 flex items-center justify-center text-xs font-bold text-neutral-900 dark:text-neutral-100">
+                      <div className="w-8 h-8 rounded-full bg-slate-200 dark:bg-slate-800 flex items-center justify-center text-xs font-bold text-slate-900 dark:text-slate-100">
                         {user.firstName?.[0]}
                         {user.lastName?.[0]}
                       </div>
                       <div>
-                        <div className="font-medium text-neutral-900 dark:text-white">
+                        <div className="font-medium text-slate-900 dark:text-white">
                           {user.firstName} {user.lastName}
                         </div>
                       </div>
                     </div>
                   </td>
-                  <td className="px-6 py-4 text-neutral-600 dark:text-neutral-400">
+                  <td className="px-6 py-4 text-slate-600 dark:text-slate-400">
                     {user.email}
                   </td>
                   <td className="px-6 py-4">
@@ -138,14 +138,14 @@ export default function UserManagementPage() {
                         updating === user.id ||
                         user.role?.name === "SUPER_ADMIN"
                       } // Basic protection
-                      className="bg-transparent border border-neutral-200 dark:border-neutral-700 rounded px-2 py-1 text-xs focus:ring-2 focus:ring-primary-500"
+                      className="bg-transparent border border-slate-200 dark:border-slate-700 rounded px-2 py-1 text-xs focus:ring-2 focus:ring-primary-500"
                     >
                       <option value={2}>ADMIN</option>
                       <option value={3}>INSTRUCTOR</option>
                       <option value={4}>STUDENT</option>
                     </select>
                   </td>
-                  <td className="px-6 py-4 text-neutral-600 dark:text-neutral-400">
+                  <td className="px-6 py-4 text-slate-600 dark:text-slate-400">
                     {user.createdAt
                       ? new Date(user.createdAt).toLocaleDateString()
                       : "N/A"}

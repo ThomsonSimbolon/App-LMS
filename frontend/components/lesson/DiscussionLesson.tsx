@@ -29,17 +29,17 @@ export function DiscussionLesson({
       </div>
 
       <div className="bg-info-50 dark:bg-info-900/20 border border-info-200 dark:border-info-800 rounded-lg p-6">
-        <h3 className="text-lg font-semibold text-neutral-900 dark:text-white mb-4 flex items-center gap-2">
+        <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
           <MessageSquare className="w-5 h-5" />
           Discussion Forum
         </h3>
 
         {topic && (
           <div className="mb-4">
-            <h4 className="font-medium text-neutral-900 dark:text-white mb-2">
+            <h4 className="font-medium text-slate-900 dark:text-white mb-2">
               Topic:
             </h4>
-            <p className="text-neutral-700 dark:text-neutral-300">
+            <p className="text-slate-700 dark:text-slate-300">
               {topic}
             </p>
           </div>
@@ -51,8 +51,8 @@ export function DiscussionLesson({
           </div>
         )}
 
-        <div className="mt-6 p-4 bg-neutral-100 dark:bg-neutral-800 rounded-lg">
-          <p className="text-sm text-neutral-600 dark:text-neutral-400">
+        <div className="mt-6 p-4 bg-slate-100 dark:bg-slate-800 rounded-lg">
+          <p className="text-sm text-slate-600 dark:text-slate-400">
             ⚠️ Discussion forum feature coming soon. Participate in the discussion to complete this lesson.
           </p>
         </div>
@@ -60,14 +60,14 @@ export function DiscussionLesson({
 
       {lesson.description && (
         <div className="mt-4 prose dark:prose-invert max-w-none">
-          <p className="text-neutral-700 dark:text-neutral-300">
+          <p className="text-slate-700 dark:text-slate-300">
             {lesson.description}
           </p>
         </div>
       )}
 
       {onComplete && (
-        <div className="mt-6 pt-6 border-t border-neutral-200 dark:border-neutral-800">
+        <div className="mt-6 pt-6 border-t border-slate-200 dark:border-slate-700">
           {isCompleted ? (
             <div className="flex items-center gap-2 text-success-600 dark:text-success-400">
               <CheckCircle className="w-5 h-5" />

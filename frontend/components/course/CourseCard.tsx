@@ -23,8 +23,7 @@ interface CourseCardProps {
 }
 
 const levelColors = {
-  BEGINNER:
-    "bg-success/10 dark:bg-success/20 text-success dark:text-success",
+  BEGINNER: "bg-success/10 dark:bg-success/20 text-success dark:text-success",
   INTERMEDIATE:
     "bg-primary-50 dark:bg-primary-900/20 text-primary-600 dark:text-primary-400",
   ADVANCED: "bg-error/10 dark:bg-error/20 text-error dark:text-error",
@@ -54,9 +53,9 @@ export function CourseCard({
 }: CourseCardProps) {
   return (
     <Link href={`${basePath}/${id}`}>
-      <div className="card card-hover overflow-hidden h-full flex flex-col group">
+      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 shadow-soft rounded-xl overflow-hidden h-full flex flex-col hover:shadow-soft-lg hover:-translate-y-0.5 transition-all duration-200 group">
         {/* Thumbnail */}
-        <div className="relative h-48 bg-neutral-200 dark:bg-neutral-800 overflow-hidden">
+        <div className="relative h-48 bg-slate-200 dark:bg-slate-800">
           {thumbnail && getFileUrl(thumbnail) ? (
             <Image
               src={getFileUrl(thumbnail)}
@@ -93,7 +92,7 @@ export function CourseCard({
               {level.charAt(0) + level.slice(1).toLowerCase()}
             </span>
             {version && (
-              <span className="badge bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 text-xs">
+              <span className="badge bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-xs">
                 v{version}
               </span>
             )}
@@ -102,16 +101,16 @@ export function CourseCard({
 
         {/* Content */}
         <div className="p-6 flex-1 flex flex-col">
-          <h3 className="text-xl font-semibold text-neutral-900 dark:text-white mb-2 line-clamp-2 group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors">
+          <h3 className="text-xl font-semibold text-slate-900 dark:text-white mb-2 line-clamp-2 group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors">
             {title}
           </h3>
 
-          <p className="text-sm text-neutral-600 dark:text-neutral-400 mb-4 line-clamp-2 flex-1">
+          <p className="text-sm text-slate-600 dark:text-slate-400 mb-4 line-clamp-2 flex-1">
             {description}
           </p>
 
           {/* Footer */}
-          <div className="flex items-center justify-between pt-4 border-t border-neutral-200 dark:border-neutral-800">
+          <div className="flex items-center justify-between pt-4 border-t border-slate-200 dark:border-slate-700">
             <div className="flex items-center gap-2">
               {instructor ? (
                 <>
@@ -119,7 +118,7 @@ export function CourseCard({
                     {instructor.firstName.charAt(0)}
                     {instructor.lastName?.charAt(0) || ""}
                   </div>
-                  <span className="text-sm text-neutral-600 dark:text-neutral-400">
+                  <span className="text-sm text-slate-600 dark:text-slate-400">
                     {instructor.firstName} {instructor.lastName || ""}
                   </span>
                 </>
@@ -128,14 +127,14 @@ export function CourseCard({
                   <div className="w-8 h-8 rounded-full bg-primary-600 flex items-center justify-center text-white text-sm font-medium">
                     ?
                   </div>
-                  <span className="text-sm text-neutral-600 dark:text-neutral-400">
+                  <span className="text-sm text-slate-600 dark:text-slate-400">
                     Unknown Instructor
                   </span>
                 </>
               )}
             </div>
 
-            <div className="flex items-center gap-3 text-sm text-neutral-600 dark:text-neutral-400">
+            <div className="flex items-center gap-3 text-sm text-slate-600 dark:text-slate-400">
               {rating && (
                 <span className="flex items-center gap-1">
                   <svg

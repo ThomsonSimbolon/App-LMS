@@ -21,13 +21,13 @@ export default function Home() {
                 Learn, Grow,
               </span>
               <br />
-              <span className="text-neutral-900 dark:text-white">
+              <span className="text-slate-900 dark:text-white">
                 Get Certified
               </span>
             </h1>
 
             {/* Subheading */}
-            <p className="text-xl md:text-2xl text-neutral-600 dark:text-neutral-400 max-w-3xl mx-auto">
+            <p className="text-xl md:text-2xl text-slate-600 dark:text-slate-400 max-w-3xl mx-auto">
               Modern Learning Management System with integrated certification.
               Build skills, track progress, and earn recognized certificates.
             </p>
@@ -58,7 +58,7 @@ export default function Home() {
                   <div className="text-3xl md:text-4xl font-bold text-primary-600 dark:text-primary-500">
                     {stat.value}
                   </div>
-                  <div className="text-sm text-neutral-600 dark:text-neutral-400">
+                  <div className="text-sm text-slate-600 dark:text-slate-400">
                     {stat.label}
                   </div>
                 </div>
@@ -94,10 +94,10 @@ export default function Home() {
                 style={{ animationDelay: `${index * 100 + 200}ms` }}
               >
                 <div className="text-4xl">{feature.icon}</div>
-                <h3 className="text-xl font-semibold text-neutral-900 dark:text-white">
+                <h3 className="text-xl font-semibold text-slate-900 dark:text-white">
                   {feature.title}
                 </h3>
-                <p className="text-neutral-600 dark:text-neutral-400">
+                <p className="text-slate-600 dark:text-slate-400">
                   {feature.description}
                 </p>
               </div>
@@ -108,7 +108,7 @@ export default function Home() {
           <div className="mt-16 text-center">
             <div className="inline-flex items-center gap-2 card px-6 py-3">
               <div className="w-2 h-2 bg-success rounded-full animate-pulse"></div>
-              <span className="text-sm text-neutral-600 dark:text-neutral-400">
+              <span className="text-sm text-slate-600 dark:text-slate-400">
                 Platform Status:{" "}
                 <span className="font-semibold text-success dark:text-success">
                   All Systems Operational

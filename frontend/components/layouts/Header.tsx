@@ -17,15 +17,15 @@ const Header: React.FC = () => {
   ];
 
   return (
-    <header className="sticky top-0 z-40 w-full border-b border-neutral-200 dark:border-neutral-800 bg-white/80 dark:bg-neutral-900/80 backdrop-blur-lg shadow-soft">
+    <header className="sticky top-0 z-40 w-full border-b border-slate-200 dark:border-slate-600 bg-white/80 dark:bg-slate-900/80 backdrop-blur-lg shadow-soft">
       <nav className="container-custom">
         <div className="flex h-16 items-center justify-between">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2 group">
-            <div className="w-8 h-8 rounded-lg bg-primary-600 flex items-center justify-center group-hover:scale-110 transition-transform">
+            <div className="w-8 h-8 rounded-lg bg-primary-500 flex items-center justify-center group-hover:scale-110 transition-transform">
               <span className="text-white font-bold text-lg">L</span>
             </div>
-            <span className="text-xl font-bold text-primary-600 dark:text-primary-400">
+            <span className="text-xl font-bold text-primary-500 dark:text-primary-400">
               LMS Platform
             </span>
           </Link>
@@ -36,7 +36,7 @@ const Header: React.FC = () => {
               <Link
                 key={item.name}
                 href={item.href}
-                className="text-sm font-medium text-neutral-700 dark:text-neutral-300 hover:text-primary-600 dark:hover:text-primary-400 transition-colors"
+                className="text-sm font-medium text-slate-600 dark:text-slate-300 hover:text-primary-500 dark:hover:text-primary-400 transition-colors"
               >
                 {item.name}
               </Link>
@@ -49,13 +49,13 @@ const Header: React.FC = () => {
             <ThemeToggle />
             <Link
               href="/login"
-              className="btn bg-transparent hover:bg-neutral-100 dark:hover:bg-neutral-800 text-neutral-700 dark:text-neutral-300 px-4 py-2 text-sm"
+              className="btn bg-transparent hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 px-4 py-2 text-sm"
             >
               Login
             </Link>
             <Link
               href="/register"
-              className="btn bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 text-sm"
+              className="btn bg-primary-500 hover:bg-primary-700 dark:hover:bg-primary-400 text-white px-4 py-2 text-sm"
             >
               Get Started
             </Link>
@@ -64,7 +64,7 @@ const Header: React.FC = () => {
           {/* Mobile Menu Button */}
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="md:hidden btn bg-transparent hover:bg-neutral-100 dark:hover:bg-neutral-800 p-2"
+            className="md:hidden btn bg-transparent hover:bg-slate-100 dark:hover:bg-slate-800 p-2"
             aria-label="Toggle menu"
           >
             {mobileMenuOpen ? (
@@ -82,7 +82,7 @@ const Header: React.FC = () => {
               <Link
                 key={item.name}
                 href={item.href}
-                className="block px-4 py-2 text-sm font-medium text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded-lg"
+                className="block px-4 py-2 text-sm font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg"
                 onClick={() => setMobileMenuOpen(false)}
               >
                 {item.name}
@@ -91,14 +91,14 @@ const Header: React.FC = () => {
             <div className="pt-2 space-y-2">
               <Link
                 href="/login"
-                className="block w-full btn bg-transparent hover:bg-neutral-100 dark:hover:bg-neutral-800 text-neutral-700 dark:text-neutral-300 px-4 py-2 text-sm text-center"
+                className="block w-full btn bg-transparent hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 px-4 py-2 text-sm text-center"
                 onClick={() => setMobileMenuOpen(false)}
               >
                 Login
               </Link>
               <Link
                 href="/register"
-                className="block w-full btn bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 text-sm text-center"
+                className="block w-full btn bg-primary-500 hover:bg-primary-700 dark:hover:bg-primary-400 text-white px-4 py-2 text-sm text-center"
                 onClick={() => setMobileMenuOpen(false)}
               >
                 Get Started

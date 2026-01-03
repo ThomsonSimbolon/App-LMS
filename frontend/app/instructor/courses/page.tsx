@@ -115,10 +115,10 @@ export default function InstructorCoursesPage() {
     <div>
       <div className="flex justify-between items-center mb-8">
         <div>
-          <h1 className="text-3xl font-bold text-neutral-900 dark:text-white mb-2">
+          <h1 className="text-3xl font-bold text-slate-900 dark:text-white mb-2">
             My Courses
           </h1>
-          <p className="text-neutral-600 dark:text-neutral-400">
+          <p className="text-slate-600 dark:text-slate-400">
             Manage your courses and content
           </p>
         </div>
@@ -138,7 +138,7 @@ export default function InstructorCoursesPage() {
       )}
 
       {courses.length === 0 ? (
-        <div className="card p-12 text-center text-neutral-600 dark:text-neutral-400">
+        <div className="card p-12 text-center text-slate-600 dark:text-slate-400">
           <p className="mb-4">You haven&apos;t created any courses yet.</p>
           <button
             onClick={() => router.push("/instructor/courses/create")}
@@ -152,7 +152,7 @@ export default function InstructorCoursesPage() {
           {courses.map((course) => (
             <div key={course.id} className="card overflow-hidden group">
               {/* Reuse CourseCard or custom card with edit actions */}
-              <div className="relative h-48 bg-neutral-200 dark:bg-neutral-800">
+              <div className="relative h-48 bg-slate-200 dark:bg-slate-800">
                 {course.thumbnail ? (
                   <Image
                     src={getFileUrl(course.thumbnail)}
@@ -162,8 +162,8 @@ export default function InstructorCoursesPage() {
                     unoptimized
                   />
                 ) : (
-                  <div className="w-full h-full flex items-center justify-center bg-neutral-200 dark:bg-neutral-800">
-                    <BookOpen className="w-16 h-16 text-neutral-400 dark:text-neutral-500" />
+                  <div className="w-full h-full flex items-center justify-center bg-slate-200 dark:bg-slate-800">
+                    <BookOpen className="w-16 h-16 text-slate-400 dark:text-slate-500" />
                   </div>
                 )}
                 <div className="absolute top-2 right-2 flex flex-col gap-1 items-end">
@@ -182,7 +182,7 @@ export default function InstructorCoursesPage() {
                 <h3 className="font-bold text-lg mb-2 line-clamp-1">
                   {course.title}
                 </h3>
-                <div className="flex justify-between items-center text-sm text-neutral-500 mb-4">
+                <div className="flex justify-between items-center text-sm text-slate-500 mb-4">
                   <span>{course.category?.name}</span>
                   <span>
                     {course.createdAt
@@ -233,11 +233,11 @@ export default function InstructorCoursesPage() {
       >
         {selectedCourse && (
           <div className="space-y-4">
-            <div className="bg-neutral-50 dark:bg-neutral-800 rounded-lg p-4">
-              <p className="text-sm text-neutral-600 dark:text-neutral-400 mb-2">
+            <div className="bg-slate-50 dark:bg-slate-800 rounded-lg p-4">
+              <p className="text-sm text-slate-600 dark:text-slate-400 mb-2">
                 Current Version
               </p>
-              <p className="text-lg font-semibold text-neutral-900 dark:text-white">
+              <p className="text-lg font-semibold text-slate-900 dark:text-white">
                 {selectedCourse.title}{" "}
                 <span className="text-primary-600">
                   v{selectedCourse.version || "1.0"}
@@ -246,10 +246,10 @@ export default function InstructorCoursesPage() {
             </div>
 
             <div className="space-y-2">
-              <p className="text-sm text-neutral-700 dark:text-neutral-300">
+              <p className="text-sm text-slate-700 dark:text-slate-300">
                 Publishing a new version will:
               </p>
-              <ul className="list-disc list-inside text-sm text-neutral-600 dark:text-neutral-400 space-y-1 ml-2">
+              <ul className="list-disc list-inside text-sm text-slate-600 dark:text-slate-400 space-y-1 ml-2">
                 <li>Create a new immutable version of this course</li>
                 <li>Duplicate all sections, lessons, and quizzes</li>
                 <li>

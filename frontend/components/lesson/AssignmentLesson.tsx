@@ -127,7 +127,7 @@ export function AssignmentLesson({
       </div>
 
       <div className="bg-accent-50 dark:bg-accent-900/20 border border-accent-200 dark:border-accent-800 rounded-lg p-6">
-        <h3 className="text-lg font-semibold text-neutral-900 dark:text-white mb-4">
+        <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-4">
           Assignment Instructions
         </h3>
 
@@ -140,11 +140,11 @@ export function AssignmentLesson({
         <div className="space-y-3 text-sm mb-6">
           {submissionType && (
             <div className="flex items-center gap-2">
-              <FileText className="w-4 h-4 text-neutral-600 dark:text-neutral-400" />
-              <span className="font-medium text-neutral-700 dark:text-neutral-300">
+              <FileText className="w-4 h-4 text-slate-600 dark:text-slate-400" />
+              <span className="font-medium text-slate-700 dark:text-slate-300">
                 Submission Type:
               </span>
-              <span className="text-neutral-600 dark:text-neutral-400">
+              <span className="text-slate-600 dark:text-slate-400">
                 {submissionType}
               </span>
             </div>
@@ -164,10 +164,10 @@ export function AssignmentLesson({
 
           {typeof maxScore === "number" && (
             <div className="flex items-center gap-2">
-              <span className="font-medium text-neutral-700 dark:text-neutral-300">
+              <span className="font-medium text-slate-700 dark:text-slate-300">
                 Max Score:
               </span>
-              <span className="text-neutral-600 dark:text-neutral-400">
+              <span className="text-slate-600 dark:text-slate-400">
                 {maxScore} points
               </span>
             </div>
@@ -178,13 +178,13 @@ export function AssignmentLesson({
           <div className="space-y-4 mt-6">
             {(submissionType === "TEXT" || submissionType === "ANY") && (
               <div>
-                <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
+                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
                   Text Submission
                 </label>
                 <textarea
                   value={submissionText}
                   onChange={(e) => setSubmissionText(e.target.value)}
-                  className="w-full px-4 py-2 border border-neutral-300 dark:border-neutral-700 rounded-lg bg-white dark:bg-neutral-900 text-neutral-900 dark:text-white"
+                  className="w-full px-4 py-2 border border-slate-300 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-900 text-slate-900 dark:text-white"
                   rows={6}
                   placeholder="Enter your submission text here..."
                 />
@@ -193,7 +193,7 @@ export function AssignmentLesson({
 
             {(submissionType === "LINK" || submissionType === "ANY") && (
               <div>
-                <label className="text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2 flex items-center gap-2">
+                <label className="text-sm font-medium text-slate-700 dark:text-slate-300 mb-2 flex items-center gap-2">
                   <LinkIcon className="w-4 h-4" />
                   Link Submission
                 </label>
@@ -201,7 +201,7 @@ export function AssignmentLesson({
                   type="url"
                   value={submissionLink}
                   onChange={(e) => setSubmissionLink(e.target.value)}
-                  className="w-full px-4 py-2 border border-neutral-300 dark:border-neutral-700 rounded-lg bg-white dark:bg-neutral-900 text-neutral-900 dark:text-white"
+                  className="w-full px-4 py-2 border border-slate-300 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-900 text-slate-900 dark:text-white"
                   placeholder="https://..."
                 />
               </div>
@@ -209,7 +209,7 @@ export function AssignmentLesson({
 
             {(submissionType === "FILE" || submissionType === "ANY") && (
               <div>
-                <label className="text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2 flex items-center gap-2">
+                <label className="text-sm font-medium text-slate-700 dark:text-slate-300 mb-2 flex items-center gap-2">
                   <Upload className="w-4 h-4" />
                   File Submission
                 </label>
@@ -218,10 +218,10 @@ export function AssignmentLesson({
                   onChange={(e) =>
                     setSubmissionFile(e.target.files?.[0] || null)
                   }
-                  className="w-full px-4 py-2 border border-neutral-300 dark:border-neutral-700 rounded-lg bg-white dark:bg-neutral-900 text-neutral-900 dark:text-white"
+                  className="w-full px-4 py-2 border border-slate-300 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-900 text-slate-900 dark:text-white"
                 />
                 {submissionFile && (
-                  <p className="mt-2 text-sm text-neutral-600 dark:text-neutral-400">
+                  <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">
                     Selected: {submissionFile.name}
                   </p>
                 )}
@@ -256,7 +256,7 @@ export function AssignmentLesson({
 
       {lesson.description && (
         <div className="mt-4 prose dark:prose-invert max-w-none">
-          <p className="text-neutral-700 dark:text-neutral-300">
+          <p className="text-slate-700 dark:text-slate-300">
             {lesson.description}
           </p>
         </div>

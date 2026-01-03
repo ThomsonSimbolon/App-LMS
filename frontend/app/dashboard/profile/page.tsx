@@ -115,11 +115,11 @@ export default function ProfilePage() {
       <div>
         <div className="max-w-2xl mx-auto">
           <div className="card p-8 animate-pulse">
-            <div className="h-8 bg-neutral-200 dark:bg-neutral-700 rounded mb-6"></div>
+            <div className="h-8 bg-slate-200 dark:bg-slate-700 rounded mb-6"></div>
             <div className="space-y-4">
-              <div className="h-4 bg-neutral-200 dark:bg-neutral-700 rounded"></div>
-              <div className="h-4 bg-neutral-200 dark:bg-neutral-700 rounded"></div>
-              <div className="h-4 bg-neutral-200 dark:bg-neutral-700 rounded"></div>
+              <div className="h-4 bg-slate-200 dark:bg-slate-700 rounded"></div>
+              <div className="h-4 bg-slate-200 dark:bg-slate-700 rounded"></div>
+              <div className="h-4 bg-slate-200 dark:bg-slate-700 rounded"></div>
             </div>
           </div>
         </div>
@@ -132,23 +132,23 @@ export default function ProfilePage() {
       <div className="max-w-2xl mx-auto">
         <div className="max-w-2xl mx-auto">
           <div className="mb-10">
-            <h1 className="text-4xl font-bold text-neutral-900 dark:text-white mb-2">
+            <h1 className="text-4xl font-bold text-slate-900 dark:text-white mb-2">
               Profile Settings
             </h1>
-            <p className="text-lg text-neutral-600 dark:text-neutral-400">
+            <p className="text-lg text-slate-600 dark:text-slate-400">
               Manage your account information
             </p>
           </div>
 
           {/* Profile Information */}
           <div className="card p-8 mb-6">
-            <h2 className="text-2xl font-semibold text-neutral-900 dark:text-white mb-6">
+            <h2 className="text-2xl font-semibold text-slate-900 dark:text-white mb-6">
               Personal Information
             </h2>
             <form onSubmit={handleProfileUpdate} className="space-y-6">
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
+                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
                     First Name
                   </label>
                   <input
@@ -161,7 +161,7 @@ export default function ProfilePage() {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
+                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
                     Last Name
                   </label>
                   <input
@@ -176,7 +176,7 @@ export default function ProfilePage() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
+                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
                   Email
                 </label>
                 <input
@@ -201,12 +201,12 @@ export default function ProfilePage() {
 
           {/* Change Password */}
           <div className="card p-8">
-            <h2 className="text-2xl font-semibold text-neutral-900 dark:text-white mb-6">
+            <h2 className="text-2xl font-semibold text-slate-900 dark:text-white mb-6">
               Change Password
             </h2>
             <form onSubmit={handlePasswordChange} className="space-y-6">
               <div>
-                <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
+                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
                   Current Password
                 </label>
                 <input
@@ -224,7 +224,7 @@ export default function ProfilePage() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
+                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
                   New Password
                 </label>
                 <input
@@ -242,7 +242,7 @@ export default function ProfilePage() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
+                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
                   Confirm New Password
                 </label>
                 <input

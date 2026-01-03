@@ -18,51 +18,51 @@ export function QuizStart({ quiz, attempts = 0, onStart }: QuizStartProps) {
 
   return (
     <div className="card p-8 max-w-2xl mx-auto">
-      <h2 className="text-3xl font-bold text-neutral-900 dark:text-white mb-4">
+      <h2 className="text-3xl font-bold text-slate-900 dark:text-white mb-4">
         {quiz.title}
       </h2>
       {quiz.description && (
-        <p className="text-neutral-700 dark:text-neutral-300 mb-6">
+        <p className="text-slate-700 dark:text-slate-300 mb-6">
           {quiz.description}
         </p>
       )}
 
       <div className="grid md:grid-cols-2 gap-4 mb-8">
-        <div className="bg-neutral-100 dark:bg-neutral-800 p-4 rounded-lg">
-          <div className="text-sm text-neutral-600 dark:text-neutral-400 mb-1">
+        <div className="bg-slate-100 dark:bg-slate-800 p-4 rounded-lg">
+          <div className="text-sm text-slate-600 dark:text-slate-400 mb-1">
             Questions
           </div>
-          <div className="text-2xl font-bold text-neutral-900 dark:text-white">
+          <div className="text-2xl font-bold text-slate-900 dark:text-white">
             {quiz.questionCount}
           </div>
         </div>
 
         {quiz.timeLimit && (
-          <div className="bg-neutral-100 dark:bg-neutral-800 p-4 rounded-lg">
-            <div className="text-sm text-neutral-600 dark:text-neutral-400 mb-1">
+          <div className="bg-slate-100 dark:bg-slate-800 p-4 rounded-lg">
+            <div className="text-sm text-slate-600 dark:text-slate-400 mb-1">
               Time Limit
             </div>
-            <div className="text-2xl font-bold text-neutral-900 dark:text-white">
+            <div className="text-2xl font-bold text-slate-900 dark:text-white">
               {quiz.timeLimit} min
             </div>
           </div>
         )}
 
-        <div className="bg-neutral-100 dark:bg-neutral-800 p-4 rounded-lg">
-          <div className="text-sm text-neutral-600 dark:text-neutral-400 mb-1">
+        <div className="bg-slate-100 dark:bg-slate-800 p-4 rounded-lg">
+          <div className="text-sm text-slate-600 dark:text-slate-400 mb-1">
             Passing Score
           </div>
-          <div className="text-2xl font-bold text-neutral-900 dark:text-white">
+          <div className="text-2xl font-bold text-slate-900 dark:text-white">
             {quiz.passingScore}%
           </div>
         </div>
 
         {quiz.maxAttempts && (
-          <div className="bg-neutral-100 dark:bg-neutral-800 p-4 rounded-lg">
-            <div className="text-sm text-neutral-600 dark:text-neutral-400 mb-1">
+          <div className="bg-slate-100 dark:bg-slate-800 p-4 rounded-lg">
+            <div className="text-sm text-slate-600 dark:text-slate-400 mb-1">
               Attempts Left
             </div>
-            <div className="text-2xl font-bold text-neutral-900 dark:text-white">
+            <div className="text-2xl font-bold text-slate-900 dark:text-white">
               {attemptsLeft !== null ? attemptsLeft : '∞'}
             </div>
           </div>

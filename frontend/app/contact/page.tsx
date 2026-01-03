@@ -49,7 +49,7 @@ export default function ContactPage() {
             <h1 className="text-4xl md:text-5xl font-bold mb-6 text-white">
               Get in Touch
             </h1>
-            <p className="text-primary-100 dark:text-neutral-400 text-lg max-w-2xl mx-auto">
+            <p className="text-primary-100 dark:text-slate-400 text-lg max-w-2xl mx-auto">
               Have questions about our courses or platform? We&apos;re here to
               help. Reach out to our team.
             </p>
@@ -66,10 +66,10 @@ export default function ContactPage() {
                     <Mail className="w-6 h-6" />
                   </div>
                   <div>
-                    <h3 className="font-bold text-neutral-900 dark:text-white mb-1">
+                    <h3 className="font-bold text-slate-900 dark:text-white mb-1">
                       Email
                     </h3>
-                    <p className="text-sm text-neutral-600 dark:text-neutral-400 mb-2">
+                    <p className="text-sm text-slate-600 dark:text-slate-400 mb-2">
                       Our friendly team is here to help.
                     </p>
                     <a
@@ -86,13 +86,13 @@ export default function ContactPage() {
                     <MapPin className="w-6 h-6" />
                   </div>
                   <div>
-                    <h3 className="font-bold text-neutral-900 dark:text-white mb-1">
+                    <h3 className="font-bold text-slate-900 dark:text-white mb-1">
                       Office
                     </h3>
-                    <p className="text-sm text-neutral-600 dark:text-neutral-400 mb-2">
+                    <p className="text-sm text-slate-600 dark:text-slate-400 mb-2">
                       Come say hello at our office HQ.
                     </p>
-                    <p className="text-neutral-900 dark:text-white text-sm font-medium">
+                    <p className="text-slate-900 dark:text-white text-sm font-medium">
                       123 Learning Street
                       <br />
                       Knowledge City, KC 45678
@@ -105,10 +105,10 @@ export default function ContactPage() {
                     <Phone className="w-6 h-6" />
                   </div>
                   <div>
-                    <h3 className="font-bold text-neutral-900 dark:text-white mb-1">
+                    <h3 className="font-bold text-slate-900 dark:text-white mb-1">
                       Phone
                     </h3>
-                    <p className="text-sm text-neutral-600 dark:text-neutral-400 mb-2">
+                    <p className="text-sm text-slate-600 dark:text-slate-400 mb-2">
                       Mon-Fri from 8am to 5pm.
                     </p>
                     <a
@@ -154,15 +154,15 @@ export default function ContactPage() {
                   />
 
                   <div className="space-y-1.5">
-                    <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300">
+                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">
                       Message
                     </label>
                     <textarea
                       name="message"
                       rows={6}
                       className={cn(
-                        "w-full rounded-lg border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-900 px-3 py-2 text-sm",
-                        "placeholder:text-neutral-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent",
+                        "w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 text-sm",
+                        "placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent",
                         "dark:text-white resize-none"
                       )}
                       placeholder="Tell us more about your inquiry..."
@@ -189,8 +189,8 @@ export default function ContactPage() {
         </section>
 
         {/* Map Section (Optional visual) */}
-        <div className="h-96 bg-neutral-200 dark:bg-neutral-800 w-full relative">
-          <div className="absolute inset-0 flex items-center justify-center text-neutral-500">
+        <div className="h-96 bg-slate-200 dark:bg-slate-800 w-full relative">
+          <div className="absolute inset-0 flex items-center justify-center text-slate-500">
             <div className="text-center flex flex-col items-center">
               <Map className="w-10 h-10 mb-2" />
               <p>Interactive Map Component Would Go Here</p>

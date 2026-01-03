@@ -6,7 +6,7 @@ interface PDFViewerProps {
 
 export function PDFViewer({ url }: PDFViewerProps) {
   return (
-    <div className="relative w-full bg-neutral-100 dark:bg-neutral-800 rounded-lg overflow-hidden" style={{ height: '600px' }}>
+    <div className="relative w-full bg-slate-100 dark:bg-slate-800 rounded-lg overflow-hidden" style={{ height: '600px' }}>
       <iframe
         src={url}
         className="w-full h-full"

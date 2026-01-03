@@ -28,8 +28,8 @@ export function LessonRenderer({
 }: LessonRendererProps) {
   if (!lesson) {
     return (
-      <div className="p-6 bg-neutral-100 dark:bg-neutral-800 rounded-lg">
-        <p className="text-neutral-600 dark:text-neutral-400">
+      <div className="p-6 bg-slate-100 dark:bg-slate-800 rounded-lg">
+        <p className="text-slate-600 dark:text-slate-400">
           Lesson content not available
         </p>
       </div>
@@ -108,8 +108,8 @@ export function LessonRenderer({
 
     default:
       return (
-        <div className="p-6 bg-neutral-100 dark:bg-neutral-800 rounded-lg">
-          <p className="text-neutral-600 dark:text-neutral-400">
+        <div className="p-6 bg-slate-100 dark:bg-slate-800 rounded-lg">
+          <p className="text-slate-600 dark:text-slate-400">
             Unknown lesson type: {type}
           </p>
         </div>

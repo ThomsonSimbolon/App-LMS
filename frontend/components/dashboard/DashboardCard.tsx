@@ -44,14 +44,14 @@ function CardContent({
           <Icon className="w-6 h-6 text-white" />
         )}
       </div>
-      <div className="text-3xl font-bold text-neutral-900 dark:text-neutral-100 mb-1">
+      <div className="text-3xl font-bold text-slate-900 dark:text-slate-100 mb-1">
         {value}
       </div>
-      <div className="text-sm font-medium text-neutral-600 dark:text-neutral-400 mb-1">
+      <div className="text-sm font-medium text-slate-600 dark:text-slate-400 mb-1">
         {title}
       </div>
       {subtitle && (
-        <div className="text-xs text-neutral-500 dark:text-neutral-500">
+        <div className="text-xs text-slate-500 dark:text-slate-500">
           {subtitle}
         </div>
       )}

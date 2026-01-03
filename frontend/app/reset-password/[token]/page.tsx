@@ -76,10 +76,10 @@ export default function ResetPasswordPage({
                 LMS Platform
               </span>
             </Link>
-            <h2 className="mt-6 text-3xl font-bold text-neutral-900 dark:text-neutral-50">
+            <h2 className="mt-6 text-3xl font-bold text-slate-900 dark:text-slate-50">
               Reset Password
             </h2>
-            <p className="mt-2 text-sm text-neutral-600 dark:text-neutral-400">
+            <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">
               Enter your new password
             </p>
           </div>
@@ -95,7 +95,7 @@ export default function ResetPasswordPage({
               <div>
                 <label
                   htmlFor="password"
-                  className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2"
+                  className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2"
                 >
                   New Password
                 </label>
@@ -116,7 +116,7 @@ export default function ResetPasswordPage({
               <div>
                 <label
                   htmlFor="confirmPassword"
-                  className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2"
+                  className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2"
                 >
                   Confirm New Password
                 </label>

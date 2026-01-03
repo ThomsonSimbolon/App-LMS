@@ -84,14 +84,14 @@ export default function PricingPage() {
   return (
     <>
       <Header />
-      <div className="min-h-screen bg-neutral-50 dark:bg-neutral-950">
+      <div className="min-h-screen bg-slate-50 dark:bg-slate-950">
         {/* Hero Section */}
         <section className="py-20 px-4 text-center">
           <div className="container-custom max-w-4xl mx-auto">
-            <h1 className="text-4xl md:text-5xl font-bold text-neutral-900 dark:text-white mb-6">
+            <h1 className="text-4xl md:text-5xl font-bold text-slate-900 dark:text-white mb-6">
               Simple, transparent pricing
             </h1>
-            <p className="text-lg md:text-xl text-neutral-600 dark:text-neutral-400 mb-10 max-w-2xl mx-auto">
+            <p className="text-lg md:text-xl text-slate-600 dark:text-slate-400 mb-10 max-w-2xl mx-auto">
               Choose the plan that&apos;s right for you. No hidden fees, cancel
               anytime.
             </p>
@@ -102,15 +102,15 @@ export default function PricingPage() {
                 className={cn(
                   "text-sm font-medium",
                   !annual
-                    ? "text-neutral-900 dark:text-white"
-                    : "text-neutral-500"
+                    ? "text-slate-900 dark:text-white"
+                    : "text-slate-500"
                 )}
               >
                 Monthly
               </span>
               <button
                 onClick={() => setAnnual(!annual)}
-                className="relative w-14 h-8 bg-neutral-200 dark:bg-neutral-700 rounded-full p-1 transition-colors focus:outline-none focus:ring-2 focus:ring-primary-500"
+                className="relative w-14 h-8 bg-slate-200 dark:bg-slate-700 rounded-full p-1 transition-colors focus:outline-none focus:ring-2 focus:ring-primary-500"
                 aria-label="Toggle billing cycle"
               >
                 <div
@@ -124,8 +124,8 @@ export default function PricingPage() {
                 className={cn(
                   "text-sm font-medium",
                   annual
-                    ? "text-neutral-900 dark:text-white"
-                    : "text-neutral-500"
+                    ? "text-slate-900 dark:text-white"
+                    : "text-slate-500"
                 )}
               >
                 Yearly{" "}
@@ -158,27 +158,27 @@ export default function PricingPage() {
                   )}
 
                   <div className="mb-6">
-                    <h3 className="text-xl font-bold text-neutral-900 dark:text-white mb-2">
+                    <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">
                       {plan.name}
                     </h3>
-                    <p className="text-sm text-neutral-600 dark:text-neutral-400 h-10">
+                    <p className="text-sm text-slate-600 dark:text-slate-400 h-10">
                       {plan.description}
                     </p>
                   </div>
 
                   <div className="mb-6">
                     <div className="flex items-baseline gap-1">
-                      <span className="text-4xl font-bold text-neutral-900 dark:text-white">
+                      <span className="text-4xl font-bold text-slate-900 dark:text-white">
                         ${plan.price}
                       </span>
                       {plan.price > 0 && (
-                        <span className="text-neutral-500">
+                        <span className="text-slate-500">
                           /{annual ? "mo" : "mo"}
                         </span>
                       )}
                     </div>
                     {annual && plan.price > 0 && (
-                      <p className="text-xs text-neutral-500 mt-1">
+                      <p className="text-xs text-slate-500 mt-1">
                         Billed ${plan.price * 12} yearly
                       </p>
                     )}
@@ -189,7 +189,7 @@ export default function PricingPage() {
                       {plan.features.map((feature, i) => (
                         <li
                           key={i}
-                          className="flex items-start gap-3 text-sm text-neutral-700 dark:text-neutral-300"
+                          className="flex items-start gap-3 text-sm text-slate-700 dark:text-slate-300"
                         >
                           <span className="text-green-500 flex-shrink-0">
                             ✓
@@ -201,7 +201,7 @@ export default function PricingPage() {
                         plan.notIncluded.map((feature, i) => (
                           <li
                             key={i}
-                            className="flex items-start gap-3 text-sm text-neutral-400 dark:text-neutral-600"
+                            className="flex items-start gap-3 text-sm text-slate-400 dark:text-slate-600"
                           >
                             <span className="flex-shrink-0">×</span>
                             {feature}
@@ -220,18 +220,18 @@ export default function PricingPage() {
         </section>
 
         {/* FAQs */}
-        <section className="py-20 bg-white dark:bg-neutral-900 border-t border-neutral-200 dark:border-neutral-800">
+        <section className="py-20 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-700">
           <div className="container-custom max-w-4xl mx-auto px-4">
-            <h2 className="text-3xl font-bold text-center text-neutral-900 dark:text-white mb-12">
+            <h2 className="text-3xl font-bold text-center text-slate-900 dark:text-white mb-12">
               Frequently Asked Questions
             </h2>
             <div className="grid md:grid-cols-2 gap-8">
               {faqs.map((faq, i) => (
                 <div key={i} className="space-y-2">
-                  <h3 className="font-bold text-lg text-neutral-900 dark:text-white">
+                  <h3 className="font-bold text-lg text-slate-900 dark:text-white">
                     {faq.q}
                   </h3>
-                  <p className="text-neutral-600 dark:text-neutral-400 leading-relaxed">
+                  <p className="text-slate-600 dark:text-slate-400 leading-relaxed">
                     {faq.a}
                   </p>
                 </div>
@@ -250,7 +250,7 @@ export default function PricingPage() {
               Join thousands of students already learning on our platform today.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button className="bg-white text-primary-600 hover:bg-neutral-100 border-none">
+              <Button className="bg-white text-primary-600 hover:bg-slate-100 border-none">
                 Get Started for Free
               </Button>
               <Button

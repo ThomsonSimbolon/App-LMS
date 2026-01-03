@@ -1,8 +1,8 @@
-const { ActivityLog } = require('../models');
+const { ActivityLog } = require("../models");
 
 /**
  * Activity Log Service
- * 
+ *
  * Centralized service for logging system activities.
  * All logging operations are non-blocking and fail-safe.
  * Logging failures will not break the main business flow.
@@ -15,14 +15,16 @@ const { ActivityLog } = require('../models');
  */
 const getIpAddress = (req) => {
   if (!req) return null;
-  
+
   // Check for forwarded IP (when behind proxy/load balancer)
-  return req.ip || 
-         req.connection?.remoteAddress || 
-         req.socket?.remoteAddress ||
-         (req.headers['x-forwarded-for']?.split(',')[0]?.trim()) ||
-         req.headers['x-real-ip'] ||
-         null;
+  return (
+    req.ip ||
+    req.connection?.remoteAddress ||
+    req.socket?.remoteAddress ||
+    req.headers["x-forwarded-for"]?.split(",")[0]?.trim() ||
+    req.headers["x-real-ip"] ||
+    null
+  );
 };
 
 /**
@@ -32,15 +34,15 @@ const getIpAddress = (req) => {
  */
 const getUserAgent = (req) => {
   if (!req) return null;
-  return req.headers['user-agent'] || null;
+  return req.headers["user-agent"] || null;
 };
 
 /**
  * Log an activity event
- * 
+ *
  * This function is non-blocking and fail-safe.
  * It will not throw errors that could break the main business flow.
- * 
+ *
  * @param {string} eventType - Type of event (USER_LOGIN, COURSE_ENROLL, etc.)
  * @param {Object|null} user - User object (can be null for system events)
  * @param {Object} entity - Entity object with type and id
@@ -52,17 +54,18 @@ const log = async (eventType, user, entity, metadata = null, req = null) => {
   try {
     // Validate eventType
     const validEventTypes = [
-      'USER_LOGIN',
-      'COURSE_ENROLL',
-      'LESSON_COMPLETE',
-      'QUIZ_SUBMIT',
-      'CERT_REQUESTED',
-      'CERT_APPROVED',
-      'CERT_REJECTED',
-      'ASSESSOR_ASSIGNED_TO_COURSE',
-      'ASSESSOR_UNASSIGNED_FROM_COURSE'
+      "USER_LOGIN",
+      "COURSE_ENROLL",
+      "LESSON_COMPLETE",
+      "QUIZ_SUBMIT",
+      "CERT_REQUESTED",
+      "CERT_REQUEST_BLOCKED",
+      "CERT_APPROVED",
+      "CERT_REJECTED",
+      "ASSESSOR_ASSIGNED_TO_COURSE",
+      "ASSESSOR_UNASSIGNED_FROM_COURSE",
     ];
-    
+
     if (!validEventTypes.includes(eventType)) {
       console.warn(`[ActivityLog] Invalid eventType: ${eventType}`);
       return;
@@ -70,7 +73,9 @@ const log = async (eventType, user, entity, metadata = null, req = null) => {
 
     // Validate entity
     if (!entity || !entity.type || !entity.id) {
-      console.warn(`[ActivityLog] Invalid entity object for event: ${eventType}`);
+      console.warn(
+        `[ActivityLog] Invalid entity object for event: ${eventType}`
+      );
       return;
     }
 
@@ -82,7 +87,7 @@ const log = async (eventType, user, entity, metadata = null, req = null) => {
       entityId: entity.id,
       metadata: metadata ? JSON.stringify(metadata) : null,
       ipAddress: getIpAddress(req),
-      userAgent: getUserAgent(req)
+      userAgent: getUserAgent(req),
     };
 
     // Create log entry asynchronously (non-blocking)
@@ -92,13 +97,18 @@ const log = async (eventType, user, entity, metadata = null, req = null) => {
         await ActivityLog.create(logData);
       } catch (error) {
         // Fail-safe: log error but don't throw
-        console.error(`[ActivityLog] Failed to log event ${eventType}:`, error.message);
+        console.error(
+          `[ActivityLog] Failed to log event ${eventType}:`,
+          error.message
+        );
       }
     });
-
   } catch (error) {
     // Fail-safe: catch any unexpected errors
-    console.error(`[ActivityLog] Unexpected error in log function:`, error.message);
+    console.error(
+      `[ActivityLog] Unexpected error in log function:`,
+      error.message
+    );
   }
 };
 
@@ -109,9 +119,9 @@ const log = async (eventType, user, entity, metadata = null, req = null) => {
  */
 const logUserLogin = async (user, req) => {
   await log(
-    'USER_LOGIN',
+    "USER_LOGIN",
     user,
-    { type: 'USER', id: user.id },
+    { type: "USER", id: user.id },
     { email: user.email, roleId: user.roleId },
     req
   );
@@ -125,9 +135,9 @@ const logUserLogin = async (user, req) => {
  */
 const logCourseEnroll = async (user, course, req) => {
   await log(
-    'COURSE_ENROLL',
+    "COURSE_ENROLL",
     user,
-    { type: 'COURSE', id: course.id },
+    { type: "COURSE", id: course.id },
     { courseTitle: course.title, courseId: course.id },
     req
   );
@@ -142,13 +152,13 @@ const logCourseEnroll = async (user, course, req) => {
  */
 const logLessonComplete = async (user, lesson, metadata = {}, req = null) => {
   await log(
-    'LESSON_COMPLETE',
+    "LESSON_COMPLETE",
     user,
-    { type: 'COURSE', id: lesson.section?.courseId || metadata.courseId },
-    { 
-      lessonId: lesson.id, 
+    { type: "COURSE", id: lesson.section?.courseId || metadata.courseId },
+    {
+      lessonId: lesson.id,
       lessonTitle: lesson.title,
-      ...metadata 
+      ...metadata,
     },
     req
   );
@@ -163,13 +173,13 @@ const logLessonComplete = async (user, lesson, metadata = {}, req = null) => {
  */
 const logQuizSubmit = async (user, quiz, metadata = {}, req = null) => {
   await log(
-    'QUIZ_SUBMIT',
+    "QUIZ_SUBMIT",
     user,
-    { type: 'QUIZ', id: quiz.id },
-    { 
+    { type: "QUIZ", id: quiz.id },
+    {
       quizId: quiz.id,
       quizTitle: quiz.title,
-      ...metadata 
+      ...metadata,
     },
     req
   );
@@ -183,12 +193,12 @@ const logQuizSubmit = async (user, quiz, metadata = {}, req = null) => {
  */
 const logCertRequested = async (user, certificate, req) => {
   await log(
-    'CERT_REQUESTED',
+    "CERT_REQUESTED",
     user,
-    { type: 'CERTIFICATE', id: certificate.id },
-    { 
+    { type: "CERTIFICATE", id: certificate.id },
+    {
       certificateNumber: certificate.certificateNumber,
-      courseId: certificate.courseId 
+      courseId: certificate.courseId,
     },
     req
   );
@@ -202,13 +212,13 @@ const logCertRequested = async (user, certificate, req) => {
  */
 const logCertApproved = async (approver, certificate, req) => {
   await log(
-    'CERT_APPROVED',
+    "CERT_APPROVED",
     approver,
-    { type: 'CERTIFICATE', id: certificate.id },
-    { 
+    { type: "CERTIFICATE", id: certificate.id },
+    {
       certificateNumber: certificate.certificateNumber,
       courseId: certificate.courseId,
-      studentId: certificate.userId 
+      studentId: certificate.userId,
     },
     req
   );
@@ -223,14 +233,14 @@ const logCertApproved = async (approver, certificate, req) => {
  */
 const logCertRejected = async (approver, certificate, rejectionReason, req) => {
   await log(
-    'CERT_REJECTED',
+    "CERT_REJECTED",
     approver,
-    { type: 'CERTIFICATE', id: certificate.id },
-    { 
+    { type: "CERTIFICATE", id: certificate.id },
+    {
       certificateNumber: certificate.certificateNumber,
       courseId: certificate.courseId,
       studentId: certificate.userId,
-      rejectionReason 
+      rejectionReason,
     },
     req
   );
@@ -245,15 +255,15 @@ const logCertRejected = async (approver, certificate, rejectionReason, req) => {
  */
 const logAssessorAssigned = async (user, course, assessor, req) => {
   await log(
-    'ASSESSOR_ASSIGNED_TO_COURSE',
+    "ASSESSOR_ASSIGNED_TO_COURSE",
     user,
-    { type: 'COURSE', id: course.id },
-    { 
+    { type: "COURSE", id: course.id },
+    {
       courseId: course.id,
       courseTitle: course.title,
       assessorId: assessor.id,
       assessorEmail: assessor.email,
-      assessorName: `${assessor.firstName} ${assessor.lastName || ''}`.trim()
+      assessorName: `${assessor.firstName} ${assessor.lastName || ""}`.trim(),
     },
     req
   );
@@ -268,15 +278,15 @@ const logAssessorAssigned = async (user, course, assessor, req) => {
  */
 const logAssessorUnassigned = async (user, course, assessor, req) => {
   await log(
-    'ASSESSOR_UNASSIGNED_FROM_COURSE',
+    "ASSESSOR_UNASSIGNED_FROM_COURSE",
     user,
-    { type: 'COURSE', id: course.id },
-    { 
+    { type: "COURSE", id: course.id },
+    {
       courseId: course.id,
       courseTitle: course.title,
       assessorId: assessor.id,
       assessorEmail: assessor.email,
-      assessorName: `${assessor.firstName} ${assessor.lastName || ''}`.trim()
+      assessorName: `${assessor.firstName} ${assessor.lastName || ""}`.trim(),
     },
     req
   );
@@ -292,6 +302,5 @@ module.exports = {
   logCertApproved,
   logCertRejected,
   logAssessorAssigned,
-  logAssessorUnassigned
+  logAssessorUnassigned,
 };
-

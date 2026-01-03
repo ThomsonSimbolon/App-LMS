@@ -95,7 +95,7 @@ export default function ActivityLogsPage() {
     };
     return (
       colors[eventType] ||
-      "bg-neutral-100 text-neutral-800 dark:bg-neutral-800 dark:text-neutral-200"
+      "bg-slate-100 text-slate-800 dark:bg-slate-800 dark:text-slate-200"
     );
   };
 
@@ -118,10 +118,10 @@ export default function ActivityLogsPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-neutral-900 dark:text-white">
+          <h1 className="text-2xl font-bold text-slate-900 dark:text-white">
             Activity Logs
           </h1>
-          <p className="text-neutral-500 dark:text-neutral-400">
+          <p className="text-slate-500 dark:text-slate-400">
             Monitor and audit system activities
           </p>
         </div>
@@ -161,10 +161,10 @@ export default function ActivityLogsPage() {
           <Card className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-neutral-500 dark:text-neutral-400">
+                <p className="text-sm text-slate-500 dark:text-slate-400">
                   Total Logs
                 </p>
-                <p className="text-2xl font-bold text-neutral-900 dark:text-white">
+                <p className="text-2xl font-bold text-slate-900 dark:text-white">
                   {stats.totalLogs.toLocaleString()}
                 </p>
               </div>
@@ -174,10 +174,10 @@ export default function ActivityLogsPage() {
           <Card className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-neutral-500 dark:text-neutral-400">
+                <p className="text-sm text-slate-500 dark:text-slate-400">
                   Unique Users
                 </p>
-                <p className="text-2xl font-bold text-neutral-900 dark:text-white">
+                <p className="text-2xl font-bold text-slate-900 dark:text-white">
                   {stats.uniqueUsers}
                 </p>
               </div>
@@ -187,10 +187,10 @@ export default function ActivityLogsPage() {
           <Card className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-neutral-500 dark:text-neutral-400">
+                <p className="text-sm text-slate-500 dark:text-slate-400">
                   Event Types
                 </p>
-                <p className="text-2xl font-bold text-neutral-900 dark:text-white">
+                <p className="text-2xl font-bold text-slate-900 dark:text-white">
                   {stats.byEventType.length}
                 </p>
               </div>
@@ -200,10 +200,10 @@ export default function ActivityLogsPage() {
           <Card className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-neutral-500 dark:text-neutral-400">
+                <p className="text-sm text-slate-500 dark:text-slate-400">
                   Entity Types
                 </p>
-                <p className="text-2xl font-bold text-neutral-900 dark:text-white">
+                <p className="text-2xl font-bold text-slate-900 dark:text-white">
                   {stats.byEntityType.length}
                 </p>
               </div>
@@ -216,20 +216,20 @@ export default function ActivityLogsPage() {
       {/* Filters */}
       <Card className="p-4">
         <div className="flex items-center gap-2 mb-4">
-          <Filter className="w-5 h-5 text-neutral-500" />
-          <h3 className="font-semibold text-neutral-900 dark:text-white">
+          <Filter className="w-5 h-5 text-slate-500" />
+          <h3 className="font-semibold text-slate-900 dark:text-white">
             Filters
           </h3>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4">
           <div>
-            <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
+            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
               Event Type
             </label>
             <select
               value={filters.eventType}
               onChange={(e) => handleFilterChange("eventType", e.target.value)}
-              className="w-full px-3 py-2 border border-neutral-300 dark:border-neutral-700 rounded-lg bg-white dark:bg-neutral-800 text-neutral-900 dark:text-white"
+              className="w-full px-3 py-2 border border-slate-300 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-white"
             >
               <option value="">All Events</option>
               <option value="USER_LOGIN">User Login</option>
@@ -242,13 +242,13 @@ export default function ActivityLogsPage() {
             </select>
           </div>
           <div>
-            <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
+            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
               Entity Type
             </label>
             <select
               value={filters.entityType}
               onChange={(e) => handleFilterChange("entityType", e.target.value)}
-              className="w-full px-3 py-2 border border-neutral-300 dark:border-neutral-700 rounded-lg bg-white dark:bg-neutral-800 text-neutral-900 dark:text-white"
+              className="w-full px-3 py-2 border border-slate-300 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-white"
             >
               <option value="">All Entities</option>
               <option value="USER">User</option>
@@ -259,7 +259,7 @@ export default function ActivityLogsPage() {
             </select>
           </div>
           <div>
-            <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
+            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
               User ID
             </label>
             <Input
@@ -270,7 +270,7 @@ export default function ActivityLogsPage() {
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
+            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
               Date From
             </label>
             <Input
@@ -280,7 +280,7 @@ export default function ActivityLogsPage() {
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
+            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
               Date To
             </label>
             <Input
@@ -315,56 +315,56 @@ export default function ActivityLogsPage() {
             {error}
           </div>
         ) : logs.length === 0 ? (
-          <div className="text-center py-12 text-neutral-500 dark:text-neutral-400">
+          <div className="text-center py-12 text-slate-500 dark:text-slate-400">
             No activity logs found
           </div>
         ) : (
           <>
             <div className="overflow-x-auto">
               <table className="w-full">
-                <thead className="bg-neutral-50 dark:bg-neutral-800 border-b border-neutral-200 dark:border-neutral-700">
+                <thead className="bg-slate-50 dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700">
                   <tr>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-neutral-500 dark:text-neutral-400 uppercase tracking-wider">
+                    <th className="px-4 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">
                       Time
                     </th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-neutral-500 dark:text-neutral-400 uppercase tracking-wider">
+                    <th className="px-4 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">
                       User
                     </th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-neutral-500 dark:text-neutral-400 uppercase tracking-wider">
+                    <th className="px-4 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">
                       Event
                     </th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-neutral-500 dark:text-neutral-400 uppercase tracking-wider">
+                    <th className="px-4 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">
                       Entity
                     </th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-neutral-500 dark:text-neutral-400 uppercase tracking-wider">
+                    <th className="px-4 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">
                       IP Address
                     </th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-neutral-500 dark:text-neutral-400 uppercase tracking-wider">
+                    <th className="px-4 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">
                       Details
                     </th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-neutral-200 dark:divide-neutral-700">
+                <tbody className="divide-y divide-slate-200 dark:divide-slate-700">
                   {logs.map((log) => (
                     <tr
                       key={log.id}
-                      className="hover:bg-neutral-50 dark:hover:bg-neutral-800/50"
+                      className="hover:bg-slate-50 dark:hover:bg-slate-800/50"
                     >
-                      <td className="px-4 py-3 text-sm text-neutral-900 dark:text-white">
+                      <td className="px-4 py-3 text-sm text-slate-900 dark:text-white">
                         {formatDate(log.createdAt)}
                       </td>
                       <td className="px-4 py-3 text-sm">
                         {log.user ? (
                           <div>
-                            <div className="font-medium text-neutral-900 dark:text-white">
+                            <div className="font-medium text-slate-900 dark:text-white">
                               {log.user.firstName} {log.user.lastName}
                             </div>
-                            <div className="text-xs text-neutral-500 dark:text-neutral-400">
+                            <div className="text-xs text-slate-500 dark:text-slate-400">
                               {log.user.email}
                             </div>
                           </div>
                         ) : (
-                          <span className="text-neutral-500 dark:text-neutral-400 italic">
+                          <span className="text-slate-500 dark:text-slate-400 italic">
                             System
                           </span>
                         )}
@@ -376,17 +376,17 @@ export default function ActivityLogsPage() {
                       </td>
                       <td className="px-4 py-3 text-sm">
                         <div>
-                          <span className="font-medium text-neutral-900 dark:text-white">
+                          <span className="font-medium text-slate-900 dark:text-white">
                             {log.entityType}
                           </span>
                           {log.entityId && (
-                            <span className="text-neutral-500 dark:text-neutral-400 ml-1">
+                            <span className="text-slate-500 dark:text-slate-400 ml-1">
                               #{log.entityId}
                             </span>
                           )}
                         </div>
                       </td>
-                      <td className="px-4 py-3 text-xs text-neutral-600 dark:text-neutral-400 font-mono">
+                      <td className="px-4 py-3 text-xs text-slate-600 dark:text-slate-400 font-mono">
                         {log.ipAddress || "-"}
                       </td>
                       <td className="px-4 py-3 text-sm">
@@ -395,7 +395,7 @@ export default function ActivityLogsPage() {
                             <summary className="text-primary-600 dark:text-primary-400 hover:underline text-xs">
                               View Details
                             </summary>
-                            <pre className="mt-2 p-2 bg-neutral-100 dark:bg-neutral-900 rounded text-xs overflow-x-auto max-h-40 overflow-y-auto">
+                            <pre className="mt-2 p-2 bg-slate-100 dark:bg-slate-900 rounded text-xs overflow-x-auto max-h-40 overflow-y-auto">
                               {JSON.stringify(log.metadata, null, 2)}
                             </pre>
                           </details>
@@ -409,8 +409,8 @@ export default function ActivityLogsPage() {
 
             {/* Pagination */}
             {pagination.pages > 1 && (
-              <div className="px-4 py-3 border-t border-neutral-200 dark:border-neutral-700 flex items-center justify-between">
-                <div className="text-sm text-neutral-500 dark:text-neutral-400">
+              <div className="px-4 py-3 border-t border-slate-200 dark:border-slate-700 flex items-center justify-between">
+                <div className="text-sm text-slate-500 dark:text-slate-400">
                   Showing {(pagination.page - 1) * pagination.limit + 1} to{" "}
                   {Math.min(
                     pagination.page * pagination.limit,

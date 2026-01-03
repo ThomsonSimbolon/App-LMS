@@ -53,10 +53,10 @@ export default function ForgotPasswordPage() {
                 LMS Platform
               </span>
             </Link>
-            <h2 className="mt-6 text-3xl font-bold text-neutral-900 dark:text-neutral-50">
+            <h2 className="mt-6 text-3xl font-bold text-slate-900 dark:text-slate-50">
               Forgot Password?
             </h2>
-            <p className="mt-2 text-sm text-neutral-600 dark:text-neutral-400">
+            <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">
               Enter your email and we&apos;ll send you a reset link
             </p>
           </div>
@@ -65,10 +65,10 @@ export default function ForgotPasswordPage() {
             {success ? (
               <div className="text-center">
                 <div className="text-6xl mb-4">✉️</div>
-                <h3 className="text-xl font-semibold text-neutral-900 dark:text-white mb-2">
+                <h3 className="text-xl font-semibold text-slate-900 dark:text-white mb-2">
                   Check your email
                 </h3>
-                <p className="text-neutral-600 dark:text-neutral-400 mb-6">
+                <p className="text-slate-600 dark:text-slate-400 mb-6">
                   We&apos;ve sent a password reset link to{" "}
                   <strong>{email}</strong>
                 </p>
@@ -90,7 +90,7 @@ export default function ForgotPasswordPage() {
                 <div>
                   <label
                     htmlFor="email"
-                    className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2"
+                    className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2"
                   >
                     Email address
                   </label>

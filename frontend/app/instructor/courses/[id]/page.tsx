@@ -243,9 +243,7 @@ export default function EditCoursePage() {
   if (!currentCourse) {
     return (
       <div className="text-center py-12">
-        <p className="text-neutral-600 dark:text-neutral-400">
-          Course not found
-        </p>
+        <p className="text-slate-600 dark:text-slate-400">Course not found</p>
         <Button
           variant="outline"
           onClick={() => router.push("/instructor/courses")}
@@ -263,15 +261,15 @@ export default function EditCoursePage() {
       <div className="mb-8">
         <button
           onClick={() => router.back()}
-          className="flex items-center gap-2 text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white mb-4 transition-colors"
+          className="flex items-center gap-2 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white mb-4 transition-colors"
         >
           <ArrowLeft className="w-5 h-5" />
           <span>Back</span>
         </button>
-        <h1 className="text-3xl font-bold text-neutral-900 dark:text-white mb-2">
+        <h1 className="text-3xl font-bold text-slate-900 dark:text-white mb-2">
           Edit Course
         </h1>
-        <p className="text-neutral-600 dark:text-neutral-400">
+        <p className="text-slate-600 dark:text-slate-400">
           Update course information and settings
         </p>
       </div>

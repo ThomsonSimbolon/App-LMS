@@ -41,10 +41,10 @@ export default function AssessorDashboardPage() {
   return (
     <div>
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-neutral-900 dark:text-white mb-2">
+        <h1 className="text-3xl font-bold text-slate-900 dark:text-white mb-2">
           Assessor Dashboard
         </h1>
-        <p className="text-neutral-600 dark:text-neutral-400">
+        <p className="text-slate-600 dark:text-slate-400">
           Welcome back, {user?.firstName}! Review and approve certificate
           requests.
         </p>
@@ -58,10 +58,10 @@ export default function AssessorDashboardPage() {
               <Clock className="w-6 h-6 text-warning-600 dark:text-warning-400" />
             </div>
             <div>
-              <p className="text-sm text-neutral-600 dark:text-neutral-400">
+              <p className="text-sm text-slate-600 dark:text-slate-400">
                 Pending Review
               </p>
-              <h3 className="text-2xl font-bold text-neutral-900 dark:text-white">
+              <h3 className="text-2xl font-bold text-slate-900 dark:text-white">
                 {stats.pending}
               </h3>
             </div>
@@ -74,10 +74,10 @@ export default function AssessorDashboardPage() {
               <Award className="w-6 h-6 text-primary-600 dark:text-primary-400" />
             </div>
             <div>
-              <p className="text-sm text-neutral-600 dark:text-neutral-400">
+              <p className="text-sm text-slate-600 dark:text-slate-400">
                 Total Assigned
               </p>
-              <h3 className="text-2xl font-bold text-neutral-900 dark:text-white">
+              <h3 className="text-2xl font-bold text-slate-900 dark:text-white">
                 {stats.totalAssigned}
               </h3>
             </div>
@@ -91,10 +91,10 @@ export default function AssessorDashboardPage() {
           <div className="card p-6">
             <div className="flex items-center justify-between mb-6">
               <div>
-                <h2 className="text-xl font-semibold text-neutral-900 dark:text-white">
+                <h2 className="text-xl font-semibold text-slate-900 dark:text-white">
                   Pending Certificates
                 </h2>
-                <p className="text-sm text-neutral-600 dark:text-neutral-400 mt-1">
+                <p className="text-sm text-slate-600 dark:text-slate-400 mt-1">
                   Review certificate requests that need your approval
                 </p>
               </div>
@@ -112,20 +112,20 @@ export default function AssessorDashboardPage() {
                 {recentCertificates.map((cert) => (
                   <div
                     key={cert.id}
-                    className="border border-neutral-200 dark:border-neutral-800 rounded-lg p-4 hover:bg-neutral-50 dark:hover:bg-neutral-800/50 transition-colors"
+                    className="border border-slate-200 dark:border-slate-700 rounded-lg p-4 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors"
                   >
                     <div className="flex items-center justify-between">
                       <div className="flex-1">
                         <div className="flex items-center gap-3 mb-2">
-                          <h3 className="font-semibold text-neutral-900 dark:text-white">
+                          <h3 className="font-semibold text-slate-900 dark:text-white">
                             {cert.user?.firstName} {cert.user?.lastName}
                           </h3>
                           <Badge variant="warning">Pending</Badge>
                         </div>
-                        <p className="text-sm text-neutral-600 dark:text-neutral-400 mb-1">
+                        <p className="text-sm text-slate-600 dark:text-slate-400 mb-1">
                           {cert.course?.title}
                         </p>
-                        <p className="text-xs text-neutral-500 dark:text-neutral-500">
+                        <p className="text-xs text-slate-500 dark:text-slate-500">
                           Requested on{" "}
                           {new Date(cert.createdAt).toLocaleDateString()}
                         </p>
@@ -142,8 +142,8 @@ export default function AssessorDashboardPage() {
               </div>
             ) : (
               <div className="text-center py-12">
-                <Award className="w-16 h-16 text-neutral-400 mx-auto mb-4" />
-                <p className="text-neutral-600 dark:text-neutral-400">
+                <Award className="w-16 h-16 text-slate-400 mx-auto mb-4" />
+                <p className="text-slate-600 dark:text-slate-400">
                   No pending certificates at the moment
                 </p>
               </div>
@@ -155,23 +155,23 @@ export default function AssessorDashboardPage() {
       {/* Quick Actions */}
       <div className="mt-8">
         <div className="card p-6">
-          <h2 className="text-lg font-semibold text-neutral-900 dark:text-white mb-4">
+          <h2 className="text-lg font-semibold text-slate-900 dark:text-white mb-4">
             Quick Actions
           </h2>
           <div className="grid sm:grid-cols-2 gap-4">
             <button
               onClick={() => router.push("/assessor/certificates")}
-              className="p-4 border border-neutral-200 dark:border-neutral-800 rounded-lg hover:bg-neutral-50 dark:hover:bg-neutral-800/50 transition-colors text-left"
+              className="p-4 border border-slate-200 dark:border-slate-700 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors text-left"
             >
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-lg bg-primary-50 dark:bg-primary-900/20 flex items-center justify-center">
                   <Award className="w-5 h-5 text-primary-600 dark:text-primary-400" />
                 </div>
                 <div>
-                  <p className="font-medium text-neutral-900 dark:text-white">
+                  <p className="font-medium text-slate-900 dark:text-white">
                     Review Certificates
                   </p>
-                  <p className="text-sm text-neutral-600 dark:text-neutral-400">
+                  <p className="text-sm text-slate-600 dark:text-slate-400">
                     Approve or reject pending requests
                   </p>
                 </div>

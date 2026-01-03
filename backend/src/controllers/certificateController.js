@@ -13,6 +13,7 @@ const pdfService = require("../services/pdfService");
 const cloudinaryService = require("../services/cloudinaryService");
 const activityLogService = require("../services/activityLogService");
 const notificationService = require("../services/notificationService");
+const certificateService = require("../services/certificateService");
 const crypto = require("crypto");
 const path = require("path");
 
@@ -60,21 +61,12 @@ exports.requestCertificate = async (req, res) => {
       });
     }
 
-    // Check if certificate already exists
-    const existing = await Certificate.findOne({
-      where: {
-        userId: req.user.userId,
-        courseId,
-      },
+    // Service-layer validation: prevent duplicate requests (including after REJECTED)
+    await certificateService.assertCertificateNotAlreadyRequested({
+      userId: req.user.userId,
+      courseId,
+      req,
     });
-
-    if (existing) {
-      return res.status(400).json({
-        success: false,
-        error: "Certificate already exists",
-        message: "You have already requested a certificate for this course",
-      });
-    }
 
     // Generate certificate number
     const certificateNumber = `LMS-${new Date().getFullYear()}-CERT-${crypto
@@ -164,6 +156,15 @@ exports.requestCertificate = async (req, res) => {
     });
   } catch (error) {
     console.error("Request certificate error:", error);
+
+    if (error?.statusCode === 409) {
+      return res.status(409).json({
+        success: false,
+        error: "Conflict",
+        message: error.publicMessage || error.message,
+      });
+    }
+
     res.status(500).json({
       success: false,
       error: "Internal server error",

@@ -45,7 +45,7 @@ export default function InstructorDashboardPage() {
     return (
       <div className="flex items-center justify-center min-h-[50vh]">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600"></div>
-        <span className="ml-3 text-neutral-600 dark:text-neutral-400">
+        <span className="ml-3 text-slate-600 dark:text-slate-400">
           Loading dashboard...
         </span>
       </div>
@@ -59,7 +59,7 @@ export default function InstructorDashboardPage() {
           <p className="text-red-600 dark:text-red-400 font-medium">
             Error loading dashboard
           </p>
-          <p className="text-sm text-neutral-500 mt-2">{dashboardError}</p>
+          <p className="text-sm text-slate-500 mt-2">{dashboardError}</p>
         </div>
       </div>
     );
@@ -68,10 +68,10 @@ export default function InstructorDashboardPage() {
   return (
     <div>
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-neutral-900 dark:text-white mb-2">
+        <h1 className="text-3xl font-bold text-slate-900 dark:text-white mb-2">
           Instructor Dashboard
         </h1>
-        <p className="text-neutral-600 dark:text-neutral-400">
+        <p className="text-slate-600 dark:text-slate-400">
           {isGreetingReady && user?.firstName
             ? `Welcome back, ${user.firstName}! Here\u2019s how your courses are performing.`
             : "Welcome back! Here\u2019s how your courses are performing."}
@@ -118,10 +118,10 @@ export default function InstructorDashboardPage() {
                 <stat.icon className="w-6 h-6" />
               </div>
               <div>
-                <p className="text-sm text-neutral-600 dark:text-neutral-400">
+                <p className="text-sm text-slate-600 dark:text-slate-400">
                   {stat.label}
                 </p>
-                <h3 className="text-2xl font-bold text-neutral-900 dark:text-white">
+                <h3 className="text-2xl font-bold text-slate-900 dark:text-white">
                   {stat.value}
                 </h3>
               </div>
@@ -134,7 +134,7 @@ export default function InstructorDashboardPage() {
         <div className="lg:col-span-2 space-y-8">
           {/* Quick Actions */}
           <div className="card p-6">
-            <h3 className="text-lg font-bold text-neutral-900 dark:text-white mb-4">
+            <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-4">
               Quick Actions
             </h3>
             <div className="flex gap-4">
@@ -157,10 +157,10 @@ export default function InstructorDashboardPage() {
 
           {/* Recent Performance (Mock) */}
           <div className="card p-6">
-            <h3 className="text-lg font-bold text-neutral-900 dark:text-white mb-4">
+            <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-4">
               Recent Enrollments
             </h3>
-            <div className="text-sm text-neutral-500 italic">
+            <div className="text-sm text-slate-500 italic">
               No recent enrollments to show.
             </div>
           </div>
@@ -169,10 +169,10 @@ export default function InstructorDashboardPage() {
         {/* Sidebar Info */}
         <div className="space-y-6">
           <div className="card p-6">
-            <h3 className="text-lg font-bold text-neutral-900 dark:text-white mb-4">
+            <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-4">
               Instructor Tips
             </h3>
-            <ul className="space-y-3 text-sm text-neutral-600 dark:text-neutral-400 list-disc pl-4">
+            <ul className="space-y-3 text-sm text-slate-600 dark:text-slate-400 list-disc pl-4">
               <li>Engage with your students in the Q&A section.</li>
               <li>Update your course content regularly.</li>
               <li>Add quizzes to assess student learning.</li>

@@ -1,18 +1,19 @@
-import React from 'react';
-import { cn } from '@/lib/utils';
+import React from "react";
+import { cn } from "@/lib/utils";
 
-export interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
+export interface InputProps
+  extends React.InputHTMLAttributes<HTMLInputElement> {
   label?: string;
   error?: string;
   helperText?: string;
 }
 
 const Input = React.forwardRef<HTMLInputElement, InputProps>(
-  ({ className, label, error, helperText, type = 'text', ...props }, ref) => {
+  ({ className, label, error, helperText, type = "text", ...props }, ref) => {
     return (
       <div className="w-full space-y-1.5">
         {label && (
-          <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300">
+          <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">
             {label}
           </label>
         )}
@@ -26,17 +27,17 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
           )}
           {...props}
         />
-        {error && (
-          <p className="text-sm text-error dark:text-error">{error}</p>
-        )}
+        {error && <p className="text-sm text-error">{error}</p>}
         {helperText && !error && (
-          <p className="text-sm text-neutral-500 dark:text-neutral-400">{helperText}</p>
+          <p className="text-sm text-slate-500 dark:text-slate-400">
+            {helperText}
+          </p>
         )}
       </div>
     );
   }
 );
 
-Input.displayName = 'Input';
+Input.displayName = "Input";
 
 export default Input;

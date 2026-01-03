@@ -51,7 +51,7 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-neutral-50 dark:bg-neutral-950 flex items-center justify-center py-12 px-4">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex items-center justify-center py-12 px-4">
       <div className="max-w-md w-full">
         {/* Logo */}
         <div className="text-center mb-8">
@@ -63,10 +63,10 @@ export default function LoginPage() {
               LMS Platform
             </span>
           </Link>
-          <h2 className="mt-6 text-3xl font-bold text-neutral-900 dark:text-white">
+          <h2 className="mt-6 text-3xl font-bold text-slate-900 dark:text-white">
             Welcome back
           </h2>
-          <p className="mt-2 text-sm text-neutral-600 dark:text-neutral-400">
+          <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">
             Sign in to continue your learning
           </p>
         </div>
@@ -83,7 +83,7 @@ export default function LoginPage() {
             <div>
               <label
                 htmlFor="email"
-                className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2"
+                className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2"
               >
                 Email address
               </label>
@@ -103,7 +103,7 @@ export default function LoginPage() {
               <div className="flex items-center justify-between mb-2">
                 <label
                   htmlFor="password"
-                  className="block text-sm font-medium text-neutral-700 dark:text-neutral-300"
+                  className="block text-sm font-medium text-slate-700 dark:text-slate-300"
                 >
                   Password
                 </label>
@@ -131,11 +131,11 @@ export default function LoginPage() {
                 id="remember-me"
                 name="remember-me"
                 type="checkbox"
-                className="h-4 w-4 rounded border-neutral-300 dark:border-neutral-700 text-primary-600 focus:ring-primary-500 dark:focus:ring-primary-500"
+                className="h-4 w-4 rounded border-slate-300 dark:border-slate-700 text-primary-600 focus:ring-primary-500 dark:focus:ring-primary-500"
               />
               <label
                 htmlFor="remember-me"
-                className="ml-2 block text-sm text-neutral-700 dark:text-neutral-300"
+                className="ml-2 block text-sm text-slate-700 dark:text-slate-300"
               >
                 Remember me
               </label>
@@ -151,7 +151,7 @@ export default function LoginPage() {
           </form>
 
           <div className="mt-6 text-center">
-            <p className="text-sm text-neutral-600 dark:text-neutral-400">
+            <p className="text-sm text-slate-600 dark:text-slate-400">
               Don&apos;t have an account?{" "}
               <Link
                 href="/register"

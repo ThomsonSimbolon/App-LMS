@@ -39,7 +39,7 @@ export default function InstructorLayout({
 
   return (
     <SidebarProvider>
-      <div className="min-h-screen bg-neutral-50 dark:bg-neutral-950">
+      <div className="min-h-screen bg-slate-50 dark:bg-slate-950">
         {/* Sidebar - Full height from top to bottom */}
         <Sidebar role={sidebarRole} />
 

@@ -88,7 +88,7 @@ export default function CourseDetailPage({
     return (
       <>
         <Header />
-        <div className="min-h-screen bg-neutral-50 dark:bg-neutral-950 py-12">
+        <div className="min-h-screen bg-slate-50 dark:bg-slate-950 py-12">
           <div className="container-custom">
             <Skeleton className="h-64 mb-8" />
             <Skeleton className="h-12 mb-4" />
@@ -104,14 +104,14 @@ export default function CourseDetailPage({
     return (
       <>
         <Header />
-        <div className="min-h-screen bg-neutral-50 dark:bg-neutral-950 py-12">
+        <div className="min-h-screen bg-slate-50 dark:bg-slate-950 py-12">
           <div className="container-custom">
             <div className="card p-12 text-center">
               <div className="text-6xl mb-4">❌</div>
-              <h1 className="text-2xl font-bold text-neutral-900 dark:text-white mb-2">
+              <h1 className="text-2xl font-bold text-slate-900 dark:text-white mb-2">
                 Course Not Found
               </h1>
-              <p className="text-neutral-600 dark:text-neutral-400 mb-6">
+              <p className="text-slate-600 dark:text-slate-400 mb-6">
                 {error || "The course you are looking for does not exist."}
               </p>
               <button
@@ -221,7 +221,7 @@ export default function CourseDetailPage({
 
         {/* Content Tabs */}
         <div className="container-custom py-12">
-          <div className="border-b border-neutral-200 dark:border-neutral-800 mb-8">
+          <div className="border-b border-slate-200 dark:border-slate-700 mb-8">
             <div className="flex gap-8">
               {["overview", "curriculum"].map((tab) => (
                 <button
@@ -230,7 +230,7 @@ export default function CourseDetailPage({
                   className={`pb-4 px-2 font-medium transition-colors ${
                     activeTab === tab
                       ? "border-b-2 border-primary-600 text-primary-600 dark:text-primary-400"
-                      : "text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white"
+                      : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
                   }`}
                 >
                   {tab.charAt(0).toUpperCase() + tab.slice(1)}
@@ -241,10 +241,10 @@ export default function CourseDetailPage({
 
           {activeTab === "overview" && (
             <div className="card p-8">
-              <h2 className="text-2xl font-bold text-neutral-900 dark:text-white mb-4">
+              <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-4">
                 About This Course
               </h2>
-              <p className="text-neutral-700 dark:text-neutral-300 whitespace-pre-line">
+              <p className="text-slate-700 dark:text-slate-300 whitespace-pre-line">
                 {course.description}
               </p>
             </div>
@@ -268,11 +268,11 @@ export default function CourseDetailPage({
                     idx: number
                   ) => (
                     <div key={section.id} className="card">
-                      <div className="p-6 border-b border-neutral-200 dark:border-neutral-800">
-                        <h3 className="text-xl font-semibold text-neutral-900 dark:text-white">
+                      <div className="p-6 border-b border-slate-200 dark:border-slate-700">
+                        <h3 className="text-xl font-semibold text-slate-900 dark:text-white">
                           Section {idx + 1}: {section.title}
                         </h3>
-                        <p className="text-sm text-neutral-600 dark:text-neutral-400 mt-1">
+                        <p className="text-sm text-slate-600 dark:text-slate-400 mt-1">
                           {section.lessons?.length || 0} lessons
                         </p>
                       </div>
@@ -288,9 +288,9 @@ export default function CourseDetailPage({
                               }) => (
                                 <li
                                   key={lesson.id}
-                                  className="flex items-center gap-3 p-3 hover:bg-neutral-50 dark:hover:bg-neutral-800 rounded-lg"
+                                  className="flex items-center gap-3 p-3 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg"
                                 >
-                                  <span className="text-neutral-600 dark:text-neutral-400">
+                                  <span className="text-slate-600 dark:text-slate-400">
                                     {(() => {
                                       switch (lesson.type) {
                                         case "VIDEO":
@@ -317,7 +317,7 @@ export default function CourseDetailPage({
                                       }
                                     })()}
                                   </span>
-                                  <span className="flex-1 text-neutral-700 dark:text-neutral-300">
+                                  <span className="flex-1 text-slate-700 dark:text-slate-300">
                                     {lesson.title}
                                   </span>
                                   {lesson.isFree && (
@@ -330,7 +330,7 @@ export default function CourseDetailPage({
                             )}
                           </ul>
                         ) : (
-                          <p className="text-neutral-600 dark:text-neutral-400 text-center py-4">
+                          <p className="text-slate-600 dark:text-slate-400 text-center py-4">
                             No lessons yet
                           </p>
                         )}
@@ -340,7 +340,7 @@ export default function CourseDetailPage({
                 )
               ) : (
                 <div className="card p-12 text-center">
-                  <p className="text-neutral-600 dark:text-neutral-400">
+                  <p className="text-slate-600 dark:text-slate-400">
                     Curriculum not available
                   </p>
                 </div>

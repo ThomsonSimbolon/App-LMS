@@ -131,15 +131,15 @@ const Sidebar: React.FC<SidebarProps> = ({ role: propRole }) => {
   return (
     <aside
       className={cn(
-        // Nuxt UI style surface - elevated card surface
-        "fixed left-0 top-0 h-screen bg-white dark:bg-neutral-900 border-r border-neutral-200 dark:border-neutral-800 shadow-soft transition-all duration-300 ease-in-out z-40 flex flex-col",
+        // Crypto/SaaS style surface - clean card surface
+        "fixed left-0 top-0 h-screen bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-600 transition-all duration-300 ease-in-out z-40 flex flex-col",
         collapsed ? "w-16" : "w-64"
       )}
     >
       {/* Brand Section - Height sama dengan header (h-16) */}
       <div
         className={cn(
-          "h-16 border-b border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 flex items-center justify-center flex-shrink-0",
+          "h-16 border-b border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-900 flex items-center justify-center flex-shrink-0",
           collapsed ? "px-0" : "px-4"
         )}
       >
@@ -152,7 +152,7 @@ const Sidebar: React.FC<SidebarProps> = ({ role: propRole }) => {
         >
           <div
             className={cn(
-              "rounded-lg bg-primary-600 dark:bg-primary-600 flex items-center justify-center group-hover:scale-110 transition-transform flex-shrink-0",
+              "rounded-lg bg-primary-500 flex items-center justify-center group-hover:scale-110 transition-transform flex-shrink-0",
               collapsed ? "w-10 h-10" : "w-8 h-8"
             )}
           >
@@ -166,7 +166,7 @@ const Sidebar: React.FC<SidebarProps> = ({ role: propRole }) => {
             </span>
           </div>
           {!collapsed && (
-            <span className="text-xl font-bold text-primary-600 dark:text-primary-400 whitespace-nowrap">
+            <span className="text-xl font-bold text-primary-500 dark:text-primary-400 whitespace-nowrap">
               LMS Platform
             </span>
           )}
@@ -191,8 +191,8 @@ const Sidebar: React.FC<SidebarProps> = ({ role: propRole }) => {
                 "flex items-center rounded-lg transition-all",
                 "hover:bg-primary-50 dark:hover:bg-primary-900/20",
                 isActive &&
-                  "bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-400 font-medium",
-                !isActive && "text-neutral-700 dark:text-neutral-300",
+                  "bg-primary-50 dark:bg-primary-900/30 text-primary-600 dark:text-primary-400 font-medium",
+                !isActive && "text-slate-600 dark:text-slate-300",
                 collapsed ? "justify-center w-full py-2.5" : "gap-3 px-3 py-2.5"
               )}
               title={collapsed ? item.name : undefined}
@@ -213,26 +213,26 @@ const Sidebar: React.FC<SidebarProps> = ({ role: propRole }) => {
       {user && (
         <div
           className={cn(
-            "border-t border-neutral-200 dark:border-neutral-800 flex-shrink-0",
+            "border-t border-slate-200 dark:border-slate-600 flex-shrink-0",
             collapsed ? "p-2" : "p-4"
           )}
         >
           {collapsed ? (
             <div className="flex items-center justify-center w-full">
-              <div className="w-10 h-10 rounded-full bg-primary-600 dark:bg-primary-600 flex items-center justify-center text-white font-semibold">
+              <div className="w-10 h-10 rounded-full bg-primary-500 flex items-center justify-center text-white font-semibold">
                 {initials}
               </div>
             </div>
           ) : (
             <div className="flex items-center gap-3 px-3 py-2">
-              <div className="w-10 h-10 rounded-full bg-primary-600 dark:bg-primary-600 flex items-center justify-center text-white font-semibold">
+              <div className="w-10 h-10 rounded-full bg-primary-500 flex items-center justify-center text-white font-semibold">
                 {initials}
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-neutral-900 dark:text-white truncate">
+                <p className="text-sm font-medium text-slate-900 dark:text-white truncate">
                   {displayName}
                 </p>
-                <p className="text-xs text-neutral-500 dark:text-neutral-400 capitalize">
+                <p className="text-xs text-slate-500 dark:text-slate-400 capitalize">
                   {role.replace("_", " ")}
                 </p>
               </div>

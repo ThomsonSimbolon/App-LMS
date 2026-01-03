@@ -175,15 +175,15 @@ export default function AdminCourseDetailPage() {
               </p>
             </div>
             <div>
-              <label className="text-sm text-neutral-600 dark:text-neutral-400">
+              <label className="text-sm text-slate-600 dark:text-slate-400">
                 Status
               </label>
               <div className="mt-1">
                 <Badge
                   className={
                     course.isPublished
-                      ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400"
-                      : "bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-400"
+                      ? "bg-success/10 text-success dark:bg-success/20 dark:text-success"
+                      : "bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-400"
                   }
                 >
                   {course.isPublished ? "Published" : "Draft"}
@@ -191,10 +191,10 @@ export default function AdminCourseDetailPage() {
               </div>
             </div>
             <div>
-              <label className="text-sm text-neutral-600 dark:text-neutral-400">
+              <label className="text-sm text-slate-600 dark:text-slate-400">
                 Level
               </label>
-              <p className="text-neutral-900 dark:text-white font-medium">
+              <p className="text-slate-900 dark:text-white font-medium">
                 {course.level}
               </p>
             </div>

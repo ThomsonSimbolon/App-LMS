@@ -56,7 +56,7 @@ const NotificationItem: React.FC<NotificationItemProps> = ({
   return (
     <div
       className={cn(
-        'p-4 hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-colors cursor-pointer relative group',
+        'p-4 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors cursor-pointer relative group',
         !notification.isRead && 'bg-primary-50/50 dark:bg-primary-900/10'
       )}
       onClick={onClick}
@@ -72,7 +72,7 @@ const NotificationItem: React.FC<NotificationItemProps> = ({
           <div className="flex items-start justify-between gap-2">
             <h4 className={cn(
               'text-sm font-medium',
-              !notification.isRead ? 'text-neutral-900 dark:text-white' : 'text-neutral-700 dark:text-neutral-300'
+              !notification.isRead ? 'text-slate-900 dark:text-white' : 'text-slate-700 dark:text-slate-300'
             )}>
               {notification.title}
             </h4>
@@ -82,17 +82,17 @@ const NotificationItem: React.FC<NotificationItemProps> = ({
                   e.stopPropagation();
                   onMarkAsRead();
                 }}
-                className="opacity-0 group-hover:opacity-100 p-1 rounded hover:bg-neutral-200 dark:hover:bg-neutral-700 transition-all"
+                className="opacity-0 group-hover:opacity-100 p-1 rounded hover:bg-slate-200 dark:hover:bg-slate-700 transition-all"
                 title="Mark as read"
               >
-                <Check className="w-3.5 h-3.5 text-neutral-600 dark:text-neutral-400" />
+                <Check className="w-3.5 h-3.5 text-slate-600 dark:text-slate-400" />
               </button>
             )}
           </div>
-          <p className="text-sm text-neutral-600 dark:text-neutral-400 mt-1 line-clamp-2">
+          <p className="text-sm text-slate-600 dark:text-slate-400 mt-1 line-clamp-2">
             {notification.message}
           </p>
-          <p className="text-xs text-neutral-500 dark:text-neutral-500 mt-2">
+          <p className="text-xs text-slate-500 dark:text-slate-500 mt-2">
             {formatDate(notification.createdAt)}
           </p>
         </div>

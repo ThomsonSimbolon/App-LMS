@@ -64,8 +64,8 @@ export function VideoLesson({
   // Early return setelah semua hooks dipanggil
   if (!isVideoContent(content)) {
     return (
-      <div className="p-6 bg-neutral-100 dark:bg-neutral-800 rounded-lg">
-        <p className="text-neutral-600 dark:text-neutral-400">
+      <div className="p-6 bg-slate-100 dark:bg-slate-800 rounded-lg">
+        <p className="text-slate-600 dark:text-slate-400">
           Invalid video lesson content
         </p>
       </div>
@@ -94,8 +94,8 @@ export function VideoLesson({
 
   if (!videoUrl) {
     return (
-      <div className="p-6 bg-neutral-100 dark:bg-neutral-800 rounded-lg">
-        <p className="text-neutral-600 dark:text-neutral-400">
+      <div className="p-6 bg-slate-100 dark:bg-slate-800 rounded-lg">
+        <p className="text-slate-600 dark:text-slate-400">
           Video URL not available
         </p>
       </div>
@@ -107,7 +107,7 @@ export function VideoLesson({
       <div className="flex items-center gap-2 mb-4">
         <Badge variant="primary">Video Lesson</Badge>
         {duration > 0 && (
-          <span className="text-sm text-neutral-600 dark:text-neutral-400">
+          <span className="text-sm text-slate-600 dark:text-slate-400">
             Duration: {Math.floor(duration / 60)}m {duration % 60}s
           </span>
         )}
@@ -122,14 +122,14 @@ export function VideoLesson({
       {duration > 0 && (
         <div className="space-y-2">
           <div className="flex items-center justify-between text-sm">
-            <span className="text-neutral-600 dark:text-neutral-400">
+            <span className="text-slate-600 dark:text-slate-400">
               Watch Progress
             </span>
-            <span className="font-medium text-neutral-900 dark:text-white">
+            <span className="font-medium text-slate-900 dark:text-white">
               {watchPercentage}% / {minWatchPercentage}% required
             </span>
           </div>
-          <div className="w-full bg-neutral-200 dark:bg-neutral-700 rounded-full h-2">
+          <div className="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2">
             <div
               className={`h-2 rounded-full transition-all ${
                 canComplete ? "bg-success-600" : "bg-primary-600"
@@ -147,14 +147,14 @@ export function VideoLesson({
 
       {lesson.description && (
         <div className="mt-4 prose dark:prose-invert max-w-none">
-          <p className="text-neutral-700 dark:text-neutral-300">
+          <p className="text-slate-700 dark:text-slate-300">
             {lesson.description}
           </p>
         </div>
       )}
 
       {onComplete && (
-        <div className="mt-6 pt-6 border-t border-neutral-200 dark:border-neutral-800">
+        <div className="mt-6 pt-6 border-t border-slate-200 dark:border-slate-700">
           {isCompleted ? (
             <div className="flex items-center gap-2 text-success-600 dark:text-success-400">
               <CheckCircle className="w-5 h-5" />

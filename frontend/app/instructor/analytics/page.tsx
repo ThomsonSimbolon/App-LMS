@@ -50,10 +50,10 @@ export default function InstructorAnalyticsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-neutral-900 dark:text-white">
+        <h1 className="text-2xl font-bold text-slate-900 dark:text-white">
           Analytics
         </h1>
-        <p className="text-neutral-500 dark:text-neutral-400">
+        <p className="text-slate-500 dark:text-slate-400">
           Track course performance and student engagement
         </p>
       </div>
@@ -62,7 +62,7 @@ export default function InstructorAnalyticsPage() {
       {analyticsLoading ? (
         <div className="flex items-center justify-center py-12">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600"></div>
-          <span className="ml-3 text-neutral-600 dark:text-neutral-400">Loading analytics...</span>
+          <span className="ml-3 text-slate-600 dark:text-slate-400">Loading analytics...</span>
         </div>
       ) : analyticsError ? (
         <Card className="p-6">
@@ -75,11 +75,11 @@ export default function InstructorAnalyticsPage() {
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {stats.map((stat, index) => (
             <Card key={index} className="p-6">
-              <p className="text-sm font-medium text-neutral-500 dark:text-neutral-400">
+              <p className="text-sm font-medium text-slate-500 dark:text-slate-400">
                 {stat.label}
               </p>
               <div className="flex items-baseline gap-2 mt-2">
-                <span className="text-2xl font-bold text-neutral-900 dark:text-white">
+                <span className="text-2xl font-bold text-slate-900 dark:text-white">
                   {stat.value}
                 </span>
                 <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${
@@ -99,7 +99,7 @@ export default function InstructorAnalyticsPage() {
       {!analyticsLoading && !analyticsError && analytics && (
         <div className="grid lg:grid-cols-2 gap-6">
           <Card className="p-6">
-            <h3 className="text-lg font-semibold text-neutral-900 dark:text-white mb-6">
+            <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-6">
               Enrollment Growth
             </h3>
             {analytics.trends.enrollmentGrowth.length > 0 ? (
@@ -114,35 +114,35 @@ export default function InstructorAnalyticsPage() {
                           className="absolute bottom-0 left-0 right-0 bg-primary-600 rounded-t-sm transition-all group-hover:bg-primary-500"
                           style={{ height: `${height}%` }}
                         ></div>
-                        <div className="opacity-0 group-hover:opacity-100 absolute -top-8 left-1/2 -translate-x-1/2 bg-neutral-900 text-white text-xs px-2 py-1 rounded whitespace-nowrap z-10">
+                        <div className="opacity-0 group-hover:opacity-100 absolute -top-8 left-1/2 -translate-x-1/2 bg-slate-900 text-white text-xs px-2 py-1 rounded whitespace-nowrap z-10">
                           {item.month}: {item.count}
                         </div>
                       </div>
                     );
                   })}
                 </div>
-                <div className="flex justify-between mt-4 text-xs text-neutral-500">
+                <div className="flex justify-between mt-4 text-xs text-slate-500">
                   <span>{analytics.trends.enrollmentGrowth[0]?.month || ''}</span>
                   <span>{analytics.trends.enrollmentGrowth[Math.floor(analytics.trends.enrollmentGrowth.length / 2)]?.month || ''}</span>
                   <span>{analytics.trends.enrollmentGrowth[analytics.trends.enrollmentGrowth.length - 1]?.month || ''}</span>
                 </div>
               </>
             ) : (
-              <div className="h-64 flex items-center justify-center bg-neutral-50 dark:bg-neutral-900/50 rounded-lg">
-                <p className="text-neutral-500">No enrollment data available</p>
+              <div className="h-64 flex items-center justify-center bg-slate-50 dark:bg-slate-900/50 rounded-lg">
+                <p className="text-slate-500">No enrollment data available</p>
               </div>
             )}
           </Card>
 
           <Card className="p-6">
-            <h3 className="text-lg font-semibold text-neutral-900 dark:text-white mb-6">
+            <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-6">
               Student Engagement
             </h3>
             <div className="space-y-4">
-              <div className="flex items-center justify-between p-4 bg-neutral-50 dark:bg-neutral-900/50 rounded-lg">
+              <div className="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-900/50 rounded-lg">
                 <div>
-                  <p className="text-sm text-neutral-600 dark:text-neutral-400">Active Students</p>
-                  <p className="text-2xl font-bold text-neutral-900 dark:text-white mt-1">
+                  <p className="text-sm text-slate-600 dark:text-slate-400">Active Students</p>
+                  <p className="text-2xl font-bold text-slate-900 dark:text-white mt-1">
                     {analytics.trends.engagement.active}
                   </p>
                 </div>
@@ -152,10 +152,10 @@ export default function InstructorAnalyticsPage() {
                   </span>
                 </div>
               </div>
-              <div className="flex items-center justify-between p-4 bg-neutral-50 dark:bg-neutral-900/50 rounded-lg">
+              <div className="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-900/50 rounded-lg">
                 <div>
-                  <p className="text-sm text-neutral-600 dark:text-neutral-400">Completed</p>
-                  <p className="text-2xl font-bold text-neutral-900 dark:text-white mt-1">
+                  <p className="text-sm text-slate-600 dark:text-slate-400">Completed</p>
+                  <p className="text-2xl font-bold text-slate-900 dark:text-white mt-1">
                     {analytics.trends.engagement.completed}
                   </p>
                 </div>
@@ -165,10 +165,10 @@ export default function InstructorAnalyticsPage() {
                   </span>
                 </div>
               </div>
-              <div className="flex items-center justify-between p-4 bg-neutral-50 dark:bg-neutral-900/50 rounded-lg">
+              <div className="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-900/50 rounded-lg">
                 <div>
-                  <p className="text-sm text-neutral-600 dark:text-neutral-400">Dropped</p>
-                  <p className="text-2xl font-bold text-neutral-900 dark:text-white mt-1">
+                  <p className="text-sm text-slate-600 dark:text-slate-400">Dropped</p>
+                  <p className="text-2xl font-bold text-slate-900 dark:text-white mt-1">
                     {analytics.trends.engagement.dropped}
                   </p>
                 </div>

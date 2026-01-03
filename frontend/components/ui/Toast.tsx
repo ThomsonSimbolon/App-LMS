@@ -88,16 +88,16 @@ const ToastItem: React.FC<ToastItemProps> = ({ toast, onClose }) => {
   };
 
   const getStyles = () => {
-    // Nuxt UI style toast with semantic backgrounds and clear contrast
+    // Crypto/SaaS style toast with semantic backgrounds and clear contrast
     switch (toast.type) {
       case "success":
-        return "bg-white dark:bg-neutral-900 border-l-4 border-success text-neutral-900 dark:text-neutral-100 shadow-soft-lg";
+        return "bg-white dark:bg-slate-900 border-l-4 border-success text-slate-900 dark:text-slate-100 shadow-soft-lg";
       case "error":
-        return "bg-white dark:bg-neutral-900 border-l-4 border-error text-neutral-900 dark:text-neutral-100 shadow-soft-lg";
+        return "bg-white dark:bg-slate-900 border-l-4 border-error text-slate-900 dark:text-slate-100 shadow-soft-lg";
       case "warning":
-        return "bg-white dark:bg-neutral-900 border-l-4 border-warning text-neutral-900 dark:text-neutral-100 shadow-soft-lg";
+        return "bg-white dark:bg-slate-900 border-l-4 border-warning text-slate-900 dark:text-slate-100 shadow-soft-lg";
       default:
-        return "bg-white dark:bg-neutral-900 border-l-4 border-info text-neutral-900 dark:text-neutral-100 shadow-soft-lg";
+        return "bg-white dark:bg-slate-900 border-l-4 border-info text-slate-900 dark:text-slate-100 shadow-soft-lg";
     }
   };
 
@@ -105,18 +105,16 @@ const ToastItem: React.FC<ToastItemProps> = ({ toast, onClose }) => {
     <div
       className={cn(
         getStyles(),
-        "rounded-xl p-4 pointer-events-auto animate-slide-up flex items-start gap-3 border border-neutral-200 dark:border-neutral-800"
+        "rounded-xl p-4 pointer-events-auto animate-slide-up flex items-start gap-3 border border-slate-200 dark:border-slate-700"
       )}
     >
       <div className="flex-shrink-0 mt-0.5">{getIcon()}</div>
       <div className="flex-1 min-w-0">
-        <p className="text-sm font-medium">
-          {toast.message}
-        </p>
+        <p className="text-sm font-medium">{toast.message}</p>
       </div>
       <button
         onClick={onClose}
-        className="flex-shrink-0 text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-300 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2 rounded-lg p-1"
+        className="flex-shrink-0 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2 rounded-lg p-1"
         aria-label="Close"
       >
         <X className="w-4 h-4" />

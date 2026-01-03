@@ -28,19 +28,19 @@ export function LessonList({ sections, currentLessonId, onLessonClick }: LessonL
   return (
     <div className="space-y-4">
       {sections.map((section, sectionIdx) => (
-        <div key={section.id} className="border border-neutral-200 dark:border-neutral-800 rounded-lg overflow-hidden">
+        <div key={section.id} className="border border-slate-200 dark:border-slate-700 rounded-lg overflow-hidden">
           {/* Section Header */}
-          <div className="bg-neutral-100 dark:bg-neutral-800 p-4 border-b border-neutral-200 dark:border-neutral-700">
-            <h3 className="font-semibold text-neutral-900 dark:text-white">
+          <div className="bg-slate-100 dark:bg-slate-800 p-4 border-b border-slate-200 dark:border-slate-700">
+            <h3 className="font-semibold text-slate-900 dark:text-white">
               Section {sectionIdx + 1}: {section.title}
             </h3>
-            <p className="text-sm text-neutral-600 dark:text-neutral-400 mt-1">
+            <p className="text-sm text-slate-600 dark:text-slate-400 mt-1">
               {section.lessons.length} lessons
             </p>
           </div>
 
           {/* Lessons */}
-          <div className="divide-y divide-neutral-200 dark:divide-neutral-800">
+          <div className="divide-y divide-slate-200 dark:divide-slate-800">
             {section.lessons.map((lesson) => (
               <button
                 key={lesson.id}
@@ -51,7 +51,7 @@ export function LessonList({ sections, currentLessonId, onLessonClick }: LessonL
                     ? 'bg-primary-50 dark:bg-primary-900/20'
                     : lesson.isLocked
                     ? 'opacity-50 cursor-not-allowed'
-                    : 'hover:bg-neutral-50 dark:hover:bg-neutral-800/50'
+                    : 'hover:bg-slate-50 dark:hover:bg-slate-800/50'
                 }`}
               >
                 <div className="flex items-center gap-3">
@@ -63,12 +63,12 @@ export function LessonList({ sections, currentLessonId, onLessonClick }: LessonL
                     <h4 className={`font-medium truncate ${
                       lesson.id === currentLessonId
                         ? 'text-primary-600 dark:text-primary-400'
-                        : 'text-neutral-900 dark:text-white'
+                        : 'text-slate-900 dark:text-white'
                     }`}>
                       {lesson.title}
                     </h4>
                     {lesson.duration && (
-                      <p className="text-sm text-neutral-600 dark:text-neutral-400">
+                      <p className="text-sm text-slate-600 dark:text-slate-400">
                         {formatDuration(lesson.duration)}
                       </p>
                     )}
@@ -82,7 +82,7 @@ export function LessonList({ sections, currentLessonId, onLessonClick }: LessonL
                       </span>
                     )}
                     {lesson.isLocked && (
-                      <span className="text-neutral-400">
+                      <span className="text-slate-400">
                         🔒
                       </span>
                     )}

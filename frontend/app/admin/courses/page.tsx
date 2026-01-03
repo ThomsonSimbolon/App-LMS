@@ -75,10 +75,10 @@ export default function AdminCoursesPage() {
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-neutral-900 dark:text-white">
+          <h1 className="text-2xl font-bold text-slate-900 dark:text-white">
             Course Management
           </h1>
-          <p className="text-neutral-500 dark:text-neutral-400">
+          <p className="text-slate-500 dark:text-slate-400">
             Manage all courses on the platform
           </p>
         </div>
@@ -101,41 +101,41 @@ export default function AdminCoursesPage() {
 
       <Card className="overflow-hidden">
         {authLoading || loading ? (
-          <div className="p-8 text-center text-neutral-500">
+          <div className="p-8 text-center text-slate-500">
             Loading courses...
           </div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-left text-sm">
-              <thead className="bg-neutral-50 dark:bg-neutral-800 border-b border-neutral-200 dark:border-neutral-700">
+              <thead className="bg-slate-50 dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700">
                 <tr>
-                  <th className="px-6 py-4 font-semibold text-neutral-900 dark:text-white">
+                  <th className="px-6 py-4 font-semibold text-slate-900 dark:text-white">
                     Course
                   </th>
-                  <th className="px-6 py-4 font-semibold text-neutral-900 dark:text-white">
+                  <th className="px-6 py-4 font-semibold text-slate-900 dark:text-white">
                     Instructor
                   </th>
-                  <th className="px-6 py-4 font-semibold text-neutral-900 dark:text-white">
+                  <th className="px-6 py-4 font-semibold text-slate-900 dark:text-white">
                     Level
                   </th>
-                  <th className="px-6 py-4 font-semibold text-neutral-900 dark:text-white">
+                  <th className="px-6 py-4 font-semibold text-slate-900 dark:text-white">
                     Created At
                   </th>
-                  <th className="px-6 py-4 font-semibold text-neutral-900 dark:text-white text-right">
+                  <th className="px-6 py-4 font-semibold text-slate-900 dark:text-white text-right">
                     Actions
                   </th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-neutral-200 dark:divide-neutral-700">
+              <tbody className="divide-y divide-slate-200 dark:divide-slate-700">
                 {courses.length > 0 ? (
                   courses.map((course) => (
                     <tr
                       key={course.id}
-                      className="hover:bg-neutral-50 dark:hover:bg-neutral-800/50 transition-colors"
+                      className="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors"
                     >
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 rounded bg-neutral-200 dark:bg-neutral-700 overflow-hidden relative flex-shrink-0">
+                          <div className="w-10 h-10 rounded bg-slate-200 dark:bg-slate-700 overflow-hidden relative flex-shrink-0">
                             {course.thumbnail ? (
                               <Image
                                 src={getFileUrl(course.thumbnail)}
@@ -145,7 +145,7 @@ export default function AdminCoursesPage() {
                                 unoptimized
                               />
                             ) : (
-                              <div className="w-full h-full flex items-center justify-center text-neutral-500 dark:text-neutral-400">
+                              <div className="w-full h-full flex items-center justify-center text-slate-500 dark:text-slate-400">
                                 <FileImage className="w-5 h-5" />
                               </div>
                             )}
@@ -153,7 +153,7 @@ export default function AdminCoursesPage() {
                           <div className="min-w-0">
                             <div className="flex items-center gap-2">
                               <div
-                                className="font-medium text-neutral-900 dark:text-white truncate max-w-[200px]"
+                                className="font-medium text-slate-900 dark:text-white truncate max-w-[200px]"
                                 title={course.title}
                               >
                                 {course.title}
@@ -164,7 +164,7 @@ export default function AdminCoursesPage() {
                                 </Badge>
                               )}
                             </div>
-                            <div className="text-xs text-neutral-500">
+                            <div className="text-xs text-slate-500">
                               {course.type === "FREE"
                                 ? "Free"
                                 : `$${course.price}`}
@@ -172,7 +172,7 @@ export default function AdminCoursesPage() {
                           </div>
                         </div>
                       </td>
-                      <td className="px-6 py-4 text-neutral-600 dark:text-neutral-300">
+                      <td className="px-6 py-4 text-slate-600 dark:text-slate-300">
                         {course.instructor
                           ? `${course.instructor.firstName} ${course.instructor.lastName}`
                           : "Unknown"}
@@ -190,7 +190,7 @@ export default function AdminCoursesPage() {
                           {course.level}
                         </Badge>
                       </td>
-                      <td className="px-6 py-4 text-neutral-600 dark:text-neutral-300">
+                      <td className="px-6 py-4 text-slate-600 dark:text-slate-300">
                         {course.createdAt ? formatDate(course.createdAt) : "-"}
                       </td>
                       <td className="px-6 py-4 text-right">
@@ -237,7 +237,7 @@ export default function AdminCoursesPage() {
                   <tr>
                     <td
                       colSpan={5}
-                      className="px-6 py-8 text-center text-neutral-500"
+                      className="px-6 py-8 text-center text-slate-500"
                     >
                       No courses found.
                     </td>
@@ -279,10 +279,10 @@ export default function AdminCoursesPage() {
           />
           {/* Modal Content */}
           <Card className="w-full max-w-md relative z-10 m-4 p-6 space-y-4">
-            <h3 className="text-xl font-bold text-neutral-900 dark:text-white">
+            <h3 className="text-xl font-bold text-slate-900 dark:text-white">
               Delete Course?
             </h3>
-            <p className="text-neutral-600 dark:text-neutral-400">
+            <p className="text-slate-600 dark:text-slate-400">
               Are you sure you want to delete this course? This action cannot be
               undone and will remove all enrollments and data associated with
               it.

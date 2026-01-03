@@ -37,7 +37,7 @@ export function QuizResults({
         }`}>
           {passed ? 'Congratulations!' : 'Not Quite There'}
         </h2>
-        <p className="text-neutral-600 dark:text-neutral-400">
+        <p className="text-slate-600 dark:text-slate-400">
           {passed
             ? 'You passed the quiz!'
             : `You need ${passingScore}% to pass`}
@@ -47,10 +47,10 @@ export function QuizResults({
       {/* Score Display */}
       <div className="bg-primary-50 dark:bg-primary-900/20 p-8 rounded-xl mb-6">
         <div className="text-center">
-          <div className="text-6xl font-bold text-neutral-900 dark:text-white mb-2">
+          <div className="text-6xl font-bold text-slate-900 dark:text-white mb-2">
             {percentage}%
           </div>
-          <div className="text-lg text-neutral-600 dark:text-neutral-400">
+          <div className="text-lg text-slate-600 dark:text-slate-400">
             {score} out of {totalPoints} points
           </div>
         </div>
@@ -58,20 +58,20 @@ export function QuizResults({
 
       {/* Stats */}
       <div className="grid grid-cols-2 gap-4 mb-8">
-        <div className="bg-neutral-100 dark:bg-neutral-800 p-4 rounded-lg text-center">
-          <div className="text-2xl font-bold text-neutral-900 dark:text-white">
+        <div className="bg-slate-100 dark:bg-slate-800 p-4 rounded-lg text-center">
+          <div className="text-2xl font-bold text-slate-900 dark:text-white">
             {correctAnswers}/{totalQuestions}
           </div>
-          <div className="text-sm text-neutral-600 dark:text-neutral-400">
+          <div className="text-sm text-slate-600 dark:text-slate-400">
             Correct Answers
           </div>
         </div>
 
-        <div className="bg-neutral-100 dark:bg-neutral-800 p-4 rounded-lg text-center">
-          <div className="text-2xl font-bold text-neutral-900 dark:text-white">
+        <div className="bg-slate-100 dark:bg-slate-800 p-4 rounded-lg text-center">
+          <div className="text-2xl font-bold text-slate-900 dark:text-white">
             {passed ? '✓' : '✗'}
           </div>
-          <div className="text-sm text-neutral-600 dark:text-neutral-400">
+          <div className="text-sm text-slate-600 dark:text-slate-400">
             Status
           </div>
         </div>

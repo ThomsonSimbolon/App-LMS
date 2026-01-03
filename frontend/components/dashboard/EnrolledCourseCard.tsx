@@ -40,9 +40,9 @@ export function EnrolledCourseCard({
 
   return (
     <Link href={`/learn/${courseId}`}>
-      <div className="card card-hover overflow-hidden group">
+      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 shadow-soft rounded-xl overflow-hidden hover:shadow-soft-lg hover:-translate-y-0.5 transition-all duration-200 group">
         {/* Thumbnail */}
-        <div className="relative h-40 bg-neutral-200 dark:bg-neutral-800 overflow-hidden">
+        <div className="relative h-40 bg-slate-200 dark:bg-slate-800">
           {thumbnail ? (
             <Image
               src={getFileUrl(thumbnail)}
@@ -77,7 +77,7 @@ export function EnrolledCourseCard({
 
         {/* Content */}
         <div className="p-5">
-          <h3 className="text-lg font-semibold text-neutral-900 dark:text-white mb-2 line-clamp-2 group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors">
+          <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-2 line-clamp-2 group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors">
             {title}
           </h3>
 
@@ -89,7 +89,7 @@ export function EnrolledCourseCard({
                     {instructor.firstName.charAt(0)}
                     {instructor.lastName?.charAt(0) || ""}
                   </div>
-                  <span className="text-neutral-600 dark:text-neutral-400">
+                  <span className="text-slate-600 dark:text-slate-400">
                     {instructor.firstName} {instructor.lastName || ""}
                   </span>
                 </>
@@ -98,20 +98,20 @@ export function EnrolledCourseCard({
                   <div className="w-6 h-6 rounded-full bg-primary-600 flex items-center justify-center text-white text-xs font-medium">
                     ?
                   </div>
-                  <span className="text-neutral-600 dark:text-neutral-400">
+                  <span className="text-slate-600 dark:text-slate-400">
                     Unknown Instructor
                   </span>
                 </>
               )}
             </div>
 
-            <span className="text-neutral-500 dark:text-neutral-500 text-xs">
+            <span className="text-slate-500 dark:text-slate-500 text-xs">
               {formatDate(lastAccessedAt)}
             </span>
           </div>
 
           {progress === 100 && (
-            <div className="mt-3 pt-3 border-t border-neutral-200 dark:border-neutral-800">
+            <div className="mt-3 pt-3 border-t border-slate-200 dark:border-slate-700">
               <div className="flex items-center text-sm font-medium text-accent-600 dark:text-accent-400">
                 <CheckCircle className="w-4 h-4 mr-1.5" />
                 Completed

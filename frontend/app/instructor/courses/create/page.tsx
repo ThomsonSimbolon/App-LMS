@@ -168,15 +168,15 @@ export default function CreateCoursePage() {
       <div className="mb-8">
         <button
           onClick={() => router.back()}
-          className="flex items-center gap-2 text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white mb-4 transition-colors"
+          className="flex items-center gap-2 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white mb-4 transition-colors"
         >
           <ArrowLeft className="w-5 h-5" />
           <span>Back</span>
         </button>
-        <h1 className="text-3xl font-bold text-neutral-900 dark:text-white mb-2">
+        <h1 className="text-3xl font-bold text-slate-900 dark:text-white mb-2">
           Create New Course
         </h1>
-        <p className="text-neutral-600 dark:text-neutral-400">
+        <p className="text-slate-600 dark:text-slate-400">
           Fill in the details below to create a new course
         </p>
       </div>
@@ -198,7 +198,7 @@ export default function CreateCoursePage() {
           <div className="lg:col-span-2 space-y-6">
             {/* Basic Information */}
             <div className="card p-6">
-              <h2 className="text-xl font-bold text-neutral-900 dark:text-white mb-6 flex items-center gap-2">
+              <h2 className="text-xl font-bold text-slate-900 dark:text-white mb-6 flex items-center gap-2">
                 <BookOpen className="w-5 h-5" />
                 Basic Information
               </h2>
@@ -215,7 +215,7 @@ export default function CreateCoursePage() {
                 />
 
                 <div>
-                  <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1.5">
+                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
                     Description
                   </label>
                   <textarea
@@ -239,7 +239,7 @@ export default function CreateCoursePage() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1.5">
+                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
                     Category
                   </label>
                   <select
@@ -267,7 +267,7 @@ export default function CreateCoursePage() {
                     </p>
                   )}
                   {categoriesLoading && (
-                    <p className="text-sm text-neutral-500 dark:text-neutral-400 mt-1">
+                    <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
                       Loading categories...
                     </p>
                   )}
@@ -277,14 +277,14 @@ export default function CreateCoursePage() {
 
             {/* Course Settings */}
             <div className="card p-6">
-              <h2 className="text-xl font-bold text-neutral-900 dark:text-white mb-6">
+              <h2 className="text-xl font-bold text-slate-900 dark:text-white mb-6">
                 Course Settings
               </h2>
 
               <div className="space-y-4">
                 <div className="grid sm:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1.5">
+                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
                       Level
                     </label>
                     <select
@@ -300,7 +300,7 @@ export default function CreateCoursePage() {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1.5">
+                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
                       Course Type
                     </label>
                     <select
@@ -338,13 +338,13 @@ export default function CreateCoursePage() {
                       name="requireSequentialCompletion"
                       checked={formData.requireSequentialCompletion}
                       onChange={handleInputChange}
-                      className="mt-1 w-4 h-4 rounded border-neutral-300 text-primary-600 focus:ring-primary-500"
+                      className="mt-1 w-4 h-4 rounded border-slate-300 text-primary-600 focus:ring-primary-500"
                     />
                     <div>
-                      <span className="text-sm font-medium text-neutral-700 dark:text-neutral-300">
+                      <span className="text-sm font-medium text-slate-700 dark:text-slate-300">
                         Require Sequential Completion
                       </span>
-                      <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-0.5">
+                      <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
                         Students must complete lessons in order
                       </p>
                     </div>
@@ -356,13 +356,13 @@ export default function CreateCoursePage() {
                       name="requireManualApproval"
                       checked={formData.requireManualApproval}
                       onChange={handleInputChange}
-                      className="mt-1 w-4 h-4 rounded border-neutral-300 text-primary-600 focus:ring-primary-500"
+                      className="mt-1 w-4 h-4 rounded border-slate-300 text-primary-600 focus:ring-primary-500"
                     />
                     <div>
-                      <span className="text-sm font-medium text-neutral-700 dark:text-neutral-300">
+                      <span className="text-sm font-medium text-slate-700 dark:text-slate-300">
                         Require Manual Certificate Approval
                       </span>
-                      <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-0.5">
+                      <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
                         Certificates require manual approval before issuance
                       </p>
                     </div>
@@ -376,7 +376,7 @@ export default function CreateCoursePage() {
           <div className="space-y-6">
             {/* Thumbnail Upload */}
             <div className="card p-6">
-              <h2 className="text-xl font-bold text-neutral-900 dark:text-white mb-4">
+              <h2 className="text-xl font-bold text-slate-900 dark:text-white mb-4">
                 Course Thumbnail
               </h2>
 
@@ -387,7 +387,7 @@ export default function CreateCoursePage() {
                       src={thumbnailPreview}
                       alt="Thumbnail preview"
                       fill
-                      className="object-cover rounded-lg border border-neutral-200 dark:border-neutral-800"
+                      className="object-cover rounded-lg border border-slate-200 dark:border-slate-700"
                       unoptimized
                     />
                     <button
@@ -404,12 +404,12 @@ export default function CreateCoursePage() {
                   </div>
                 ) : (
                   <label className="block">
-                    <div className="border-2 border-dashed border-neutral-300 dark:border-neutral-700 rounded-lg p-8 text-center cursor-pointer hover:border-primary-500 dark:hover:border-primary-500 transition-colors">
-                      <Upload className="w-8 h-8 text-neutral-400 dark:text-neutral-500 mx-auto mb-2" />
-                      <p className="text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
+                    <div className="border-2 border-dashed border-slate-300 dark:border-slate-700 rounded-lg p-8 text-center cursor-pointer hover:border-primary-500 dark:hover:border-primary-500 transition-colors">
+                      <Upload className="w-8 h-8 text-slate-400 dark:text-slate-500 mx-auto mb-2" />
+                      <p className="text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
                         Upload Thumbnail
                       </p>
-                      <p className="text-xs text-neutral-500 dark:text-neutral-400">
+                      <p className="text-xs text-slate-500 dark:text-slate-400">
                         PNG, JPG up to 5MB
                       </p>
                     </div>
@@ -428,7 +428,7 @@ export default function CreateCoursePage() {
                   </p>
                 )}
 
-                <p className="text-xs text-neutral-500 dark:text-neutral-400">
+                <p className="text-xs text-slate-500 dark:text-slate-400">
                   A good thumbnail helps attract students to your course.
                   Recommended size: 1280x720px
                 </p>
@@ -436,7 +436,7 @@ export default function CreateCoursePage() {
             </div>
 
             {/* Submit Button */}
-            <div className="card p-6 bg-neutral-50 dark:bg-neutral-900/50">
+            <div className="card p-6 bg-slate-50 dark:bg-slate-900/50">
               <div className="space-y-4">
                 <Button
                   type="submit"
